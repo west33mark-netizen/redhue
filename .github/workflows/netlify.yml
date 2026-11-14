@@ -20,6 +20,14 @@ jobs:
         if: env.NETLIFY_AUTH_TOKEN == ''
         run: |
           echo "::warning::NETLIFY_AUTH_TOKEN er ikke sat i repoets Secrets – springer deploy over."
+      - name: Tjek nøglens form (viser aldrig selve nøglen)
+        if: env.NETLIFY_AUTH_TOKEN != ''
+        run: |
+          T="$NETLIFY_AUTH_TOKEN"; T_TRIM="$(printf %s "$T" | tr -d '[:space:]')"
+          echo "Længde: ${#T} (uden mellemrum: ${#T_TRIM})"
+          case "$T_TRIM" in nfp_*) echo "Starter med nfp_: ja";; *) echo "::warning::Nøglen starter ikke med nfp_ – det er nok ikke en Netlify personal access token";; esac
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T_TRIM" https://api.netlify.com/api/v1/user); echo "Netlify /user svarer: $code"
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T_TRIM" https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID); echo "Netlify site svarer: $code"
       - uses: actions/setup-node@v4
         if: env.NETLIFY_AUTH_TOKEN != ''
         with:
@@ -30,4 +38,4 @@ jobs:
         run: npm ci
       - name: Deploy (produktion)
         if: env.NETLIFY_AUTH_TOKEN != ''
-        run: npx -y netlify-cli@latest deploy --build --prod --message "GitHub ${{ github.sha }}"
+        run: export NETLIFY_AUTH_TOKEN="$(printf %s "$NETLIFY_AUTH_TOKEN" | tr -d '[:space:]')"; npx -y netlify-cli@latest deploy --build --prod --message "GitHub ${{ github.sha }}"
