@@ -109,3 +109,17 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - Stopper når man skifter skærm eller lukker appen. Browsere uden stemmer får en pæn besked og ingen knapper.
 - Mere naturlige stemmer (fx ElevenLabs) kan kobles på senere via en serverfunktion; det kræver en nøgle og koster pr. oplæsning.
 
+## 🗣️ Tal-knap og stemme-tilstand
+- **🗣️ Tal** i topbaren (mobil), i sidemenuen (computer) og **"Fortæl mig om min dag"** under uret på hjemmeskærmen: appen fortæller med dine egne tal, hvad du ser (hilsen, klokken, missionsdag, opgaver, streak, profit, mål – og dagens besked på hjemmeskærmen). Tryk igen for at stoppe.
+- **Stemme-tilstand** (Indstillinger → Stemmer, slukket som standard): nye svar fra coach, mor/far/mentor og guide læses højt af sig selv.
+
+## 🛡️ Tryghed: SOS, positionsdeling, find mine enheder (`/api/safe`, `netlify/functions/safe.mjs`)
+**Samtykke først:** intet spores eller deles uden brugerens eget tryk på sin egen enhed. Man kan kun se andre, der selv har sendt dig et delingslink. REDHUE erstatter ikke 112.
+- **SOS (gratis):** hold knappen i 2 sek. (kort tryk sender intet). Appen henter positionen, laver et live-link i 24 timer og en færdig besked → SMS til alle nødkontakter (Android/iPhone-format), WhatsApp, Del eller Kopiér. Brugeren trykker selv Send. "📞 Ring 112" er altid synlig. Virker også uden GPS-tilladelse (uden position). SOS-knap på hjemmeskærmen og i kontrolpanelet.
+- **Nødkontakter:** navn + telefon, gemmes kun på telefonen.
+- **Del min position (gratis):** 1, 4 eller 24 timer via link; synlig 📍-markering; stop med ét tryk; højst 5 aktive delinger (udløbne ryddes op).
+- **Andre med appen (gratis):** dem der har delt deres link med dig – navn, nøjagtighed, sidst opdateret, "Åbn kort". Åbnes et link, tilføjes personen automatisk.
+- **Find mine enheder (Pro):** enheder med samme licens, kun hvor "Denne enhed kan findes" er slået til (navn, seneste position, batteri, "Glem").
+- **Begrænsning:** web-apps kan kun bruge GPS, mens appen er åben; ellers vises seneste kendte position med tidspunkt.
+- **Server:** Netlify Blobs (`redhue-safe`). Enheder identificeres med en tilfældig nøgle, som kun gemmes som hash; licenser og nøgler gemmes aldrig. Delinger udløber og slettes.
+- **Til salg (GDPR):** positionsdata er persondata – nævn dem i din privatlivspolitik (formål, opbevaring, sletning).

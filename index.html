@@ -346,6 +346,41 @@ table.list tr:hover td{background:rgba(255,255,255,.025)}
 .vo-row select{min-width:0}
 .vo-rate{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
 .vo-rate input{flex:1;accent-color:var(--cy)}
+/* ---------- Tryghed: SOS, positionsdeling, find mine enheder ---------- */
+.nav-btn[data-go="safe"]{--acc:var(--red)}
+.sos-wrap{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+@media(max-width:620px){.sos-wrap{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.sos{position:relative;width:148px;height:148px;border-radius:50%;border:0;cursor:pointer;color:#fff;font:700 30px 'Space Grotesk',sans-serif;letter-spacing:.06em;
+  background:radial-gradient(circle at 35% 30%,#ff7a8a,#e8113a 60%,#a3001f);box-shadow:0 18px 50px -12px rgba(232,17,58,.7),inset 0 -6px 16px rgba(0,0,0,.25);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.sos small{display:block;font:500 12px 'Space Grotesk',sans-serif;letter-spacing:0;opacity:.9;margin-top:4px}
+.sos svg{position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);transform:rotate(-90deg);pointer-events:none}
+.sos svg circle{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-dasharray:490;stroke-dashoffset:490}
+.sos.hold svg circle{transition:stroke-dashoffset 2s linear;stroke-dashoffset:0}
+.sos:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.call112{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#a3001f;font-weight:700;border-radius:14px;padding:12px 18px;text-decoration:none;font-size:16px}
+.sos-out{margin-top:14px;border-radius:16px;padding:14px;border:1.5px solid rgba(232,17,58,.6);background:rgba(232,17,58,.08)}
+.sos-out[hidden]{display:none}
+.sos-out .actions{margin-top:10px}
+.sos-out a.btn{text-decoration:none}
+.sf-list{display:grid;gap:8px;margin-top:10px}
+.sf-item{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:14px;flex-wrap:wrap}
+.sf-item b{font-weight:600}
+.sf-item .m{color:var(--muted);font-size:12.5px}
+.sf-item .sosb{background:#e8113a;color:#fff;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:6px}
+.sf-item .acts{display:flex;gap:6px;flex-wrap:wrap}
+.sf-item .acts a{text-decoration:none}
+.loc-pill{display:inline-flex;align-items:center;gap:4px;color:#fff;background:#e8113a;border-radius:99px;padding:1px 8px;font-size:11px}
+.loc-pill[hidden]{display:none}
+.os-sos{position:absolute;top:calc(36px + env(safe-area-inset-top));right:18px;border:0;border-radius:99px;padding:6px 12px;font:700 12px 'Space Grotesk',sans-serif;color:#fff;background:#e8113a;box-shadow:0 6px 18px -6px rgba(232,17,58,.8);cursor:pointer;z-index:2}
+.privacy-note{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+/* ---------- Tal-knap: appen fortæller, hvad du ser ---------- */
+.talk{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);border-radius:99px;padding:7px 13px;font:inherit;font-size:13.5px;cursor:pointer;line-height:1}
+.talk:hover{border-color:rgba(255,255,255,.3)}
+.talk.on{border-color:color-mix(in srgb,var(--cy) 70%,var(--line));background:color-mix(in srgb,var(--cy) 18%,transparent)}
+@media(prefers-reduced-motion:no-preference){.talk.on{animation:sayp 1.2s ease-in-out infinite}}
+.topbar .tb-r{display:flex;gap:8px;align-items:center}
+.os-clock .talk{margin-top:12px}
+.side-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 /* ---------- Virtuel mor/far/mentor ---------- */
 .pa-set{display:none;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.18);flex-wrap:wrap;align-items:flex-end}
 .pa-set.on{display:flex}
@@ -468,7 +503,8 @@ html.d4 .os.d4-in .os-in{animation:d4home .7s cubic-bezier(.16,.84,.24,1) both}
 /* ---------- REDHUE OS: hjemmeskærm ---------- */
 #navSide [data-go="home"]{display:none}
 .os{position:fixed;inset:0;z-index:50;overflow-y:auto;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent}
-.os[hidden],.buyLink[hidden],.ch-box[hidden],#avDel[hidden],#paForm[hidden],#paLock[hidden]{display:none!important}
+.os[hidden],.buyLink[hidden],.ch-box[hidden],#avDel[hidden],#paForm[hidden],#paLock[hidden],[data-talk][hidden],.loc-pill[hidden],.sos-out[hidden]{display:none!important}
+.os-in{position:relative}
 html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-w.wide .big{font-size:19px}
 .os-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 18px calc(14px + env(safe-area-inset-bottom))}
@@ -516,7 +552,8 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .os-sh b{font-size:17px}
 .os-sh span{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
-.os-qs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
+.os-qs{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:14px}
+.os-q{font-size:10px!important}
 .os-q{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:16px;padding:10px 6px;font:inherit;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:0}
 .os-q .i{font-size:19px;line-height:1.2}
 .os-q.on{border-color:color-mix(in srgb,var(--cy) 60%,var(--line));background:color-mix(in srgb,var(--cy) 14%,transparent)}
@@ -544,13 +581,13 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
   <aside id="side">
     <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
     <nav id="navSide"></nav>
-    <div class="side-foot"><button class="small" id="langBtn">EN</button></div>
+    <div class="side-foot"><button class="talk" data-talk id="talkD">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtn">EN</button></div>
   </aside>
 
   <div>
     <div class="topbar">
       <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
-      <button class="small" id="langBtnM">EN</button>
+      <div class="tb-r"><button class="talk" data-talk id="talkM">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtnM">EN</button></div>
     </div>
     <main id="main">
 
@@ -820,6 +857,57 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
         </div>
       </section>
 
+      <!-- TRYGHED -->
+      <section class="section" id="s-safe">
+        <h2 class="sec" data-t="safe"></h2>
+        <p class="sub" data-t="safeSub"></p>
+        <div class="card">
+          <div class="sos-wrap">
+            <button class="sos" id="sosBtn" aria-describedby="sosHelp"><svg viewBox="0 0 164 164" aria-hidden="true"><circle cx="82" cy="82" r="78"/></svg>SOS<small data-t="sosHold"></small></button>
+            <div>
+              <h3 style="margin:0 0 6px" data-t="sosT"></h3>
+              <p class="sub" id="sosHelp" style="margin:0 0 12px" data-t="sosHelp"></p>
+              <a class="call112" href="tel:112">📞 <span data-t="call112"></span></a>
+            </div>
+          </div>
+          <div class="sos-out" id="sosOut" hidden></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card">
+            <h3 data-t="ecT"></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="ecSub"></p>
+            <div class="sf-list" id="ecList"></div>
+            <form class="pgoal-row" id="ecForm" style="margin-top:10px;flex-wrap:wrap" autocomplete="off">
+              <div style="min-width:120px"><label data-t="ecName"></label><input id="ecName" maxlength="30" required></div>
+              <div style="min-width:140px"><label data-t="ecPhone"></label><input id="ecPhone" type="tel" inputmode="tel" maxlength="20" required placeholder="+45 12 34 56 78"></div>
+              <button class="primary" type="submit" data-t="add"></button>
+            </form>
+          </div>
+          <div class="card">
+            <h3><span data-t="shT"></span> <span class="loc-pill" id="shPill" hidden>📍 <span data-t="sharing"></span></span></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="shSub"></p>
+            <form class="pgoal-row" id="shForm" style="flex-wrap:wrap" autocomplete="off">
+              <div style="min-width:120px"><label data-t="shFor"></label><input id="shLabel" maxlength="30"></div>
+              <div style="min-width:110px"><label data-t="shHours"></label><select id="shHours"><option value="1">1 t</option><option value="4">4 t</option><option value="24">24 t</option></select></div>
+              <button class="primary" type="submit" data-t="shStart"></button>
+            </form>
+            <div class="sf-list" id="shList"></div>
+          </div>
+          <div class="card">
+            <h3 data-t="wT"></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="wSub"></p>
+            <form class="pgoal-row" id="wAddForm" autocomplete="off"><div><input id="wCode" maxlength="200" data-tp="wPh"></div><button class="primary" type="submit" data-t="add"></button></form>
+            <div class="sf-list" id="wList"></div>
+          </div>
+          <div class="card">
+            <h3 data-t="fdT"></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="fdSub"></p>
+            <div id="fdBody"></div>
+          </div>
+        </div>
+        <p class="privacy-note" data-t="safePriv"></p>
+      </section>
+
       <!-- SETTINGS -->
       <section class="section" id="s-settings">
         <h2 class="sec" data-t="settings"></h2>
@@ -842,7 +930,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <div class="card">
             <h3 data-t="voT"></h3>
             <p class="sub" style="margin-bottom:6px" id="voSub"></p>
-            <div class="actions" style="margin-top:0"><button id="voBtn" class="primary"></button></div>
+            <div class="actions" style="margin-top:0"><button id="voBtn" class="primary"></button><button id="voAutoBtn"></button></div>
             <div id="voRows"></div>
             <div class="vo-rate"><span data-t="voRate"></span><input type="range" id="voRate" min="0.7" max="1.1" step="0.05"><span class="mono" id="voRateV"></span></div>
           </div>
@@ -885,8 +973,9 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </div>
 <div class="os" id="os" hidden>
   <div class="os-in">
-    <div class="os-status"><span><span class="live"></span>REDHUE OS 2</span><span class="r"><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
-    <div class="os-clock"><div class="time" id="osClock"></div><div class="date" id="osDate"></div><div class="greet" id="osGreet"></div></div>
+    <div class="os-status"><span><span class="live"></span>REDHUE OS 2</span><span class="r"><span class="loc-pill" id="osLoc" hidden>📍</span><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
+    <button class="os-sos" id="osSos" aria-label="SOS">🆘 SOS</button>
+    <div class="os-clock"><div class="time" id="osClock"></div><div class="date" id="osDate"></div><div class="greet" id="osGreet"></div><button class="talk" data-talk id="talkH">🗣️ <span data-t="talkBtnHome"></span></button></div>
     <div class="os-wg" id="osWidgets"></div>
     <div class="os-apps" id="osApps"></div>
     <div class="os-dock" id="osDock"></div>
@@ -1013,6 +1102,29 @@ const T = {
   profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
   pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  safe:"Tryghed", safeSub:"SOS til dine nødkontakter, frivillig deling af din position og find dine egne enheder.",
+  sosHold:"Hold 2 sek.", sosT:"Nødsignal", sosHelp:"Hold SOS-knappen inde i 2 sekunder. Appen finder din position og laver en færdig besked til dine nødkontakter med et live-link i 24 timer. Du trykker selv Send. Er du i akut fare, så ring 112.", call112:"Ring 112",
+  sosGetting:"Finder din position…", sosNoPos:"Kunne ikke finde din position. Beskeden sendes uden – ring 112, hvis du er i fare.",
+  sosMsg:(n,pos,clock,live)=>`🆘 SOS fra ${n}: Jeg har brug for hjælp.${pos?` Min position: ${pos}`:""} (kl. ${clock}).${live?` Følg min position live i 24 timer: ${live}`:""}`,
+  sosReady:"Nødsignalet er klar. Vælg hvordan det skal sendes – og tryk Send i besked-appen:", sosSms:n=>`📱 SMS til ${n} ${n===1?"kontakt":"kontakter"}`, sosNoContacts:"Du har ingen nødkontakter endnu – tilføj dem nedenfor. Du kan stadig dele beskeden:", sosStop:"Stop SOS-deling", sosStopped:"SOS-deling stoppet",
+  waBtn:"WhatsApp", shareBtn:"Del…", copyBtn:"Kopiér", copied:"Kopieret",
+  ecT:"🧑‍🤝‍🧑 Nødkontakter", ecSub:"Dem SOS-beskeden går til. Gemmes kun på din telefon.", ecName:"Navn", ecPhone:"Telefon", add:"Tilføj", ecNone:"Ingen nødkontakter endnu.",
+  shT:"📍 Del min position", shSub:"Du bestemmer, hvem der får linket, og hvor længe. Positionen opdateres, mens appen er åben.", shFor:"Til hvem (valgfrit)", shHours:"Hvor længe", shStart:"Start deling", sharing:"Deler",
+  shActive:(l,left)=>`${l?`Til ${l} · `:""}${left} tilbage`, shNone:"Du deler ikke din position.", shMsg:(n,link)=>`${n} deler sin position med dig via REDHUE: ${link}`, stop:"Stop",
+  wT:"👀 Andre med appen", wSub:"Folk der har delt deres position med dig. Indsæt det link eller den kode, de har sendt.", wPh:"Link eller kode", wNone:"Ingen deler med dig endnu.", wExpired:"Delingen er udløbet", wAgo:(n,a)=>`${n} · opdateret ${a}`, wAdded:"Tilføjet", wBad:"Det ligner ikke et REDHUE-delingslink.", openMap:"Åbn kort", remove:"Fjern",
+  fdT:"📱 Find mine enheder", fdSub:"Dine egne telefoner og computere med samme licens. Kun enheder, hvor du har slået det til.", fdThis:"Denne enhed kan findes", fdName:"Navn på denne enhed", fdNone:"Ingen enheder kan findes endnu.", fdForget:"Glem", fdThisTag:"denne", fdPro:"Find mine enheder er en del af Pro.",
+  safePriv:"Privatliv: Intet deles uden dit eget tryk. Delinger udløber af sig selv, og du kan stoppe dem når som helst. Web-apps kan kun bruge positionen, mens appen er åben – ellers vises seneste kendte position med tidspunkt. REDHUE erstatter ikke 112.",
+  agoNow:"lige nu", agoMin:n=>`for ${n} min. siden`, agoH:n=>`for ${n} t. siden`, agoD:n=>`for ${n} d. siden`, minLeft:n=>`${n} min.`, hLeft:n=>`${n} t.`,
+  talkBtn:"Tal", talkBtnHome:"Fortæl mig om min dag", voAutoOn:"Stemme-tilstand: tændt", voAutoOff:"Stemme-tilstand: slukket",
+  talk:{ hiM:"Godmorgen", hiD:"Hej", hiE:"Godaften", time:(c,d)=>`Klokken er ${c}, ${d}.`, day:(d,g)=>`Du er på dag ${d} af 90${g?`, og du har nået ${g} procent af dit månedsmål`:""}.`,
+    tasks:(n)=>n>=4?"Du har klaret alle dagens fire opgaver. Flot!":n?`Du har klaret ${n} af dagens fire opgaver.`:"Du har ikke klaret nogen af dagens opgaver endnu. Én lille opgave er en god start.",
+    streak:n=>n>1?`Din streak er på ${n} dage.`:"", profit:(p,m)=>`Din profit denne måned er ${p}${m!==null?`, med ${m} procent margin`:""}.`, noMoney:"Du har ikke logget nogen tal denne måned endnu.",
+    goal:(left,per)=>`Du mangler ${left} til dit profitmål. Det er cirka ${per} om dagen.`, goalHit:"Du har nået dit profitmål. Godt gået!", forecast:x=>`Hvis du fortsætter sådan, ender måneden på cirka ${x}.`,
+    pipe:(i,s,p,d)=>`I din pipeline har du ${i} ${i===1?"idé":"idéer"}, ${s} ${s===1?"manuskript":"manuskripter"}, ${p} i produktion og ${d} ${d===1?"postet video":"postede videoer"}.`, nextIdea:x=>`Næste idé: ${x}.`, emptyPipe:"Din pipeline er tom. Læg tre idéer ind, så ved du altid, hvad din næste video er.",
+    left:x=>`Tilbage i dag: ${x}.`, wallet:(b,i)=>`Din saldo er ${b}. De sidste 30 dage har du tjent ${i}.`, last:(inc,x,y)=>`Seneste post: ${inc?"en indtægt":"en udgift"} på ${x}${y?`, ${y}`:""}.`,
+    assets:x=>`Dine aktiver er i alt ${x}.`, port:(c,f)=>`Du følger ${c} krypto og ${f} fonde.`, prods:n=>n?`Du har ${n} produkter.`:"Du har ingen produkter endnu.",
+    agents:p=>p?"Dine fire AI-agenter er klar: Script, Hook og Caption, Planlægger og Analytiker.":"Agenterne er en del af Pro. De skriver manuskripter, hooks og planer for dig.",
+    chat:"Her kan du tale med din AI-coach, fællesskabet og din mor, far eller mentor.", settings:"Indstillinger. Her kan du ændre profil, tidszone, stemmer, 4D og backup.", note:(n)=>`Besked fra ${n}:` },
   voT:"🔊 Stemmer", voSubOk:n=>`Beskeder kan læses højt med blide stemmer fra din telefon (${n} ${n===1?"stemme":"stemmer"} fundet). Teksten forlader aldrig telefonen.`, voSubNone:"Din browser har ingen stemmer til oplæsning. Prøv Chrome på Android eller Safari på iPhone.", voOn:"Oplæsning er tændt", voOff:"Oplæsning er slukket", voRate:"Tempo", voAuto:"Automatisk", voTest:"Prøv", voWho:{mom:"Mor",dad:"Far",mentor:"Mentor",coach:"Coach",guide:"Guide"}, voSample:"Hej. Jeg er så glad for, at du er her. Tag det roligt, ét skridt ad gangen.", voPlay:"Læs højt", voStop:"Stop",
   paRoles:{mom:["Mor","👩"],dad:["Far","👨"],mentor:["Mentor","🧑"]}, paRole:"Hvem skal støtte dig?", paName:"Navn", paNote:"💌 Dagens besked", paPh:n=>`Skriv til ${n}…`, paLockTxt:n=>`At chatte med ${n} er en del af Pro. Dagens besked er gratis.`, paSaved:"Gemt 💛", paHello:n=>`Hej, det er ${n}. Fortæl mig, hvordan det går – både med kanalen og med dig.`,
   gratT:"🙏 Dagens taknemmelighed", gratSub:"Én linje om dagen. Hvad eller hvem er du taknemmelig for i dag? Det bliver på din telefon.", gratPh:"Fx: en seer skrev at min video hjalp ham…", gratSaved:"Gemt 🙏",
@@ -1100,6 +1212,29 @@ const T = {
   profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
   pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  safe:"Safety", safeSub:"SOS to your emergency contacts, voluntary location sharing and find your own devices.",
+  sosHold:"Hold 2 sec", sosT:"Emergency signal", sosHelp:"Hold the SOS button for 2 seconds. The app finds your location and prepares a message to your emergency contacts with a 24-hour live link. You press Send yourself. If you're in immediate danger, call 112.", call112:"Call 112",
+  sosGetting:"Finding your location…", sosNoPos:"Couldn't find your location. The message is sent without it – call 112 if you're in danger.",
+  sosMsg:(n,pos,clock,live)=>`🆘 SOS from ${n}: I need help.${pos?` My location: ${pos}`:""} (at ${clock}).${live?` Follow my location live for 24 hours: ${live}`:""}`,
+  sosReady:"Your emergency signal is ready. Choose how to send it – then press Send in your messaging app:", sosSms:n=>`📱 SMS to ${n} ${n===1?"contact":"contacts"}`, sosNoContacts:"You have no emergency contacts yet – add them below. You can still share the message:", sosStop:"Stop SOS sharing", sosStopped:"SOS sharing stopped",
+  waBtn:"WhatsApp", shareBtn:"Share…", copyBtn:"Copy", copied:"Copied",
+  ecT:"🧑‍🤝‍🧑 Emergency contacts", ecSub:"Who the SOS message goes to. Stored only on your phone.", ecName:"Name", ecPhone:"Phone", add:"Add", ecNone:"No emergency contacts yet.",
+  shT:"📍 Share my location", shSub:"You decide who gets the link and for how long. Your location updates while the app is open.", shFor:"For whom (optional)", shHours:"How long", shStart:"Start sharing", sharing:"Sharing",
+  shActive:(l,left)=>`${l?`For ${l} · `:""}${left} left`, shNone:"You're not sharing your location.", shMsg:(n,link)=>`${n} is sharing their location with you via REDHUE: ${link}`, stop:"Stop",
+  wT:"👀 Others with the app", wSub:"People who've shared their location with you. Paste the link or code they sent.", wPh:"Link or code", wNone:"Nobody is sharing with you yet.", wExpired:"Sharing has ended", wAgo:(n,a)=>`${n} · updated ${a}`, wAdded:"Added", wBad:"That doesn't look like a REDHUE sharing link.", openMap:"Open map", remove:"Remove",
+  fdT:"📱 Find my devices", fdSub:"Your own phones and computers with the same license. Only devices where you've turned it on.", fdThis:"This device can be found", fdName:"Name of this device", fdNone:"No devices can be found yet.", fdForget:"Forget", fdThisTag:"this one", fdPro:"Find my devices is part of Pro.",
+  safePriv:"Privacy: Nothing is shared without your own tap. Shares expire by themselves and you can stop them any time. Web apps can only use your location while the app is open – otherwise the last known location is shown with its time. REDHUE does not replace 112.",
+  agoNow:"just now", agoMin:n=>`${n} min ago`, agoH:n=>`${n} h ago`, agoD:n=>`${n} d ago`, minLeft:n=>`${n} min`, hLeft:n=>`${n} h`,
+  talkBtn:"Talk", talkBtnHome:"Tell me about my day", voAutoOn:"Voice mode: on", voAutoOff:"Voice mode: off",
+  talk:{ hiM:"Good morning", hiD:"Hi", hiE:"Good evening", time:(c,d)=>`It's ${c}, ${d}.`, day:(d,g)=>`You're on day ${d} of 90${g?`, and you've reached ${g} percent of your monthly goal`:""}.`,
+    tasks:(n)=>n>=4?"You've done all four of today's tasks. Great job!":n?`You've done ${n} of today's four tasks.`:"You haven't done any of today's tasks yet. One small task is a great start.",
+    streak:n=>n>1?`Your streak is ${n} days.`:"", profit:(p,m)=>`Your profit this month is ${p}${m!==null?`, with a ${m} percent margin`:""}.`, noMoney:"You haven't logged any numbers this month yet.",
+    goal:(left,per)=>`You need ${left} more to reach your profit goal. That's about ${per} a day.`, goalHit:"You've reached your profit goal. Well done!", forecast:x=>`If you keep this up, the month ends at about ${x}.`,
+    pipe:(i,s,p,d)=>`In your pipeline you have ${i} ${i===1?"idea":"ideas"}, ${s} ${s===1?"script":"scripts"}, ${p} in production and ${d} posted ${d===1?"video":"videos"}.`, nextIdea:x=>`Next idea: ${x}.`, emptyPipe:"Your pipeline is empty. Add three ideas so you always know your next video.",
+    left:x=>`Left today: ${x}.`, wallet:(b,i)=>`Your balance is ${b}. In the last 30 days you've earned ${i}.`, last:(inc,x,y)=>`Latest entry: ${inc?"income":"an expense"} of ${x}${y?`, ${y}`:""}.`,
+    assets:x=>`Your total assets are ${x}.`, port:(c,f)=>`You're tracking ${c} crypto and ${f} funds.`, prods:n=>n?`You have ${n} products.`:"You don't have any products yet.",
+    agents:p=>p?"Your four AI agents are ready: Script, Hook and Caption, Planner and Analyst.":"The agents are part of Pro. They write scripts, hooks and plans for you.",
+    chat:"Here you can talk with your AI coach, the community and your mom, dad or mentor.", settings:"Settings. Here you can change your profile, time zone, voices, 4D and backup.", note:(n)=>`A note from ${n}:` },
   voT:"🔊 Voices", voSubOk:n=>`Messages can be read aloud with gentle voices from your phone (${n} ${n===1?"voice":"voices"} found). The text never leaves your phone.`, voSubNone:"Your browser has no voices for reading aloud. Try Chrome on Android or Safari on iPhone.", voOn:"Read-aloud is on", voOff:"Read-aloud is off", voRate:"Speed", voAuto:"Automatic", voTest:"Try", voWho:{mom:"Mom",dad:"Dad",mentor:"Mentor",coach:"Coach",guide:"Guide"}, voSample:"Hi. I'm so glad you're here. Take it easy, one step at a time.", voPlay:"Read aloud", voStop:"Stop",
   paRoles:{mom:["Mom","👩"],dad:["Dad","👨"],mentor:["Mentor","🧑"]}, paRole:"Who should support you?", paName:"Name", paNote:"💌 Today's note", paPh:n=>`Write to ${n}…`, paLockTxt:n=>`Chatting with ${n} is part of Pro. Today's note is free.`, paSaved:"Saved 💛", paHello:n=>`Hi, it's ${n}. Tell me how things are going – with the channel and with you.`,
   gratT:"🙏 Today's gratitude", gratSub:"One line a day. What or who are you grateful for today? It stays on your phone.", gratPh:"E.g. a viewer said my video helped him…", gratSaved:"Saved 🙏",
@@ -1135,10 +1270,11 @@ const t = () => T[lang];
 
 /* ---------- Navigation ---------- */
 const NAV = [
-  ["home","⌂"],["overview","◎"],["mission","🎯"],["pipeline","▦"],["agents","🤖"],["chat","💬"],["wallet","💳"],["profit","💰"],["portfolio","📈"],["products","🛒"],["settings","⚙︎"]
+  ["home","⌂"],["overview","◎"],["mission","🎯"],["pipeline","▦"],["agents","🤖"],["chat","💬"],["wallet","💳"],["profit","💰"],["portfolio","📈"],["products","🛒"],["safe","🛡️"],["settings","⚙︎"]
 ];
 const IS_PHONE = matchMedia("(max-width:860px)").matches;
-let current = location.hash.slice(1) || (IS_PHONE ? "home" : "overview");
+const SAFE_VIEW = (location.hash.match(/^#safe\?view=([a-z0-9]{6,20})/)||[])[1]||"";
+let current = SAFE_VIEW ? "safe" : (location.hash.slice(1) || (IS_PHONE ? "home" : "overview"));
 function renderNav(){
   const html = NAV.map(([id,ic]) =>
     `<button class="nav-btn ${id===current?"active":""}" data-go="${id}"><span class="ic">${ic}</span>${t()[id]}${id==="agents"?'<span class="pro">PRO</span>':""}</button>`).join("");
@@ -1367,16 +1503,175 @@ const Voice=(()=>{
     const L=t(), c=cfg(), v=forLang();
     $("voSub").textContent=ok&&all().length?L.voSubOk(v.length):L.voSubNone;
     $("voBtn").textContent=c.on?L.voOn:L.voOff; $("voBtn").classList.toggle("primary",c.on); $("voBtn").disabled=!ok;
+    $("voAutoBtn").textContent=c.auto?L.voAutoOn:L.voAutoOff; $("voAutoBtn").classList.toggle("primary",!!c.auto); $("voAutoBtn").disabled=!ok||!c.on;
     $("voRate").value=c.rate; $("voRateV").textContent=(+c.rate).toFixed(2)+"×";
     $("voRows").innerHTML=!ok||!all().length?"":["mom","dad","mentor","coach","guide"].map(r=>`<div class="vo-row"><span>${esc(L.voWho[r])}</span><select data-vo="${r}"><option value="">${esc(L.voAuto)}${auto(r)?" · "+esc(auto(r).name):""}</option>${v.map(x=>`<option value="${esc(x.voiceURI)}" ${c.voices[r]===x.voiceURI?"selected":""}>${esc(x.name)}</option>`).join("")}</select><button class="small" data-votest="${r}">${esc(L.voTest)}</button></div>`).join(""); }
-  $("voBtn").onclick=()=>{ const c=cfg(); c.on=!c.on; store.set(KEY,c); stop(); renderSettings(); if(current!=="settings") renderSection(current); };
+  $("voBtn").onclick=()=>{ const c=cfg(); c.on=!c.on; store.set(KEY,c); stop(); renderSettings(); if(window.Talk) Talk.refresh(); };
+  $("voAutoBtn").onclick=()=>{ const c=cfg(); c.auto=!c.auto; store.set(KEY,c); renderSettings(); };
   $("voRate").oninput=()=>{ const c=cfg(); c.rate=+$("voRate").value; store.set(KEY,c); $("voRateV").textContent=c.rate.toFixed(2)+"×"; };
   $("voRows").addEventListener("change",e=>{ const s=e.target.closest("[data-vo]"); if(!s) return; const c=cfg(); if(s.value) c.voices[s.dataset.vo]=s.value; else delete c.voices[s.dataset.vo]; store.set(KEY,c); });
   $("voRows").addEventListener("click",e=>{ const b=e.target.closest("[data-votest]"); if(b) speak(t().voSample,b.dataset.votest,b); });
   if(ok&&ss.addEventListener) ss.addEventListener("voiceschanged",()=>{ if(current==="settings") renderSettings(); });
   addEventListener("pagehide",stop); document.addEventListener("visibilitychange",()=>{ if(document.hidden) stop(); });
-  return { speak, stop, btn, renderSettings, clean, available:()=>ok };
+  return { speak, stop, btn, renderSettings, clean, available:()=>ok, on:()=>cfg().on, auto:()=>ok&&cfg().on&&!!cfg().auto };
 })();
+
+/* ---------- Tryghed: SOS, frivillig positionsdeling, andre med appen, find mine enheder ----------
+   Samtykke først: intet spores eller deles uden brugerens eget tryk på sin egen enhed.
+   Web-apps kan kun bruge GPS, mens appen er åben. REDHUE erstatter ikke 112. */
+const Safe=(()=>{
+  const API="/api/safe", K_DEV="redhue_device", K_EC="redhue_ec", K_SH="redhue_shares", K_W="redhue_watch", K_FD="redhue_findable";
+  const L=()=>t(), loc=()=>lang==="da"?"da-DK":"en-GB";
+  function devKey(){ let k=store.get(K_DEV,""); if(!/^[a-f0-9]{40}$/.test(k)){ k=[...crypto.getRandomValues(new Uint8Array(20))].map(b=>b.toString(16).padStart(2,"0")).join(""); store.set(K_DEV,k); } return k; }
+  async function api(body){ const headers={"content-type":"application/json","x-device":devKey()}; if(store.get(K.lic,"")) headers["x-license"]=store.get(K.lic,"");
+    const r=await fetch(API,{method:"POST",headers,body:JSON.stringify(body)}); const j=await r.json().catch(()=>({})); return {ok:r.ok,status:r.status,j}; }
+  let lastPos=null, watchId=null, lastSent=0, timer=null;
+  function getPos(timeout=10000){ return new Promise(res=>{ if(!navigator.geolocation) return res(lastPos);
+    navigator.geolocation.getCurrentPosition(p=>{ lastPos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)}; res(lastPos); },()=>res(lastPos),{enableHighAccuracy:true,timeout,maximumAge:30000}); }); }
+  const mapUrl=p=>`https://maps.google.com/?q=${p.lat.toFixed(5)},${p.lng.toFixed(5)}`;
+  const liveUrl=c=>`${location.origin}${location.pathname}#safe?view=${c}`;
+  const clockNow=()=>new Date().toLocaleTimeString(loc(),{hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone:TZ()}).replace(".",":");
+  function ago(ts){ const s=(Date.now()-ts)/1000, X=L(); return s<60?X.agoNow:s<3600?X.agoMin(Math.round(s/60)):s<86400?X.agoH(Math.round(s/3600)):X.agoD(Math.round(s/86400)); }
+  function left(exp){ const m=Math.max(0,Math.round((exp-Date.now())/60000)), X=L(); return m<60?X.minLeft(m):X.hLeft(Math.round(m/60)); }
+  const myShares=()=>store.get(K_SH,[]).filter(s=>s.exp>Date.now());
+  const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const smsHref=(nums,text)=>`sms:${nums.join(",")}${isIOS()?"&":"?"}body=${encodeURIComponent(text)}`;
+
+  // --- Live-opdatering, mens appen er åben og der er aktive delinger eller "kan findes" ---
+  function needLive(){ return myShares().length>0 || (store.get(K_FD,{}).on && hasLic()); }
+  function startLive(){ if(watchId!==null||!navigator.geolocation||!needLive()) return;
+    watchId=navigator.geolocation.watchPosition(p=>{ lastPos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)}; push(); },()=>{},{enableHighAccuracy:true,maximumAge:30000,timeout:20000});
+    clearInterval(timer); timer=setInterval(push,120000); }
+  function stopLive(){ if(watchId!==null&&navigator.geolocation) navigator.geolocation.clearWatch(watchId); watchId=null; clearInterval(timer); timer=null; }
+  async function push(force){ if(!lastPos||document.hidden) return; if(!force&&Date.now()-lastSent<30000) return; lastSent=Date.now();
+    for(const s of myShares()){ const r=await api({action:"share_update",code:s.code,pos:lastPos}).catch(()=>null); if(r&&(r.status===404||r.j.stopped)) dropShare(s.code); }
+    const fd=store.get(K_FD,{}); if(fd.on&&hasLic()){ let bat=null; try{ if(navigator.getBattery){ const b=await navigator.getBattery(); bat=Math.round(b.level*100); } }catch{} api({action:"ping",name:fd.name||defaultName(),pos:lastPos,battery:bat,findable:true}).catch(()=>{}); }
+    indicators(); }
+  function dropShare(code){ store.set(K_SH,store.get(K_SH,[]).filter(s=>s.code!==code)); if(!needLive()) stopLive(); indicators(); }
+  function indicators(){ const on=myShares().length>0; ["osLoc","shPill"].forEach(id=>{ const e=$(id); if(e) e.hidden=!on; }); }
+
+  // --- SOS: hold 2 sek. ---
+  let holdT=null;
+  function holdStart(e){ if(e&&e.button>0) return; e&&e.preventDefault(); const b=$("sosBtn"); b.classList.add("hold"); buzz(15); holdT=setTimeout(()=>{ b.classList.remove("hold"); trigger(); },2000); }
+  function holdEnd(){ clearTimeout(holdT); holdT=null; $("sosBtn").classList.remove("hold"); }
+  async function trigger(){
+    buzz([200,80,200,80,400]); const X=L(), out=$("sosOut"); out.hidden=false; out.innerHTML=`<b>${esc(X.sosGetting)}</b>`;
+    const pos=await getPos(9000), nm=(S.profile.name||"").trim()||"REDHUE";
+    let code=null; try{ const r=await api({action:"share_start",name:nm,sos:true,pos}); if(r.ok){ code=r.j.code; store.set(K_SH,myShares().concat({code,exp:r.j.exp,label:"SOS",sos:true})); startLive(); } }catch{}
+    const text=X.sosMsg(nm, pos?`${mapUrl(pos)} (±${pos.acc} m)`:"", clockNow(), code?liveUrl(code):"");
+    const ec=store.get(K_EC,[]), nums=ec.map(c=>c.phone.replace(/[^\d+]/g,"")).filter(Boolean);
+    out.innerHTML=`${pos?"":`<p style="margin:0 0 8px;color:var(--red)">${esc(X.sosNoPos)}</p>`}<p style="margin:0 0 6px">${esc(nums.length?X.sosReady:X.sosNoContacts)}</p>
+      <div class="mono" style="font-size:12.5px;color:var(--muted);overflow-wrap:anywhere" id="sosText">${esc(text)}</div>
+      <div class="actions">${nums.length?`<a class="btn primary" id="sosSms" href="${esc(smsHref(nums,text))}">${esc(X.sosSms(nums.length))}</a>`:""}
+        <a class="btn" id="sosWa" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(X.waBtn)}</a>
+        ${navigator.share?`<button id="sosShare">${esc(X.shareBtn)}</button>`:""}<button id="sosCopy">${esc(X.copyBtn)}</button>
+        <a class="call112" href="tel:112">📞 ${esc(X.call112)}</a>${code?`<button class="small" id="sosStop">${esc(X.sosStop)}</button>`:""}</div>`;
+    $("sosCopy").onclick=()=>copy(text); if($("sosShare")) $("sosShare").onclick=()=>navigator.share({text}).catch(()=>{});
+    if($("sosStop")) $("sosStop").onclick=async()=>{ await api({action:"share_stop",code}).catch(()=>{}); dropShare(code); out.hidden=true; toast(X.sosStopped); render(); };
+    render(); }
+  function copy(text){ (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(()=>toast(L().copied)).catch(()=>{ const ta=document.createElement("textarea"); ta.value=text; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); toast(L().copied); }catch{} ta.remove(); }); }
+
+  // --- Visning ---
+  const defaultName=()=>/android/i.test(navigator.userAgent)?(lang==="en"?"Android phone":"Android-telefon"):/iphone/i.test(navigator.userAgent)?"iPhone":/ipad/i.test(navigator.userAgent)?"iPad":(lang==="en"?"Computer":"Computer");
+  async function render(){
+    const X=L(), ec=store.get(K_EC,[]);
+    $("ecList").innerHTML=ec.length?ec.map((c,i)=>`<div class="sf-item"><span><b>${esc(c.name)}</b> <span class="m">${esc(c.phone)}</span></span><div class="acts"><a class="btn small" href="tel:${esc(c.phone.replace(/[^\d+]/g,""))}">📞</a><button class="small" data-ecdel="${i}">${esc(X.remove)}</button></div></div>`).join(""):`<div class="m" style="color:var(--muted);font-size:14px">${esc(X.ecNone)}</div>`;
+    const sh=myShares();
+    $("shList").innerHTML=sh.length?sh.map(s=>`<div class="sf-item"><span>${s.sos?`<span class="sosb">SOS</span> `:""}${esc(X.shActive(s.sos?"":s.label,left(s.exp)))}</span><div class="acts"><button class="small" data-shcopy="${esc(s.code)}">${esc(X.copyBtn)}</button>${navigator.share?`<button class="small" data-shshare="${esc(s.code)}">${esc(X.shareBtn)}</button>`:""}<button class="small" data-shstop="${esc(s.code)}">${esc(X.stop)}</button></div></div>`).join(""):`<div style="color:var(--muted);font-size:14px">${esc(X.shNone)}</div>`;
+    indicators(); renderWatch(); renderDevices(); }
+  async function renderWatch(){ const X=L(), w=store.get(K_W,[]);
+    if(!w.length){ $("wList").innerHTML=`<div style="color:var(--muted);font-size:14px">${esc(X.wNone)}</div>`; return; }
+    const rows=await Promise.all(w.map(async it=>{ try{ const r=await api({action:"view",code:it.code}); return {it,r}; }catch{ return {it,r:null}; } }));
+    $("wList").innerHTML=rows.map(({it,r})=>{ const d=r&&r.ok?r.j:null;
+      if(!d) return `<div class="sf-item"><span><b>${esc(it.name||it.code)}</b> <span class="m">${esc(X.wExpired)}</span></span><div class="acts"><button class="small" data-wdel="${esc(it.code)}">${esc(X.remove)}</button></div></div>`;
+      if(d.name&&d.name!==it.name){ it.name=d.name; store.set(K_W,w); }
+      return `<div class="sf-item"><span>${d.sos?`<span class="sosb">SOS</span> `:""}<b>${esc(d.name)}</b><br><span class="m">${esc(X.wAgo(d.pos?`±${d.pos.acc} m`:"–",ago(d.ts)))}</span></span><div class="acts">${d.pos?`<a class="btn small" href="${esc(mapUrl(d.pos))}" target="_blank" rel="noopener">${esc(X.openMap)}</a>`:""}<button class="small" data-wdel="${esc(it.code)}">${esc(X.remove)}</button></div></div>`; }).join(""); }
+  async function renderDevices(){ const X=L(), fd=store.get(K_FD,{});
+    if(!hasLic()){ $("fdBody").innerHTML=`<div style="color:var(--muted);font-size:14px">${esc(X.fdPro)}</div>`; return; }
+    $("fdBody").innerHTML=`<label style="display:flex;gap:8px;align-items:center;cursor:pointer;text-transform:none;letter-spacing:0;font-size:14px;color:var(--text)"><input type="checkbox" id="fdOn" ${fd.on?"checked":""} style="width:auto"> ${esc(X.fdThis)}</label>
+      <div class="pgoal-row" style="margin-top:8px"><div><label>${esc(X.fdName)}</label><input id="fdName" maxlength="30" value="${esc(fd.name||defaultName())}"></div><button id="fdSave">${esc(t().save)}</button></div><div class="sf-list" id="fdList"></div>`;
+    $("fdOn").onchange=async()=>{ const v=$("fdOn").checked; store.set(K_FD,{on:v,name:$("fdName").value.trim()||defaultName()});
+      if(v){ await getPos(8000); startLive(); await push(true); } else { await api({action:"ping",findable:false}).catch(()=>{}); if(!needLive()) stopLive(); } renderDevices(); };
+    $("fdSave").onclick=()=>{ store.set(K_FD,Object.assign({},store.get(K_FD,{}),{name:$("fdName").value.trim().slice(0,30)})); toast(t().saved); push(true); };
+    try{ const r=await api({action:"devices"}); const list=r.ok?r.j.devices:[];
+      $("fdList").innerHTML=list.length?list.map(d=>`<div class="sf-item"><span><b>${esc(d.name)}</b>${d.me?` <span class="m">(${esc(X.fdThisTag)})</span>`:""}<br><span class="m">${esc(ago(d.ts))}${d.battery!=null?` · 🔋 ${d.battery}%`:""}${d.pos?` · ±${d.pos.acc} m`:""}</span></span><div class="acts">${d.pos?`<a class="btn small" href="${esc(mapUrl(d.pos))}" target="_blank" rel="noopener">${esc(X.openMap)}</a>`:""}<button class="small" data-fdforget="${esc(d.id)}">${esc(X.fdForget)}</button></div></div>`).join(""):`<div style="color:var(--muted);font-size:14px">${esc(X.fdNone)}</div>`;
+    }catch{} }
+  function addWatch(raw){ const m=String(raw||"").trim().match(/(?:view=)?([a-z0-9]{8,20})\s*$/i); if(!m) { toast(L().wBad); return false; }
+    const code=m[1].toLowerCase(), w=store.get(K_W,[]); if(!w.some(x=>x.code===code)) w.push({code,name:""}); store.set(K_W,w); return true; }
+
+  // --- Hændelser ---
+  const sb=$("sosBtn");
+  sb.addEventListener("pointerdown",holdStart); ["pointerup","pointerleave","pointercancel"].forEach(ev=>sb.addEventListener(ev,holdEnd));
+  sb.addEventListener("keydown",e=>{ if((e.key===" "||e.key==="Enter")&&!holdT&&!e.repeat) holdStart(e); });
+  sb.addEventListener("keyup",e=>{ if(e.key===" "||e.key==="Enter") holdEnd(); });
+  sb.addEventListener("contextmenu",e=>e.preventDefault());
+  $("osSos").onclick=()=>{ go("safe"); setTimeout(()=>$("sosBtn").focus(),200); };
+  $("ecForm").onsubmit=e=>{ e.preventDefault(); const name=$("ecName").value.trim(), phone=$("ecPhone").value.trim(); if(!name||!/[\d]{4,}/.test(phone.replace(/\D/g,""))) return;
+    store.set(K_EC,store.get(K_EC,[]).concat({name:name.slice(0,30),phone:phone.slice(0,20)}).slice(0,10)); $("ecName").value=""; $("ecPhone").value=""; render(); };
+  $("ecList").addEventListener("click",e=>{ const b=e.target.closest("[data-ecdel]"); if(!b) return; const ec=store.get(K_EC,[]); ec.splice(+b.dataset.ecdel,1); store.set(K_EC,ec); render(); });
+  $("shForm").onsubmit=async e=>{ e.preventDefault(); const X=L(), pos=await getPos(9000), nm=(S.profile.name||"").trim()||"REDHUE";
+    try{ const r=await api({action:"share_start",name:nm,hours:+$("shHours").value,pos}); if(!r.ok) return toast(r.j.error==="too_many_shares"?"Max 5":t().errors.default);
+      const label=$("shLabel").value.trim().slice(0,30); store.set(K_SH,myShares().concat({code:r.j.code,exp:r.j.exp,label})); $("shLabel").value=""; startLive(); render();
+      const msg=X.shMsg(nm,liveUrl(r.j.code)); if(navigator.share) navigator.share({text:msg}).catch(()=>copy(msg)); else copy(msg);
+    }catch{ toast(t().errors.network); } };
+  $("shList").addEventListener("click",async e=>{ const b=e.target.closest("[data-shstop],[data-shcopy],[data-shshare]"); if(!b) return; const X=L(), nm=(S.profile.name||"").trim()||"REDHUE";
+    if(b.dataset.shstop){ await api({action:"share_stop",code:b.dataset.shstop}).catch(()=>{}); dropShare(b.dataset.shstop); render(); }
+    else if(b.dataset.shcopy) copy(X.shMsg(nm,liveUrl(b.dataset.shcopy)));
+    else navigator.share({text:X.shMsg(nm,liveUrl(b.dataset.shshare))}).catch(()=>{}); });
+  $("wAddForm").onsubmit=e=>{ e.preventDefault(); if(addWatch($("wCode").value)){ $("wCode").value=""; toast(L().wAdded); renderWatch(); } };
+  $("wList").addEventListener("click",e=>{ const b=e.target.closest("[data-wdel]"); if(!b) return; store.set(K_W,store.get(K_W,[]).filter(x=>x.code!==b.dataset.wdel)); renderWatch(); });
+  $("fdBody").addEventListener("click",async e=>{ const b=e.target.closest("[data-fdforget]"); if(!b) return; await api({action:"forget",id:b.dataset.fdforget}).catch(()=>{}); renderDevices(); });
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(needLive()) { startLive(); push(true); } if(current==="safe") render(); } });
+  setInterval(()=>{ if(current==="safe"&&!document.hidden) renderWatch(); },30000);
+  // Åbnet via et delingslink → tilføj til "Andre med appen"
+  if(SAFE_VIEW){ addWatch(SAFE_VIEW); history.replaceState(null,"",location.pathname+location.search+"#safe"); }
+  if(needLive()) startLive(); indicators();
+  return { render, trigger, addWatch, getPos, myShares, indicators };
+})();
+
+/* ---------- Tal-knap: appen fortæller med dine egne tal, hvad du ser ---------- */
+window.Talk=null;
+const Talk=(()=>{
+  const T=()=>t().talk;
+  function sentences(id){
+    const L=t(), K=T(), out=[], h=nowHour(), loc=lang==="da"?"da-DK":"en-GB", now=new Date();
+    const clock=now.toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone:TZ()}).replace(".",":");
+    const date=now.toLocaleDateString(loc,{weekday:"long",day:"numeric",month:"long",timeZone:TZ()});
+    const done=(S.mission.checks[today()]||[]).filter(Boolean).length, P=profitNow(), D=Math.min(missionDay(),90);
+    const nm=(S.profile.name||"").trim(), hi=(h<10?K.hiM:h<18?K.hiD:K.hiE)+(nm?" "+nm:"")+".";
+    const leftTasks=()=>{ const c=S.mission.checks[today()]||[]; const l=L.checks.filter((x,i)=>!c[i]); return l.length&&l.length<4?K.left(l.join(", ")):""; };
+    const profitLine=()=>{ if(!P.in&&!P.out) return K.noMoney; const s=[K.profit(money(P.profit),P.in?P.margin:null)];
+      if(S.profitGoal){ const [y,m,d]=today().split("-").map(Number), dim=new Date(y,m,0).getDate(), left=dim-d+1;
+        s.push(P.profit>=S.profitGoal?K.goalHit:K.goal(money(S.profitGoal-P.profit),money(Math.ceil((S.profitGoal-P.profit)/left)))); }
+      return s.join(" "); };
+    switch(id){
+      case "home": case "overview":
+        out.push(hi, K.time(clock,date), K.day(D,S.mission.goal?goalPct():0), K.tasks(done), K.streak(streak()), profitLine());
+        if(id==="home"){ const lb=Parent.label(); out.push(K.note(lb.name), Parent.note()); } else out.push(K.assets(money(balance()+cryptoValue()+fundsValue())));
+        break;
+      case "mission": out.push(K.day(D,S.mission.goal?goalPct():0), K.streak(streak()), K.tasks(done), leftTasks()); break;
+      case "pipeline": { const c=k=>S.kanban.filter(x=>x.col===k).length, cols=Object.keys(L.cols);
+        if(!S.kanban.length) out.push(K.emptyPipe); else { out.push(K.pipe(...cols.map(c))); const nx=S.kanban.find(x=>x.col===cols[0]); if(nx) out.push(K.nextIdea(nx.title)); } break; }
+      case "wallet": { out.push(K.wallet(money(balance()),money(sumWallet(30,"in")))); const w=S.wallet.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date)))[0];
+        if(w) out.push(K.last(w.type==="in", money(w.amount), w.cat||"")); break; }
+      case "profit": { out.push(profitLine()); const [y,m,d]=today().split("-").map(Number), dim=new Date(y,m,0).getDate(); if(P.in||P.out) out.push(K.forecast(money(Math.round(P.profit/d*dim)))); break; }
+      case "portfolio": out.push(K.assets(money(balance()+cryptoValue()+fundsValue())), K.port((S.crypto||[]).length,(S.funds||[]).length)); break;
+      case "products": out.push(K.prods((S.products||[]).length)); break;
+      case "agents": out.push(K.agents(hasLic())); break;
+      case "chat": out.push(K.chat); break;
+      case "settings": out.push(K.settings); break;
+    }
+    return out.filter(Boolean).join(" ");
+  }
+  function role(id){ return id==="home"?Parent.cfg().role:"guide"; }
+  // Én tilstand for alle tal-knapper: tryk = tal, tryk igen = stop
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-talk]"); if(!b) return; buzz(10);
+    if(b.classList.contains("on")){ Voice.stop(); return; }
+    Voice.speak(sentences(current), role(current), b); },true);
+  function refresh(){ const show=Voice.available()&&Voice.on(); document.querySelectorAll("[data-talk]").forEach(b=>b.hidden=!show); }
+  return { sentences, refresh };
+})();
+window.Talk=Talk;
 
 /* ---------- Virtuel mor/far/mentor ----------
    Gratis: en daglig besked ud fra tid og tal (lokalt). Pro: chat via /api/coach med persona.
@@ -1441,7 +1736,7 @@ const Parent=(()=>{
     try{ const r=await fetch(COACH_API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({license:store.get(K.lic,""),lang,persona:cfg(),messages:store.get(HIST,[]).slice(-20),context:coachContext()})});
       const j=await r.json().catch(()=>({})); if(r.ok&&j.text) text=j.text; else err=j.error||"default"; }catch{ err="network"; }
     busy=false; const h2=store.get(HIST,[]);
-    if(text){ h2.push({role:"assistant",content:text}); store.set(HIST,h2.slice(-30)); } else { h2.pop(); store.set(HIST,h2); $("paIn").value=q; toast(t().errors[err]||t().errors.default); }
+    if(text){ h2.push({role:"assistant",content:text}); store.set(HIST,h2.slice(-30)); if(Voice.auto()) setTimeout(()=>Voice.speak(md(text),cfg().role),50); } else { h2.pop(); store.set(HIST,h2); $("paIn").value=q; toast(t().errors[err]||t().errors.default); }
     if(current==="chat") render(); }
   $("paForm").onsubmit=e=>{ e.preventDefault(); ask($("paIn").value); };
   $("paIn").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!matchMedia("(max-width:860px)").matches){ e.preventDefault(); $("paForm").requestSubmit(); } });
@@ -1589,6 +1884,7 @@ const Guide = (()=>{
     {k:["niche","emne","topic"], a:()=>S.mission.niche?T(`Din niche er <b>${esc(S.mission.niche)}</b>. Vil du skifte, så gør det under Mission.`,`Your niche is <b>${esc(S.mission.niche)}</b>. To change it, go to Mission.`):T("Du har ikke valgt en niche endnu. Den hjælper agenterne og coachen med at ramme rigtigt.","You haven't picked a niche yet. It helps the agents and coach get it right."), b:()=>[["restart",T("Vælg niche","Pick a niche")]]},
     {k:["kontrolpanel","control panel","stryg","swipe","skuffe","drawer","alle apps"], a:()=>T("På hjemmeskærmen: <b>stryg ned</b> fra toppen for kontrolpanelet med dagens opgaver, og <b>stryg op</b> for alle apps. Androids tilbage-knap fører dig hjem.","On the home screen: <b>swipe down</b> from the top for the control panel with today's tasks, and <b>swipe up</b> for all apps. Android's back button takes you home."), b:()=>[["go:home",T("Til hjemmeskærmen","Go to home")]]},
     {k:["mor","far","mentor","forælder","parent","mom","dad","støtte","support","opmuntring","encourag"], a:()=>{ const lb=Parent.label(); return T(`Under <b>Chat → ${lb.em} ${esc(lb.name)}</b> får du en daglig besked, der passer til din dag, gratis. Med Pro kan du også skrive med ${esc(lb.name)}: varm og støttende, men ærlig. Du vælger selv Mor, Far eller Mentor og navnet.`,`Under <b>Chat → ${lb.em} ${esc(lb.name)}</b> you get a daily note that fits your day, free. With Pro you can also talk with ${esc(lb.name)}: warm and supportive, but honest. You choose Mom, Dad or Mentor and the name.`); }, b:()=>[["parent",T("Åbn","Open")]]},
+    {k:["sos","nød","112","fare","danger","emergency","position","lokation","location","spor","track","find min","find my","mistet","lost my","del position","share location"], a:()=>T("Under <b>🛡️ Tryghed</b> kan du holde <b>SOS</b> inde i 2 sekunder: appen laver en besked med din position til dine nødkontakter. Du kan også dele din position i 1, 4 eller 24 timer og se dem, der deler med dig. <b>Er du i akut fare, så ring 112.</b>","Under <b>🛡️ Safety</b> you can hold <b>SOS</b> for 2 seconds: the app prepares a message with your location for your emergency contacts. You can also share your location for 1, 4 or 24 hours and see people sharing with you. <b>If you're in immediate danger, call 112.</b>"), b:()=>[["go:safe",T("Åbn Tryghed","Open Safety")]]},
     {k:["taknemmelig","grateful","gratitude","tak for","glad for"], a:()=>T("Under <b>Mission</b> finder du <b>Dagens taknemmelighed</b>: én linje om dagen om, hvad du er taknemmelig for. Det tager 20 sekunder og bliver på din telefon.","Under <b>Mission</b> you'll find <b>Today's gratitude</b>: one line a day about what you're grateful for. It takes 20 seconds and stays on your phone."), b:()=>[["go:mission",T("Skriv dagens linje","Write today's line")]]},
     {k:["sejr","win","hyld","cheer","reaktion","reaction","fejr","celebrate"], a:()=>T("I <b>Chat → Fællesskab</b> kan du trykke <b>🎉 Del en sejr</b>. Appen foreslår sejre ud fra dine tal, og andre kan hylde dig med ❤️ 🙌 🔥. Når du rammer en milepæl, fejrer appen den også med dig.","In <b>Chat → Community</b> tap <b>🎉 Share a win</b>. The app suggests wins from your numbers, and others can cheer you with ❤️ 🙌 🔥. When you hit a milestone, the app celebrates it with you too."), b:()=>[["go:chat",T("Åbn fællesskabet","Open community")]]},
     {k:["slet alt","nulstil","reset","delete all","start forfra"], a:()=>T("Du kan nulstille under Indstillinger. Tag en backup først, for det kan ikke fortrydes.","You can reset under Settings. Make a backup first, because it can't be undone."), b:()=>[["backup",T("Tag backup først","Back up first")]]}
@@ -1651,7 +1947,7 @@ const Guide = (()=>{
   }
 
   // Visning
-  function say(html,btns=[],keep){ const s=st(); s.log.push({b:1,h:html,a:btns}); s.log=s.log.slice(-40); save(s); render(); }
+  function say(html,btns=[],keep){ const s=st(); s.log.push({b:1,h:html,a:btns}); s.log=s.log.slice(-40); save(s); render(); if(Voice.auto()&&!$("gd").hidden) Voice.speak(html,"guide"); }
   function me(txt){ const s=st(); s.log.push({b:0,h:esc(txt)}); s.log=s.log.slice(-40); save(s); render(); }
   function render(){
     const s=st(), el=$("gdList");
@@ -1792,7 +2088,7 @@ async function coachAsk(q){
     const j=await r.json().catch(()=>({})); if(r.ok&&j.text) text=j.text; else err=j.error||"default";
   }catch{ err="network"; }
   chBusy=false;
-  if(text){ const h2=store.get(K_COACH,[]); h2.push({role:"assistant",content:text}); store.set(K_COACH,h2.slice(-30)); addXP(1); }
+  if(text){ const h2=store.get(K_COACH,[]); h2.push({role:"assistant",content:text}); store.set(K_COACH,h2.slice(-30)); addXP(1); if(Voice.auto()) setTimeout(()=>Voice.speak(md(text),"coach"),50); }
   else { const h2=store.get(K_COACH,[]); h2.pop(); store.set(K_COACH,h2); $("chCoachIn").value=q; toast(t().errors[err]||t().errors.default); }
   if(current==="chat") renderCoach();
 }
@@ -2074,7 +2370,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -2196,10 +2492,11 @@ function renderOsSheets(){
     ["lang","🌐",`${L.osLangQ} · ${lang.toUpperCase()}`,false],
     ["haptic","📳",L.osHaptic,hap],
     ["tz","🕑",L.osTz,false],
-    ["d4","🧊",L.d4Q,D4.on()]
+    ["d4","🧊",L.d4Q,D4.on()],
+    ["sos","🆘","SOS",false]
   ].map(([id,i,l,on])=>`<button class="os-q ${on?"on":""}" data-q="${id}"><span class="i">${i}</span>${esc(l)}</button>`).join("");
   $("osPanelChecks").innerHTML=checklistHTML();
-  const all=[["overview","◎","var(--cy)"],...OS_APPS.filter(a=>!a[0].startsWith("q-")),["chat","💬","var(--vi)"],["settings","⚙︎","var(--muted)"]];
+  const all=[["overview","◎","var(--cy)"],...OS_APPS.filter(a=>!a[0].startsWith("q-")),["chat","💬","var(--vi)"],["safe","🛡️","var(--red)"],["settings","⚙︎","var(--muted)"]];
   $("osAllApps").innerHTML=all.map(osAppHTML).join("");
 }
 $("os").addEventListener("click",e=>{
@@ -2241,6 +2538,7 @@ $("osPanel").addEventListener("click",e=>{ const q=e.target.closest("[data-q]");
   else if(id==="tz"){ hideSheets(); go("settings"); }
   else if(id==="streak"){ hideSheets(); go("mission"); }
   else if(id==="d4"){ D4.set(!D4.on()); renderOsSheets(); }
+  else if(id==="sos"){ hideSheets(); go("safe"); setTimeout(()=>$("sosBtn").focus(),200); }
 });
 // Tryk i ark der åbner en app: luk arket først
 document.addEventListener("click",e=>{ const b=e.target.closest("#osPanel [data-os],#osDrawer [data-os]"); if(!b) return; e.stopPropagation(); hideSheets();
@@ -2303,7 +2601,7 @@ function applyStatic(){
   document.querySelectorAll(".buyLink").forEach(a=>{ a.href=CFG.GUMROAD_URL; a.hidden=!buyOk; });
 }
 function renderSection(id){
-  ({overview:renderOverview,mission:renderMission,pipeline:renderPipeline,wallet:renderWallet,portfolio:renderPortfolio,products:renderProducts,agents:renderAgents,settings:renderSettings,home:renderHome,profit:renderProfit,chat:renderChat}[id]||(()=>{}))();
+  ({overview:renderOverview,mission:renderMission,pipeline:renderPipeline,wallet:renderWallet,portfolio:renderPortfolio,products:renderProducts,agents:renderAgents,settings:renderSettings,home:renderHome,profit:renderProfit,chat:renderChat,safe:()=>Safe.render()}[id]||(()=>{}))();
 }
 function renderAll(){ applyStatic(); go(current); }
 const toggleLang=()=>{ lang = lang==="da"?"en":"da"; store.set(K.lang,lang); renderAll(); };
@@ -2316,6 +2614,7 @@ if(qLic){ store.set(K.lic,qLic); history.replaceState(null,"",location.pathname+
 
 renderAll();
 D4.apply();
+Talk.refresh();
 if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices();
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
