@@ -74,3 +74,9 @@ Den nye app rører aldrig de gamle nøgler.
 - Begge kræver en gyldig licens (Gumroad eller `REDHUE_DEV_KEY`). Netlify installerer `@netlify/blobs` fra `package.json` automatisk ved build.
 - Se/ryd beskeder i Netlify under **Data & Storage → Blobs → redhue-chat**.
 
+## 🧊 4D
+- **Tesserakt i baggrunden:** en 4D-terning der roterer gennem den 4. dimension over tid, plus lys-partikler i dybden. På telefonens hjemmeskærm sidder den bag uret.
+- **Dybde ved vip:** på telefonen vipper sektionen og hjemmeskærmens lag (ur, widgets, ikoner, dock) med gyroskopet. På computer står indholdet stille; baggrunden følger musen, og kortet under musen vipper og glinser.
+- **Dimensionsskift:** sektioner glider ind fra dybden.
+- Tænd/sluk under **Indstillinger → 4D** eller i kontrolpanelet. Slukket som standard ved "mindre bevægelse", pauser når appen ikke er åben, ca. 30 billeder/sek. for batteriet.
+

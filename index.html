@@ -331,6 +331,30 @@ table.list tr:hover td{background:rgba(255,255,255,.025)}
 .imp-report .fix{color:var(--muted);margin-top:6px}
 .imp-report dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
 .imp-report dd{color:var(--text);word-break:break-all}
+/* ---------- 4D: tesserakt-baggrund, dybde ved vip, dimensionsskift ---------- */
+#fx4d{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity .6s}
+html.d4 #fx4d{opacity:1}
+html.d4 #main{perspective:1400px;perspective-origin:50% var(--oy,50vh);overflow-x:clip}
+html.d4 body{overflow-x:clip}
+/* Hele sektionen vipper kun på touch-skærme (telefonens gyroskop); på computer står den stille */
+@media(pointer:coarse){html.d4 #main>.section.active{transform-origin:50% var(--oy,50vh);transform:rotateX(calc(var(--ty,0) * -2.4deg)) rotateY(calc(var(--tx,0) * 2.8deg));will-change:transform}}
+html.d4 #main>.section.d4-in{animation:d4in .6s cubic-bezier(.16,.84,.24,1) both}
+@keyframes d4in{from{opacity:0;transform:rotateY(-12deg) rotateX(4deg) translateZ(-220px);filter:blur(8px)}to{opacity:1;filter:none}}
+html.d4 .os-clock{transform:translate3d(calc(var(--tx,0) * -14px),calc(var(--ty,0) * -10px),0)}
+html.d4 .os-wg{transform:translate3d(calc(var(--tx,0) * 7px),calc(var(--ty,0) * 6px),0)}
+html.d4 .os-apps{transform:translate3d(calc(var(--tx,0) * 14px),calc(var(--ty,0) * 11px),0)}
+html.d4 .os-dock{transform:translate3d(calc(var(--tx,0) * 20px),0,0)}
+html.d4 .os-in{transform:perspective(900px) rotateX(calc(var(--ty,0) * -3deg)) rotateY(calc(var(--tx,0) * 3.5deg))}
+html.d4 .os.d4-in .os-in{animation:d4home .7s cubic-bezier(.16,.84,.24,1) both}
+@keyframes d4home{from{opacity:0;transform:perspective(900px) translateZ(180px) scale(.94);filter:blur(10px)}}
+/* glans der følger musen på computer */
+@media(pointer:fine){
+  html.d4 .card{transition:transform .25s ease-out,box-shadow .25s}
+  html.d4 .card.d4-tilt{transform:perspective(900px) rotateX(var(--crx,0deg)) rotateY(var(--cry,0deg)) translateZ(6px);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  html.d4 .card .d4-sheen{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.07),transparent 45%);opacity:0;transition:opacity .25s}
+  html.d4 .card.d4-tilt .d4-sheen{opacity:1}
+}
+@media(prefers-reduced-motion:reduce){html.d4 #main>.section.d4-in,html.d4 .os.d4-in .os-in{animation:none}}
 /* ---------- Chat: AI-coach + fællesskab ---------- */
 .nav-btn[data-go="chat"]{--acc:var(--vi)}
 .ch-tabs{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);margin-bottom:14px}
@@ -423,7 +447,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
 .os-sh b{font-size:17px}
 .os-sh span{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
-.os-qs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.os-qs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
 .os-q{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:16px;padding:10px 6px;font:inherit;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:0}
 .os-q .i{font-size:19px;line-height:1.2}
 .os-q.on{border-color:color-mix(in srgb,var(--cy) 60%,var(--line));background:color-mix(in srgb,var(--cy) 14%,transparent)}
@@ -439,6 +463,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </style>
 </head>
 <body>
+<canvas id="fx4d" aria-hidden="true"></canvas>
 <div class="app">
   <aside id="side">
     <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
@@ -719,6 +744,11 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             <div class="pgoal-row"><div><input id="profName" maxlength="40" autocomplete="given-name"></div><button class="primary" id="profSave" data-t="save"></button></div>
           </div>
           <div class="card">
+            <h3 data-t="d4T"></h3>
+            <p class="sub" style="margin-bottom:10px" data-t="d4Sub"></p>
+            <div class="actions" style="margin-top:0"><button id="d4Btn" class="primary"></button><button id="d4Motion" hidden data-t="d4Motion"></button></div>
+          </div>
+          <div class="card">
             <h3 data-t="tzT"></h3>
             <p class="sub" style="margin-bottom:8px" data-t="tzSub"></p>
             <select id="tzSel"></select>
@@ -877,6 +907,7 @@ const T = {
   profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
   pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  d4T:"4D", d4Sub:"Dybde der følger, når du vipper telefonen, en tesserakt der roterer gennem tiden i baggrunden, og sektioner der glider ind fra dybden.", d4On:"4D er tændt", d4Off:"4D er slukket", d4Motion:"Tillad bevægelsessensor", d4Q:"4D",
   chat:"Chat", chatSub:"Spørg din AI-coach om dine tal, eller skriv med andre REDHUE-creators.", chCoach:"AI-coach", chRoom:"Fællesskab", chSend:"Send", chClear:"Ny samtale",
   chCoachHead:"Coachen kan se dine tal: mission, profit og pipeline.", chCoachPh:"Spørg om din plan, dine tal eller din næste video…", chRoomPh:"Skriv til fællesskabet…",
   chLockedText:"Chat er en del af REDHUE Pro. Indsæt din licensnøgle for at låse op.", chHello:"Hej! Jeg kan se dine tal i appen. Hvad vil du have hjælp til i dag?",
@@ -943,6 +974,7 @@ const T = {
   profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
   pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  d4T:"4D", d4Sub:"Depth that follows when you tilt your phone, a tesseract rotating through time in the background, and sections that glide in from depth.", d4On:"4D is on", d4Off:"4D is off", d4Motion:"Allow motion sensor", d4Q:"4D",
   chat:"Chat", chatSub:"Ask your AI coach about your numbers, or talk with other REDHUE creators.", chCoach:"AI coach", chRoom:"Community", chSend:"Send", chClear:"New chat",
   chCoachHead:"The coach can see your numbers: mission, profit and pipeline.", chCoachPh:"Ask about your plan, your numbers or your next video…", chRoomPh:"Write to the community…",
   chLockedText:"Chat is part of REDHUE Pro. Paste your license key to unlock.", chHello:"Hi! I can see your numbers in the app. What do you want help with today?",
@@ -974,6 +1006,7 @@ function go(id){
   $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); if(id!=="chat") roomStop(); document.documentElement.classList.toggle("os-on", id==="home");
   document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active", s.id==="s-"+id));
   renderNav(); renderSection(id); window.scrollTo(0,0);
+  if(from!==id) D4.enter(id);
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if(b){ e.preventDefault(); go(b.dataset.go); } });
 
@@ -1140,6 +1173,82 @@ $("kanban").addEventListener("click",e=>{
 
 function fillCats(){ const cats = $("wType").value==="in"? t().catsIn : t().catsOut; $("wCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join(""); }
 $("wType").onchange=fillCats;
+/* ---------- 4D-motor ---------- */
+const D4 = (()=>{
+  const KEY="redhue_4d", reduce=matchMedia("(prefers-reduced-motion:reduce)");
+  const cv=$("fx4d"), cx=cv.getContext("2d");
+  let W=0,H=0,DPR=1, raf=0, last=0, t0=performance.now();
+  let tx=0,ty=0, gx=0,gy=0, haveTilt=false;
+  const on=()=>store.get(KEY, !reduce.matches);
+  // Tesserakt: 16 hjørner (±1)^4, kanter mellem hjørner der adskiller sig i én koordinat
+  const V=[]; for(let i=0;i<16;i++) V.push([i&1?1:-1,i&2?1:-1,i&4?1:-1,i&8?1:-1]);
+  const E=[]; for(let i=0;i<16;i++) for(let b=0;b<4;b++){ const j=i^(1<<b); if(j>i) E.push([i,j]); }
+  // Lys-partikler i dybden
+  const P=Array.from({length:70},()=>({x:Math.random()*2-1,y:Math.random()*2-1,z:Math.random()}));
+  function size(){ DPR=Math.min(1.5,devicePixelRatio||1); W=innerWidth; H=innerHeight; cv.width=W*DPR; cv.height=H*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
+  function rot(a,i,j,th){ const c=Math.cos(th),s=Math.sin(th),x=a[i],y=a[j]; a[i]=x*c-y*s; a[j]=x*s+y*c; }
+  function frame(now){
+    raf=requestAnimationFrame(frame);
+    if(now-last<33) return; last=now;                       // ca. 30 billeder/sek. for batteriet
+    const t=(now-t0)/1000;
+    tx+=(gx-tx)*.08; ty+=(gy-ty)*.08;                       // blød bevægelse
+    const root=document.documentElement.style;
+    root.setProperty("--tx",tx.toFixed(3)); root.setProperty("--ty",ty.toFixed(3));
+    root.setProperty("--oy",(scrollY+H/2).toFixed(0)+"px");
+    cx.clearRect(0,0,W,H);
+    // partikler: nærmeste bevæger sig mest ved vip
+    for(const p of P){ p.z-=.0016; if(p.z<=.02){ p.z=1; p.x=Math.random()*2-1; p.y=Math.random()*2-1; }
+      const k=1/p.z, sx=W/2+(p.x*W*.5+tx*40)*k*.35, sy=H/2+(p.y*H*.5+ty*30)*k*.35;
+      if(sx<0||sx>W||sy<0||sy>H) continue;
+      const a=Math.min(.55,(1-p.z)*.7), r=(1-p.z)*1.8+.3;
+      cx.fillStyle=`rgba(${p.x>0?"155,107,255":"62,232,255"},${a})`; cx.beginPath(); cx.arc(sx,sy,r,0,6.283); cx.fill(); }
+    // tesserakt: rotation i XW, YW og ZW-planerne = bevægelse gennem den 4. dimension
+    const phone=W<700, home=current==="home";
+    // Telefon: bag uret på hjemmeskærmen, ellers lavt og dæmpet bag kortene. Computer: til højre.
+    const S0=Math.min(W,H)*(phone?(home?.24:.3):.22), cxp=W*(phone?.5:.72)+tx*-26, cyp=H*(phone?(home?.15:.62):.46)+ty*-20, fade=phone&&!home?.45:1;
+    const pts=V.map(v=>{ const a=v.slice(); rot(a,0,3,t*.31); rot(a,1,3,t*.19+ty*.4); rot(a,2,3,t*.23); rot(a,0,1,t*.07+tx*.5);
+      const w=1/(2.6-a[3]); const x=a[0]*w, y=a[1]*w, z=a[2]*w; const q=1/(2.8-z); return [cxp+x*q*S0*2.2, cyp+y*q*S0*2.2, a[3]]; });
+    cx.lineWidth=1.1;
+    for(const [i,j] of E){ const A=pts[i],B=pts[j], d=(A[2]+B[2])/2; // farve efter dybde i 4. dimension
+      const al=(.10+.22*((d+1)/2))*fade;
+      cx.strokeStyle= d>.3?`rgba(255,79,216,${al})`: d<-.3?`rgba(62,232,255,${al})`:`rgba(155,107,255,${al})`;
+      cx.beginPath(); cx.moveTo(A[0],A[1]); cx.lineTo(B[0],B[1]); cx.stroke(); }
+    for(const A of pts){ cx.fillStyle=`rgba(242,241,248,${(.25+.35*((A[2]+1)/2))*fade})`; cx.beginPath(); cx.arc(A[0],A[1],1.6+A[2]*.8,0,6.283); cx.fill(); }
+  }
+  function start(){ if(raf||document.hidden||!on()) return; size(); last=0; raf=requestAnimationFrame(frame); }
+  function stop(){ cancelAnimationFrame(raf); raf=0; }
+  function apply(){ const v=on(); document.documentElement.classList.toggle("d4",v); if(v) start(); else { stop(); cx.clearRect(0,0,W,H); ["--tx","--ty"].forEach(k=>document.documentElement.style.setProperty(k,0)); } renderBtn(); }
+  function renderBtn(){ const b=$("d4Btn"); if(!b) return; b.textContent=on()?t().d4On:t().d4Off; b.classList.toggle("primary",on());
+    $("d4Motion").hidden=!(on()&&typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&!haveTilt); }
+  function set(v){ store.set(KEY,!!v); apply(); buzz(12); }
+  function enter(id){ if(!on()||reduce.matches) return;
+    const el= id==="home"? $("os") : $("s-"+id); if(!el) return;
+    el.classList.remove("d4-in"); void el.offsetWidth; el.classList.add("d4-in");
+    setTimeout(()=>el.classList.remove("d4-in"),750); }
+  // Input: telefonens vip (gyroskop) eller musen på computer
+  addEventListener("deviceorientation",e=>{ if(e.gamma==null) return; haveTilt=true;
+    gx=Math.max(-1,Math.min(1,e.gamma/28)); gy=Math.max(-1,Math.min(1,((e.beta||50)-50)/28)); },{passive:true});
+  addEventListener("pointermove",e=>{ if(e.pointerType!=="mouse"||haveTilt||matchMedia("(pointer:coarse)").matches) return; gx=(e.clientX/innerWidth-.5)*2; gy=(e.clientY/innerHeight-.5)*2; },{passive:true});
+  async function askMotion(){ try{ const r=await DeviceOrientationEvent.requestPermission(); if(r==="granted") haveTilt=true; }catch{} renderBtn(); }
+  // Kort-vip og glans på computer
+  if(matchMedia("(pointer:fine)").matches){
+    document.addEventListener("pointermove",e=>{ if(!on()) return; const c=e.target.closest&&e.target.closest("#main .card"); 
+      document.querySelectorAll("#main .card.d4-tilt").forEach(x=>{ if(x!==c) x.classList.remove("d4-tilt"); });
+      if(!c||c.offsetHeight>520) return;
+      if(!c.querySelector(":scope>.d4-sheen")){ const s=document.createElement("i"); s.className="d4-sheen"; c.appendChild(s); }
+      const r=c.getBoundingClientRect(), px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      c.style.setProperty("--cry",((px-.5)*7).toFixed(2)+"deg"); c.style.setProperty("--crx",((.5-py)*6).toFixed(2)+"deg");
+      c.style.setProperty("--mx",(px*100).toFixed(1)+"%"); c.style.setProperty("--my",(py*100).toFixed(1)+"%"); c.classList.add("d4-tilt"); },{passive:true});
+    document.addEventListener("pointerleave",()=>document.querySelectorAll(".card.d4-tilt").forEach(x=>x.classList.remove("d4-tilt")));
+  }
+  addEventListener("resize",()=>{ if(raf) size(); });
+  document.addEventListener("visibilitychange",()=>{ document.hidden?stop():start(); });
+  reduce.addEventListener?.("change",apply);
+  return { on, set, apply, enter, askMotion, renderBtn };
+})();
+$("d4Btn").onclick=()=>D4.set(!D4.on());
+$("d4Motion").onclick=()=>D4.askMotion();
+
 /* ---------- Chat: AI-coach + fællesskab ---------- */
 const K_COACH="redhue_coach", COACH_API="/api/coach", CHAT_API="/api/chat";
 let chTab="coach", chRoom=[], chRoomTimer=null, chBusy=false, chPolls=0;
@@ -1448,11 +1557,11 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
-  renderTZ(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
+  renderTZ(); D4.renderBtn(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
   $("licInput").value=store.get(K.lic,"");
   $("licStatus").textContent = hasLic()?t().proOn:t().proOff; $("licStatus").style.color = hasLic()?"var(--ok)":"var(--muted)";
   const lk=legacyKeys();
@@ -1566,7 +1675,8 @@ function renderOsSheets(){
     ["streak","🔥",`${streak()} · ${L.osStreakQ}`,false],
     ["lang","🌐",`${L.osLangQ} · ${lang.toUpperCase()}`,false],
     ["haptic","📳",L.osHaptic,hap],
-    ["tz","🕑",L.osTz,false]
+    ["tz","🕑",L.osTz,false],
+    ["d4","🧊",L.d4Q,D4.on()]
   ].map(([id,i,l,on])=>`<button class="os-q ${on?"on":""}" data-q="${id}"><span class="i">${i}</span>${esc(l)}</button>`).join("");
   $("osPanelChecks").innerHTML=checklistHTML();
   const all=[["overview","◎","var(--cy)"],...OS_APPS.filter(a=>!a[0].startsWith("q-")),["chat","💬","var(--vi)"],["settings","⚙︎","var(--muted)"]];
@@ -1609,6 +1719,7 @@ $("osPanel").addEventListener("click",e=>{ const q=e.target.closest("[data-q]");
   else if(id==="haptic"){ store.set("redhue_haptic",!store.get("redhue_haptic",true)); renderOsSheets(); }
   else if(id==="tz"){ hideSheets(); go("settings"); }
   else if(id==="streak"){ hideSheets(); go("mission"); }
+  else if(id==="d4"){ D4.set(!D4.on()); renderOsSheets(); }
 });
 // Tryk i ark der åbner en app: luk arket først
 document.addEventListener("click",e=>{ const b=e.target.closest("#osPanel [data-os],#osDrawer [data-os]"); if(!b) return; e.stopPropagation(); hideSheets();
@@ -1667,6 +1778,7 @@ const qLic=new URLSearchParams(location.search).get("license");
 if(qLic){ store.set(K.lic,qLic); history.replaceState(null,"",location.pathname+"#agents"); current="agents"; }
 
 renderAll();
+D4.apply();
 if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices();
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
