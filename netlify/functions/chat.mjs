@@ -8,7 +8,7 @@
 // Reaktioner gemmes som én nøgle pr. (besked, bruger, emoji): rx/<besked>/<bruger>/<emoji>
 // Kun Pro-licenser kan læse og skrive. Brugere identificeres anonymt ud fra licensen.
 import { getStore } from "@netlify/blobs";
-import { json, verifyLicense, authorId, isOwner, limited } from "../lib/shared.mjs";
+import { json, verifyLicense, authorId, isOwner, limited, preflight } from "../lib/shared.mjs";
 
 export const deps = { getStore }; // kan udskiftes i tests
 const STORE = "redhue-chat", PREFIX = "msg/", RX = "rx/", EMOJI = ["heart", "clap", "fire"], KEEP = 500, PAGE = 60, MAX_BODY = 500;
@@ -43,6 +43,7 @@ async function deleteReactions(s, msgKey) {
 }
 
 export default async (req) => {
+  const pre = preflight(req); if (pre) return pre;
   const license = req.headers.get("x-license") || "";
   if (!(await verifyLicense(license))) return json(402, { error: "pro_required" });
   const me = await authorId(license);

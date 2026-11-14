@@ -8,8 +8,18 @@ const buckets = new Map();      // name:key -> { count, windowStart }
 export const json = (status, body) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" }
+    headers: { "content-type": "application/json", "cache-control": "no-store", ...CORS }
   });
+
+// Appen kan også køre som forhåndsvisning (andet domæne). Ingen cookies bruges – nøgler sendes i headers –
+// så det er sikkert at tillade alle oprindelser.
+export const CORS = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-headers": "content-type, x-license, x-device",
+  "access-control-allow-methods": "GET, POST, OPTIONS",
+  "access-control-max-age": "86400"
+};
+export const preflight = (req) => (req.method === "OPTIONS" ? new Response(null, { status: 204, headers: CORS }) : null);
 
 export const isOwner = (key) => !!process.env.REDHUE_DEV_KEY && key === process.env.REDHUE_DEV_KEY;
 

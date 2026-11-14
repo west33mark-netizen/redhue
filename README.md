@@ -146,3 +146,8 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 4. Åbn sitet på din egen telefon: installér som app, send én test-feedback, tjek at den står i indbakken.
 5. Send beta-links til testerne én for én (én kode pr. person), og notér hvem der fik hvilken.
 6. Hæv `VERSION` i `index.html` og `CACHE` i `sw.js` ved hver ny beta-udgivelse.
+
+### Opdateringer (fra 0.9.1-beta)
+- Ny udgivelse: hæv `VERSION` i `index.html` og `CACHE` i `sw.js`, og push. Åbne apps finder den nye version inden for 30 min (eller når appen åbnes igen) og viser «Ny version klar · Genstart». Brugerens data røres ikke.
+- Indstillinger → Beta: «Søg efter opdatering» og «Genstart app» (rydder cache og genindlæser – hjælper hvis en tester sidder fast).
+- Forhåndsvisning (fx i Claude-appen): en bjælke viser, at feedback, AI og deling virker på redhue.netlify.app. Alle API-kald går dertil (`CFG.SITE`), og funktionerne svarer med CORS.

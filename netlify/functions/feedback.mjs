@@ -5,7 +5,7 @@
 //   POST { action:"done", key }  header x-license = ejer-nøgle  → markér som behandlet
 // Der gemmes ingen IP-adresse og ingen licensnøgle; kun et anonymt id, hvis afsenderen har licens.
 import { getStore } from "@netlify/blobs";
-import { json, isOwner, authorId, limited } from "../lib/shared.mjs";
+import { json, isOwner, authorId, limited, preflight } from "../lib/shared.mjs";
 
 export const deps = { getStore };
 export const config = { path: "/api/feedback" };
@@ -14,6 +14,7 @@ const store = () => deps.getStore({ name: STORE, consistency: "strong" });
 const clean = (v, n) => String(v || "").replace(/[\u0000-\u0008\u000b-\u001f]/g, "").trim().slice(0, n);
 
 export default async (req) => {
+  const pre = preflight(req); if (pre) return pre;
   const license = req.headers.get("x-license") || "";
   const s = store();
 

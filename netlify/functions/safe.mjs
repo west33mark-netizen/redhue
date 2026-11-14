@@ -12,7 +12,7 @@
 //   devices     {}                                  → { me, devices: [...] } (Pro: mine egne enheder)
 //   forget      { id }                              → { ok }            (Pro: fjern en af mine enheder)
 import { getStore } from "@netlify/blobs";
-import { json, verifyLicense, authorId, limited } from "../lib/shared.mjs";
+import { json, verifyLicense, authorId, limited, preflight } from "../lib/shared.mjs";
 
 export const deps = { getStore }; // kan udskiftes i tests
 const store = () => deps.getStore({ name: "redhue-safe", consistency: "strong" });
@@ -36,6 +36,7 @@ function newCode() {
 }
 
 export default async (req) => {
+  const pre = preflight(req); if (pre) return pre;
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
   let body;
   try { body = await req.json(); } catch { return json(400, { error: "bad_json" }); }

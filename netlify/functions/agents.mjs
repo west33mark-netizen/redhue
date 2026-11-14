@@ -1,3 +1,4 @@
+import { verifyLicense, preflight, CORS } from "../lib/shared.mjs";
 // REDHUE Pro · Agent-team backend
 // Netlify Function (v2). Endpoint: POST /api/agents
 // Env vars (Netlify → Site configuration → Environment variables):
@@ -8,10 +9,8 @@
 // Se også coach.mjs (AI-coach) og chat.mjs (fællesskabs-chat), som deler netlify/lib/shared.mjs.
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const LICENSE_TTL_MS = 6 * 60 * 60 * 1000; // re-verify license every 6 hours
 const RATE_LIMIT = 40;                      // runs per license per hour (per function instance)
 
-const licenseCache = new Map(); // key -> { ok, at }
 const usage = new Map();        // key -> { count, windowStart }
 
 // ---------- Agent definitions ----------
@@ -137,7 +136,7 @@ const REQUIRED = { script: ["niche", "topic"], hooks: ["niche", "topic"], planne
 const json = (status, body) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" }
+    headers: { "content-type": "application/json", "cache-control": "no-store", ...CORS }
   });
 
 function clean(fields) {
@@ -147,34 +146,6 @@ function clean(fields) {
     out[k] = String(v).slice(0, k === "stats" || k === "script" ? 6000 : 400).trim();
   }
   return out;
-}
-
-async function verifyLicense(key) {
-  if (!key) return false;
-  if (process.env.REDHUE_DEV_KEY && key === process.env.REDHUE_DEV_KEY) return true;
-
-  const cached = licenseCache.get(key);
-  if (cached && Date.now() - cached.at < LICENSE_TTL_MS) return cached.ok;
-
-  try {
-    const res = await fetch("https://api.gumroad.com/v2/licenses/verify", {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        product_id: process.env.GUMROAD_PRODUCT_ID || "",
-        license_key: key,
-        increment_uses_count: "false"
-      })
-    });
-    const data = await res.json();
-    const p = data.purchase || {};
-    const ok = !!data.success && !p.refunded && !p.chargebacked &&
-      !p.subscription_cancelled_at && !p.subscription_failed_at;
-    licenseCache.set(key, { ok, at: Date.now() });
-    return ok;
-  } catch {
-    return false;
-  }
 }
 
 function rateLimited(key) {
@@ -188,6 +159,7 @@ function rateLimited(key) {
 
 // ---------- Handler ----------
 export default async (req) => {
+  const pre = preflight(req); if (pre) return pre;
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
   if (!process.env.ANTHROPIC_API_KEY) return json(500, { error: "server_not_configured" });
 

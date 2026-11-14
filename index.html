@@ -575,6 +575,11 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-hint::before{content:"";display:block;width:36px;height:4px;border-radius:9px;background:rgba(255,255,255,.3);margin:0 auto 6px}
 .os-status{cursor:pointer}
 @media(min-width:861px){.os{background:rgba(6,6,14,.55);backdrop-filter:blur(6px)}.os-in{border-left:1px solid var(--line);border-right:1px solid var(--line);background:rgba(6,6,14,.35)}}
+.upd-bar{position:fixed;left:50%;transform:translateX(-50%);top:calc(12px + env(safe-area-inset-top));white-space:nowrap;z-index:8500;display:flex;align-items:center;gap:12px;background:#15121f;border:1px solid var(--vi);border-radius:14px;padding:10px 10px 10px 14px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:calc(100% - 24px)}
+.upd-bar[hidden],.pv-bar[hidden]{display:none!important}
+.upd-bar button{white-space:nowrap}
+.pv-bar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:7px 12px;font-size:12.5px;background:rgba(155,107,255,.14);border-bottom:1px solid var(--line);color:var(--text)}
+.pv-bar a{color:#c9b6ff;font-weight:600}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -592,6 +597,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </style>
 </head>
 <body>
+<div class="pv-bar" id="pvBar" hidden><span id="pvTxt"></span><a id="pvLink" href="https://redhue.netlify.app" target="_blank" rel="noopener">redhue.netlify.app</a></div>
 <canvas id="fx4d" aria-hidden="true"></canvas>
 <div class="moment-bg" id="moment" hidden role="dialog" aria-modal="true"><div class="moment"><div class="em" id="momEm"></div><h3 id="momT"></h3><p id="momP"></p><div class="actions" id="momActs"></div></div></div>
 <button class="gd-fab" id="gdFab" aria-label="REDHUE Guide">✦</button>
@@ -949,6 +955,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             <p class="sub" style="margin-bottom:8px" id="btSub"></p>
             <div id="btRows"></div>
             <div class="actions"><button class="primary" id="btFb"></button><a class="btn" id="btPriv" href="privatliv.html" target="_blank" rel="noopener"></a><button id="btInbox" hidden></button></div>
+            <div class="actions" style="margin-top:6px"><button class="small" id="btUpd"></button><button class="small" id="btRestart"></button></div>
             <div id="btInboxList"></div>
           </div>
           <div class="card">
@@ -1009,6 +1016,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
     </main>
   </div>
 </div>
+<div class="upd-bar" id="updBar" hidden role="status"><span id="updTxt"></span><button class="primary small" id="updGo"></button></div>
 <div class="fb-sheet" id="fbSheet" hidden role="dialog" aria-modal="true" aria-labelledby="fbTitle">
   <div class="fb-in">
     <h3 id="fbTitle" style="margin:0 0 4px"></h3>
@@ -1073,11 +1081,18 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.0-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.1-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
+  SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
   API: "/api/agents"
 };
+// Kører vi som den rigtige app, eller som forhåndsvisning (fx inde i Claude-appen)?
+const ON_SITE = (()=>{ try{ const o=location.origin; return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) || /\.netlify\.app$/.test(location.hostname) || o===CFG.SITE; }catch(e){ return false; } })();
+const IS_PREVIEW = !ON_SITE;
+const apiUrl = p => (ON_SITE ? "" : CFG.SITE) + p;
+const APP_URL = ON_SITE ? location.origin + location.pathname : CFG.SITE + "/";
+CFG.API = apiUrl(CFG.API);
 const K = { state:"redhue_v3_state", lang:"redhue_lang", lic:"redhue_pro_license", hist:"redhue_agent_history" };
 
 const store = {
@@ -1601,7 +1616,7 @@ const Voice=(()=>{
    Samtykke først: intet spores eller deles uden brugerens eget tryk på sin egen enhed.
    Web-apps kan kun bruge GPS, mens appen er åben. REDHUE erstatter ikke 112. */
 const Safe=(()=>{
-  const API="/api/safe", K_DEV="redhue_device", K_EC="redhue_ec", K_SH="redhue_shares", K_W="redhue_watch", K_FD="redhue_findable";
+  const API=apiUrl("/api/safe"), K_DEV="redhue_device", K_EC="redhue_ec", K_SH="redhue_shares", K_W="redhue_watch", K_FD="redhue_findable";
   const L=()=>t(), loc=()=>lang==="da"?"da-DK":"en-GB";
   function devKey(){ let k=store.get(K_DEV,""); if(!/^[a-f0-9]{40}$/.test(k)){ k=[...crypto.getRandomValues(new Uint8Array(20))].map(b=>b.toString(16).padStart(2,"0")).join(""); store.set(K_DEV,k); } return k; }
   async function api(body){ const headers={"content-type":"application/json","x-device":devKey()}; if(store.get(K.lic,"")) headers["x-license"]=store.get(K.lic,"");
@@ -1610,7 +1625,7 @@ const Safe=(()=>{
   function getPos(timeout=10000){ return new Promise(res=>{ if(!navigator.geolocation) return res(lastPos);
     navigator.geolocation.getCurrentPosition(p=>{ lastPos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)}; res(lastPos); },()=>res(lastPos),{enableHighAccuracy:true,timeout,maximumAge:30000}); }); }
   const mapUrl=p=>`https://maps.google.com/?q=${p.lat.toFixed(5)},${p.lng.toFixed(5)}`;
-  const liveUrl=c=>`${location.origin}${location.pathname}#safe?view=${c}`;
+  const liveUrl=c=>`${APP_URL}#safe?view=${c}`;
   const clockNow=()=>new Date().toLocaleTimeString(loc(),{hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone:TZ()}).replace(".",":");
   function ago(ts){ const s=(Date.now()-ts)/1000, X=L(); return s<60?X.agoNow:s<3600?X.agoMin(Math.round(s/60)):s<86400?X.agoH(Math.round(s/3600)):X.agoD(Math.round(s/86400)); }
   function left(exp){ const m=Math.max(0,Math.round((exp-Date.now())/60000)), X=L(); return m<60?X.minLeft(m):X.hLeft(Math.round(m/60)); }
@@ -2147,7 +2162,7 @@ $("d4Btn").onclick=()=>D4.set(!D4.on());
 $("d4Motion").onclick=()=>D4.askMotion();
 
 /* ---------- Chat: AI-coach + fællesskab ---------- */
-const K_COACH="redhue_coach", COACH_API="/api/coach", CHAT_API="/api/chat";
+const K_COACH="redhue_coach", COACH_API=apiUrl("/api/coach"), CHAT_API=apiUrl("/api/chat");
 let chTab="coach", chRoom=[], chRoomTimer=null, chBusy=false, chPolls=0;
 function coachContext(){
   const M=monthly(), now=M[M.length-1], last=M[M.length-2], cols=Object.keys(t().cols);
@@ -2473,9 +2488,53 @@ function renderSettings(){
   $("legacyExp").style.display = lk.length?"":"none";
   Beta.render();
 }
+/* ---------- Opdatering og genstart ----------
+   Ny udgave hentes i baggrunden. Når den er klar, vises "Ny version klar · Genstart".
+   Data ligger i telefonens lager og røres ikke af en genstart. */
+const Updater=(()=>{
+  const L=(da,en)=>lang==="en"?en:da;
+  let reg=null, reloading=false, waiting=null, wanted=false;
+  const canSW=()=>{ try{ return "serviceWorker" in navigator && window.isSecureContext && ON_SITE && window.top===window.self; }catch(e){ return false; } };
+  function show(w){ waiting=w; $("updTxt").textContent=L("Ny version klar","New version ready"); $("updGo").textContent=L("Genstart","Restart"); $("updBar").hidden=false; }
+  function watch(r){
+    if(r.waiting && navigator.serviceWorker.controller) show(r.waiting);
+    r.addEventListener("updatefound",()=>{ const nw=r.installing; if(!nw) return;
+      nw.addEventListener("statechange",()=>{ if(nw.state==="installed" && navigator.serviceWorker.controller) show(nw); }); });
+  }
+  function restart(){
+    $("updBar").hidden=true;
+    if(waiting){ wanted=true; waiting.postMessage("skip"); setTimeout(()=>location.reload(),2500); } // controllerchange genindlæser normalt før
+    else location.reload();
+  }
+  async function check(manual){
+    if(!canSW()){ if(manual){ if(IS_PREVIEW) toast(L("Forhåndsvisning: åbn redhue.netlify.app for opdateringer","Preview: open redhue.netlify.app for updates")); else location.reload(); } return; }
+    try{ if(!reg) reg=await navigator.serviceWorker.getRegistration(); if(!reg) return;
+      await reg.update();
+      if(manual) setTimeout(()=>{ if($("updBar").hidden) toast(L("Du har den nyeste version ("+VERSION+")","You're on the latest version ("+VERSION+")")); },1500);
+    }catch(e){ if(manual) toast(L("Kunne ikke søge efter opdatering – er du online?","Couldn't check for updates – are you online?")); }
+  }
+  async function hardRestart(){
+    try{ if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.map(k=>caches.delete(k))); } }catch(e){}
+    try{ if(canSW()){ const rs=await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(r=>r.unregister())); } }catch(e){}
+    location.reload();
+  }
+  function init(){
+    $("updGo").onclick=restart;
+    // Fortæl brugeren, når en ny version er taget i brug
+    const last=store.get("redhue_ver",""); if(last && last!==VERSION) setTimeout(()=>toast(L("Opdateret til ","Updated to ")+VERSION+" ✨"),900); store.set("redhue_ver",VERSION);
+    if(IS_PREVIEW){ $("pvTxt").textContent=L("Forhåndsvisning – feedback, AI og deling virker i den rigtige app:","Preview – feedback, AI and sharing work in the real app:"); $("pvBar").hidden=false; }
+    if(!canSW()) return;
+    // Genindlæs kun når brugeren selv har trykket Genstart (ikke ved første installation)
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(!wanted||reloading) return; reloading=true; location.reload(); });
+    navigator.serviceWorker.register("sw.js").then(r=>{ reg=r; watch(r); }).catch(()=>{});
+    setInterval(()=>check(false),30*60*1000);
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") check(false); });
+  }
+  return {init,check,hardRestart};
+})();
 /* ---------- Beta: version, feedback, indbakke ---------- */
 const Beta=(()=>{
-  const L=(da,en)=>lang==="en"?en:da, API="/api/feedback";
+  const L=(da,en)=>lang==="en"?en:da, API=apiUrl("/api/feedback");
   let kind="idea";
   const isBetaKey=k=>/^BETA-[0-9A-F]{5}-[0-9A-F]{5}$/.test(k||"");
   function render(){
@@ -2489,6 +2548,8 @@ const Beta=(()=>{
     $("btPriv").textContent=L("Privatliv & vilkår","Privacy & terms");
     $("btInbox").textContent=L("Feedback-indbakke","Feedback inbox");
     $("btInbox").hidden=!lic||isBetaKey(lic);
+    $("btUpd").textContent=L("Søg efter opdatering","Check for update");
+    $("btRestart").textContent=L("Genstart app","Restart app");
   }
   function open(k){
     kind=k||"idea"; const sh=$("fbSheet");
@@ -2512,7 +2573,7 @@ const Beta=(()=>{
     try{ const r=await fetch(API,{method:"POST",headers,body:JSON.stringify(body)}); const j=await r.json().catch(()=>({}));
       if(!r.ok) throw new Error(j.error||r.status);
       $("fbText").value=""; close(); toast(L("Tak! Feedback sendt 💜","Thanks! Feedback sent 💜"));
-    }catch(e){ toast(String(e.message)==="rate_limited"?L("Du har sendt meget – prøv igen om lidt","You've sent a lot – try again later"):L("Kunne ikke sende. Kører appen på Netlify?","Couldn't send. Is the app running on Netlify?")); }
+    }catch(e){ toast(String(e.message)==="rate_limited"?L("Du har sendt meget – prøv igen om lidt","You've sent a lot – try again later"):L("Kunne ikke sende. Åbn appen på redhue.netlify.app.","Couldn't send. Open the app at redhue.netlify.app.")); }
     finally{ btn.disabled=false; }
   }
   async function inbox(){
@@ -2522,9 +2583,9 @@ const Beta=(()=>{
       if(!r.ok) throw 0;
       const ic={idea:"💡",bug:"🐞",other:"💬"};
       box.innerHTML=j.items.length?j.items.map(it=>`<div class="fb-item${it.done?" done":""}"><div class="fb-meta">${ic[it.kind]||"💬"} ${esc(new Date(it.at).toLocaleString(lang==="en"?"en-GB":"da-DK",{timeZone:TZ()}))} · ${esc(it.version||"?")} · ${esc(it.page||"-")}${it.contact?" · "+esc(it.contact):""}</div><div>${esc(it.text)}</div>${it.errors?`<div class="fb-err" style="margin-top:6px">${esc(it.errors)}</div>`:""}<div class="actions" style="margin-top:6px"><button class="small" data-fbdone="${esc(it.key)}">${it.done?esc(L("Genåbn","Reopen")):esc(L("Markér behandlet","Mark done"))}</button></div></div>`).join(""):`<div class="sub">${esc(L("Ingen feedback endnu.","No feedback yet."))}</div>`;
-    }catch{ box.innerHTML=`<div class="sub">${esc(L("Kunne ikke hente. Kører appen på Netlify?","Couldn't load. Is the app running on Netlify?"))}</div>`; }
+    }catch{ box.innerHTML=`<div class="sub">${esc(L("Kunne ikke hente. Åbn appen på redhue.netlify.app.","Couldn't load. Open the app at redhue.netlify.app."))}</div>`; }
   }
-  $("btFb").onclick=()=>open("idea"); $("btInbox").onclick=inbox;
+  $("btFb").onclick=()=>open("idea"); $("btUpd").onclick=()=>Updater.check(true); $("btRestart").onclick=()=>{ toast(L("Genstarter…","Restarting…")); setTimeout(()=>Updater.hardRestart(),300); }; $("btInbox").onclick=inbox;
   $("btInboxList").onclick=async e=>{ const b=e.target.closest("[data-fbdone]"); if(!b) return; b.disabled=true;
     try{ await fetch(API,{method:"POST",headers:{"content-type":"application/json","x-license":store.get(K.lic,"")},body:JSON.stringify({action:"done",key:b.dataset.fbdone})}); }catch{} inbox(); };
   $("fbKinds").onclick=e=>{ const b=e.target.closest("[data-k]"); if(!b) return; kind=b.dataset.k; $("fbKinds").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)); $("fbText").placeholder=kind==="bug"?L("Hvad skete der? Hvad trykkede du på lige før?","What happened? What did you tap just before?"):L("Skriv her…","Write here…"); };
@@ -2534,7 +2595,9 @@ const Beta=(()=>{
   window.__openFeedback=open;
   return {render,open};
 })();
-function download(name,obj){ const b=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+function download(name,obj){ const txt=JSON.stringify(obj,null,2);
+  if(IS_PREVIEW){ const L=(da,en)=>lang==="en"?en:da; (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast(L("Forhåndsvisning: backup kopieret – sæt den ind i en note","Preview: backup copied – paste it into a note")),()=>toast(L("Download virker kun i den rigtige app (redhue.netlify.app)","Download only works in the real app (redhue.netlify.app)"))); return; }
+  const b=new Blob([txt],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
 $("licSave").onclick=()=>{ store.set(K.lic,$("licInput").value.trim()); toast(t().licSaved); renderSettings(); };
 $("expBtn").onclick=()=>download(`redhue-backup-${today()}.json`,{app:"REDHUE",v:3,exported:new Date().toISOString(),state:S,agentHistory:store.get(K.hist,[])});
 $("impBtn").onclick=()=>$("impFile").click();
@@ -2770,7 +2833,7 @@ __safeRun("render",()=>renderAll());
 __safeRun("4D",()=>D4.apply());
 __safeRun("tale",()=>Talk.refresh());
 __safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
-__safeRun("offline",()=>{ if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+__safeRun("opdatering",()=>Updater.init());
 </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 // Body: { license, lang: "da"|"en", messages: [{role:"user"|"assistant", content}], context: {...brugerens nøgletal},
 //         persona?: { role: "mom"|"dad"|"mentor", name } }  ← "virtuel mor/far": varm, støttende, ærlig
 // Env: ANTHROPIC_API_KEY (krævet), ANTHROPIC_MODEL (valgfri), GUMROAD_PRODUCT_ID, REDHUE_DEV_KEY
-import { json, verifyLicense, limited } from "../lib/shared.mjs";
+import { json, verifyLicense, limited, preflight } from "../lib/shared.mjs";
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 const MAX_MSGS = 20, MAX_LEN = 2000;
@@ -49,6 +49,7 @@ function contextBlock(ctx, lang) {
 }
 
 export default async (req) => {
+  const pre = preflight(req); if (pre) return pre;
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
   if (!process.env.ANTHROPIC_API_KEY) return json(500, { error: "server_not_configured" });
   let body;
