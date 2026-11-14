@@ -336,6 +336,16 @@ table.list tr:hover td{background:rgba(255,255,255,.025)}
 .imp-report .fix{color:var(--muted);margin-top:6px}
 .imp-report dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
 .imp-report dd{color:var(--text);word-break:break-all}
+/* ---------- Blide stemmer (tekst til tale) ---------- */
+.say{float:right;margin:-2px -4px 2px 8px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);border-radius:99px;width:30px;height:30px;display:grid;place-items:center;font-size:14px;cursor:pointer;padding:0;line-height:1}
+.say:hover{border-color:rgba(255,255,255,.3)}
+.say.on{border-color:color-mix(in srgb,var(--cy) 70%,var(--line));background:color-mix(in srgb,var(--cy) 18%,transparent)}
+@media(prefers-reduced-motion:no-preference){.say.on{animation:sayp 1.2s ease-in-out infinite}@keyframes sayp{50%{box-shadow:0 0 0 6px rgba(62,232,255,.12)}}}
+.vo-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:8px}
+.vo-row span{font-size:14px;min-width:84px}
+.vo-row select{min-width:0}
+.vo-rate{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+.vo-rate input{flex:1;accent-color:var(--cy)}
 /* ---------- Virtuel mor/far/mentor ---------- */
 .pa-set{display:none;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.18);flex-wrap:wrap;align-items:flex-end}
 .pa-set.on{display:flex}
@@ -830,6 +840,13 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             <div class="pgoal-row"><div><input id="profName" maxlength="40" autocomplete="given-name"></div><button class="primary" id="profSave" data-t="save"></button></div>
           </div>
           <div class="card">
+            <h3 data-t="voT"></h3>
+            <p class="sub" style="margin-bottom:6px" id="voSub"></p>
+            <div class="actions" style="margin-top:0"><button id="voBtn" class="primary"></button></div>
+            <div id="voRows"></div>
+            <div class="vo-rate"><span data-t="voRate"></span><input type="range" id="voRate" min="0.7" max="1.1" step="0.05"><span class="mono" id="voRateV"></span></div>
+          </div>
+          <div class="card">
             <h3 data-t="d4T"></h3>
             <p class="sub" style="margin-bottom:10px" data-t="d4Sub"></p>
             <div class="actions" style="margin-top:0"><button id="d4Btn" class="primary"></button><button id="d4Motion" hidden data-t="d4Motion"></button></div>
@@ -996,6 +1013,7 @@ const T = {
   profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
   pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  voT:"🔊 Stemmer", voSubOk:n=>`Beskeder kan læses højt med blide stemmer fra din telefon (${n} ${n===1?"stemme":"stemmer"} fundet). Teksten forlader aldrig telefonen.`, voSubNone:"Din browser har ingen stemmer til oplæsning. Prøv Chrome på Android eller Safari på iPhone.", voOn:"Oplæsning er tændt", voOff:"Oplæsning er slukket", voRate:"Tempo", voAuto:"Automatisk", voTest:"Prøv", voWho:{mom:"Mor",dad:"Far",mentor:"Mentor",coach:"Coach",guide:"Guide"}, voSample:"Hej. Jeg er så glad for, at du er her. Tag det roligt, ét skridt ad gangen.", voPlay:"Læs højt", voStop:"Stop",
   paRoles:{mom:["Mor","👩"],dad:["Far","👨"],mentor:["Mentor","🧑"]}, paRole:"Hvem skal støtte dig?", paName:"Navn", paNote:"💌 Dagens besked", paPh:n=>`Skriv til ${n}…`, paLockTxt:n=>`At chatte med ${n} er en del af Pro. Dagens besked er gratis.`, paSaved:"Gemt 💛", paHello:n=>`Hej, det er ${n}. Fortæl mig, hvordan det går – både med kanalen og med dig.`,
   gratT:"🙏 Dagens taknemmelighed", gratSub:"Én linje om dagen. Hvad eller hvem er du taknemmelig for i dag? Det bliver på din telefon.", gratPh:"Fx: en seer skrev at min video hjalp ham…", gratSaved:"Gemt 🙏",
   winBtn:"🎉 Del en sejr", winHead:"Vælg en sejr at dele, eller skriv din egen:", winOwn:"Skriv din egen sejr…", winShare:"Del", winTitle:n=>`🎉 ${n} delte en sejr`, cheered:n=>`💜 Du er blevet hyldet ${n} ${n===1?"gang":"gange"} siden sidst`,
@@ -1082,6 +1100,7 @@ const T = {
   profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
   pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  voT:"🔊 Voices", voSubOk:n=>`Messages can be read aloud with gentle voices from your phone (${n} ${n===1?"voice":"voices"} found). The text never leaves your phone.`, voSubNone:"Your browser has no voices for reading aloud. Try Chrome on Android or Safari on iPhone.", voOn:"Read-aloud is on", voOff:"Read-aloud is off", voRate:"Speed", voAuto:"Automatic", voTest:"Try", voWho:{mom:"Mom",dad:"Dad",mentor:"Mentor",coach:"Coach",guide:"Guide"}, voSample:"Hi. I'm so glad you're here. Take it easy, one step at a time.", voPlay:"Read aloud", voStop:"Stop",
   paRoles:{mom:["Mom","👩"],dad:["Dad","👨"],mentor:["Mentor","🧑"]}, paRole:"Who should support you?", paName:"Name", paNote:"💌 Today's note", paPh:n=>`Write to ${n}…`, paLockTxt:n=>`Chatting with ${n} is part of Pro. Today's note is free.`, paSaved:"Saved 💛", paHello:n=>`Hi, it's ${n}. Tell me how things are going – with the channel and with you.`,
   gratT:"🙏 Today's gratitude", gratSub:"One line a day. What or who are you grateful for today? It stays on your phone.", gratPh:"E.g. a viewer said my video helped him…", gratSaved:"Saved 🙏",
   winBtn:"🎉 Share a win", winHead:"Pick a win to share, or write your own:", winOwn:"Write your own win…", winShare:"Share", winTitle:n=>`🎉 ${n} shared a win`, cheered:n=>`💜 You've been cheered ${n} ${n===1?"time":"times"} since last time`,
@@ -1130,7 +1149,7 @@ function go(id){
   const from = current; current = id;
   // Fra hjemmeskærmen ind i en app: nyt historik-trin, så Androids tilbage-knap fører hjem igen
   if(from==="home" && id!=="home") history.pushState(null,"","#"+id); else history.replaceState(null,"","#"+id);
-  $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); if(id!=="chat") roomStop(); document.documentElement.classList.toggle("os-on", id==="home"); document.documentElement.classList.toggle("on-chat", id==="chat");
+  $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); if(id!=="chat") roomStop(); if(from!==id) Voice.stop(); document.documentElement.classList.toggle("os-on", id==="home"); document.documentElement.classList.toggle("on-chat", id==="chat");
   document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active", s.id==="s-"+id));
   renderNav(); renderSection(id); window.scrollTo(0,0); if(id==="home") $("os").scrollTop=0;
   if(from!==id) D4.enter(id);
@@ -1302,6 +1321,63 @@ $("kanban").addEventListener("click",e=>{
 
 function fillCats(){ const cats = $("wType").value==="in"? t().catsIn : t().catsOut; $("wCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join(""); }
 $("wType").onchange=fillCats;
+/* ---------- Blide stemmer: tekst til tale med telefonens egne stemmer ----------
+   Gratis og privat (Web Speech API, intet forlader telefonen). Roligt tempo og blød tone,
+   egen stemme pr. figur. Emojis, markdown og lister fjernes før oplæsning. */
+const Voice=(()=>{
+  const KEY="redhue_voice", ss=window.speechSynthesis;
+  const ok=!!(ss&&window.SpeechSynthesisUtterance);
+  const cfg=()=>Object.assign({on:true,rate:.9,voices:{}},store.get(KEY,{}));
+  const TONE={mom:{pitch:1.08},dad:{pitch:.86},mentor:{pitch:.98},coach:{pitch:1},guide:{pitch:1.04}};
+  const FEM=/female|kvinde|woman|frau|sara|helle|naja|ida|christel|pernille|freja|tilde|zira|samantha|karen|susan|serena|tessa|fiona|victoria|moira|allison|ava|kate|jenny|aria|emma/i;
+  const MAL=/male|mand|man\b|magnus|jeppe|mads|carsten|daniel|alex|fred|tom|george|guy|ryan|david|mark|thomas|lee|oliver/i;
+  let current=null, curBtn=null;
+  const all=()=>ok?ss.getVoices():[];
+  const forLang=()=>{ const l=lang==="en"?"en":"da"; const v=all().filter(x=>(x.lang||"").toLowerCase().startsWith(l)); return v.length?v:all(); };
+  function auto(role){ const v=forLang(); if(!v.length) return null;
+    const want=role==="mom"?FEM:role==="dad"?MAL:null;
+    const score=x=>(want&&want.test(x.name)?4:0)+(want&&!want.test(x.name)&&(role==="mom"?MAL:FEM).test(x.name)?-3:0)+(/natural|neural|premium|enhanced|google/i.test(x.name)?2:0)+(x.localService?1:0);
+    return v.slice().sort((a,b)=>score(b)-score(a))[0]; }
+  function voiceFor(role){ const uri=cfg().voices[role]; return (uri&&all().find(v=>v.voiceURI===uri))||auto(role); }
+  function clean(s){
+    // Blokke (punkter, afsnit, linjeskift) bliver til pauser, så lister ikke læses i ét hug
+    const html=String(s||"").replace(/<\/(li|p|h[1-6]|div|ol|ul)>|<br\s*\/?>/gi,". ");
+    const d=document.createElement("div"); d.innerHTML=html; let t=d.textContent||"";
+    t=t.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu,"").replace(/[*_#`>|]/g,"")
+      .replace(/(^|[.!?]\s+)[-•]\s+/g,"$1").replace(/(^|[.!?]\s+)\d+[.)]\s+/g,"$1").replace(/\n+/g,". ")
+      .replace(/\s*[–—]\s*/g,", ").replace(/([.!?])\s*[,.]+/g,"$1").replace(/\s+([,.!?])/g,"$1").replace(/^[,.\s]+/,"").replace(/\s+/g," ").trim();
+    return t; }
+  function stop(){ if(ok) ss.cancel(); if(curBtn){ curBtn.classList.remove("on"); curBtn.title=t().voPlay; } current=null; curBtn=null; }
+  function speak(text,role="mentor",btn){
+    if(!ok) return;
+    if(btn&&curBtn===btn){ stop(); return; }
+    stop(); const s=clean(text); if(!s) return;
+    const u=new SpeechSynthesisUtterance(s), v=voiceFor(role), c=cfg();
+    u.lang=(v&&v.lang)||(lang==="en"?"en-GB":"da-DK"); if(v){ try{ u.voice=v; }catch{} }
+    u.rate=Math.min(1.1,Math.max(.7,+c.rate||.9)); u.pitch=(TONE[role]||TONE.mentor).pitch; u.volume=.95;
+    u.onend=u.onerror=()=>{ if(current===u) stop(); };
+    current=u; if(btn){ curBtn=btn; btn.classList.add("on"); btn.title=t().voStop; }
+    ss.speak(u); }
+  const btn=(role)=>ok&&cfg().on?`<button type="button" class="say" data-say="${role}" title="${esc(t().voPlay)}" aria-label="${esc(t().voPlay)}">🔊</button>`:"";
+  // Én lytter for alle 🔊-knapper: læser teksten i den boble, knappen sidder i
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-say]"); if(!b) return; e.stopPropagation();
+    const box=b.closest(".ch-msg,.gd-m,.os-w"); if(!box) return; const c=box.cloneNode(true); c.querySelectorAll(".say,.nt,.lbl,.who").forEach(x=>x.remove());
+    speak(c.innerHTML,b.dataset.say,b); },true);
+  function renderSettings(){
+    const L=t(), c=cfg(), v=forLang();
+    $("voSub").textContent=ok&&all().length?L.voSubOk(v.length):L.voSubNone;
+    $("voBtn").textContent=c.on?L.voOn:L.voOff; $("voBtn").classList.toggle("primary",c.on); $("voBtn").disabled=!ok;
+    $("voRate").value=c.rate; $("voRateV").textContent=(+c.rate).toFixed(2)+"×";
+    $("voRows").innerHTML=!ok||!all().length?"":["mom","dad","mentor","coach","guide"].map(r=>`<div class="vo-row"><span>${esc(L.voWho[r])}</span><select data-vo="${r}"><option value="">${esc(L.voAuto)}${auto(r)?" · "+esc(auto(r).name):""}</option>${v.map(x=>`<option value="${esc(x.voiceURI)}" ${c.voices[r]===x.voiceURI?"selected":""}>${esc(x.name)}</option>`).join("")}</select><button class="small" data-votest="${r}">${esc(L.voTest)}</button></div>`).join(""); }
+  $("voBtn").onclick=()=>{ const c=cfg(); c.on=!c.on; store.set(KEY,c); stop(); renderSettings(); if(current!=="settings") renderSection(current); };
+  $("voRate").oninput=()=>{ const c=cfg(); c.rate=+$("voRate").value; store.set(KEY,c); $("voRateV").textContent=c.rate.toFixed(2)+"×"; };
+  $("voRows").addEventListener("change",e=>{ const s=e.target.closest("[data-vo]"); if(!s) return; const c=cfg(); if(s.value) c.voices[s.dataset.vo]=s.value; else delete c.voices[s.dataset.vo]; store.set(KEY,c); });
+  $("voRows").addEventListener("click",e=>{ const b=e.target.closest("[data-votest]"); if(b) speak(t().voSample,b.dataset.votest,b); });
+  if(ok&&ss.addEventListener) ss.addEventListener("voiceschanged",()=>{ if(current==="settings") renderSettings(); });
+  addEventListener("pagehide",stop); document.addEventListener("visibilitychange",()=>{ if(document.hidden) stop(); });
+  return { speak, stop, btn, renderSettings, clean, available:()=>ok };
+})();
+
 /* ---------- Virtuel mor/far/mentor ----------
    Gratis: en daglig besked ud fra tid og tal (lokalt). Pro: chat via /api/coach med persona.
    Varm, men ærlig; siger ærligt at den er en AI; opmuntrer til rigtige mennesker; sikkerhedsnet. */
@@ -1351,9 +1427,10 @@ const Parent=(()=>{
     $("paTab").textContent=`${lb.em} ${lb.name}`; $("paHead").textContent=`${lb.em} ${lb.name}`;
     const c=cfg(); $("paRole").innerHTML=Object.entries(L.paRoles).map(([k,[n,e]])=>`<option value="${k}" ${c.role===k?"selected":""}>${e} ${n}</option>`).join("");
     if(document.activeElement!==$("paName")) $("paName").value=c.name||""; $("paName").placeholder=(L.paRoles[c.role]||L.paRoles.mentor)[0];
-    $("paList").innerHTML=`<div class="ch-msg ai note"><div class="nt">${L.paNote}</div>${esc(note())}<div class="sig">– ${esc(lb.name)} ${lb.em}</div></div>`
-      +(pro&&!hist.length?`<div class="ch-msg ai">${esc(L.paHello(lb.name))}</div>`:"")
-      +hist.map(m=>`<div class="ch-msg ${m.role==="user"?"me":"ai"}">${m.role==="user"?esc(m.content).replace(/\n/g,"<br>"):md(m.content)}</div>`).join("")
+    const vb=Voice.btn(c.role);
+    $("paList").innerHTML=`<div class="ch-msg ai note">${vb}<div class="nt">${L.paNote}</div>${esc(note())}<div class="sig">– ${esc(lb.name)} ${lb.em}</div></div>`
+      +(pro&&!hist.length?`<div class="ch-msg ai">${vb}${esc(L.paHello(lb.name))}</div>`:"")
+      +hist.map(m=>`<div class="ch-msg ${m.role==="user"?"me":"ai"}">${m.role==="user"?esc(m.content).replace(/\n/g,"<br>"):vb+md(m.content)}</div>`).join("")
       +(busy?`<div class="ch-msg ai"><span class="ch-dots"><i></i><i></i><i></i></span></div>`:"");
     $("paIn").placeholder=L.paPh(lb.name); $("paForm").hidden=!pro; $("paLock").hidden=pro; $("paLockTxt").textContent=L.paLockTxt(lb.name);
     $("paList").scrollTop=$("paList").scrollHeight;
@@ -1371,7 +1448,7 @@ const Parent=(()=>{
   $("paCfg").onclick=()=>{ const s=$("paSet").classList.toggle("on"); $("paCfg").setAttribute("aria-expanded",s); };
   $("paSave").onclick=()=>{ store.set(KEY,{role:$("paRole").value,name:$("paName").value.trim().slice(0,24)}); $("paSet").classList.remove("on"); toast(t().paSaved); render(); if(current==="home") renderHome(); };
   $("paUnlock").onclick=()=>{ chTab="coach"; renderChat(); setTimeout(()=>$("chLicIn")?.focus(),100); };
-  return { render, note, label, ask };
+  return { render, note, label, ask, cfg };
 })();
 
 /* ---------- Oxytocin: samhørighed, anerkendelse og varme ----------
@@ -1578,7 +1655,7 @@ const Guide = (()=>{
   function me(txt){ const s=st(); s.log.push({b:0,h:esc(txt)}); s.log=s.log.slice(-40); save(s); render(); }
   function render(){
     const s=st(), el=$("gdList");
-    el.innerHTML=s.log.map((m,i)=>`<div class="gd-m ${m.b?"":"me"}"><p>${m.h}</p></div>`+(m.b&&m.a&&m.a.length&&i===s.log.length-1?`<div class="gd-acts">${m.a.map(([id,l])=>`<button type="button" class="small" data-gd="${esc(id)}">${esc(l)}</button>`).join("")}</div>`:"")).join("");
+    el.innerHTML=s.log.map((m,i)=>`<div class="gd-m ${m.b?"":"me"}">${m.b?Voice.btn("guide"):""}<p>${m.h}</p></div>`+(m.b&&m.a&&m.a.length&&i===s.log.length-1?`<div class="gd-acts">${m.a.map(([id,l])=>`<button type="button" class="small" data-gd="${esc(id)}">${esc(l)}</button>`).join("")}</div>`:"")).join("");
     el.scrollTop=el.scrollHeight;
   }
   function open(){ $("gd").hidden=false; $("gdFab").classList.remove("gd-new"); $("gdFab").querySelector(".gd-dot")?.remove();
@@ -1698,7 +1775,7 @@ function coachContext(){
   };
 }
 function chMsgHTML(m){ const me=m.role==="user";
-  return `<div class="ch-msg ${me?"me":"ai"}">${me?esc(m.content).replace(/\n/g,"<br>"):md(m.content)}</div>`; }
+  return `<div class="ch-msg ${me?"me":"ai"}">${me?esc(m.content).replace(/\n/g,"<br>"):Voice.btn("coach")+md(m.content)}</div>`; }
 function renderCoach(){
   const L=t(), hist=store.get(K_COACH,[]), el=$("chCoachList");
   el.innerHTML=`<div class="ch-msg ai">${esc(L.chHello)}</div>`+hist.map(chMsgHTML).join("")+(chBusy?`<div class="ch-msg ai"><span class="ch-dots"><i></i><i></i><i></i></span></div>`:"");
@@ -1997,11 +2074,11 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
-  renderTZ(); D4.renderBtn(); renderAvatars(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
+  renderTZ(); D4.renderBtn(); renderAvatars(); Voice.renderSettings(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
   $("licInput").value=store.get(K.lic,"");
   $("licStatus").textContent = hasLic()?t().proOn:t().proOff; $("licStatus").style.color = hasLic()?"var(--ok)":"var(--muted)";
   const lk=legacyKeys();
@@ -2106,6 +2183,7 @@ function renderHome(){
       <div class="os-pipe">${cnt.map((n,i)=>`<span>${n}<small>${L.osPipeS[i]||""}</small></span>`).join("")}</div></button>`;
   const lb=Parent.label();
   $("osWidgets").insertAdjacentHTML("beforeend",`<button class="os-w wide note" data-os="parent" style="flex-direction:column;align-items:stretch;gap:4px"><div class="lbl">💌 ${esc(lb.name)} ${lb.em}</div><div class="txt">${esc(Parent.note())}</div></button>`);
+  if(Voice.available()&&store.get("redhue_voice",{on:true}).on!==false){ const w=$("osWidgets").querySelector('[data-os="parent"]'); w.insertAdjacentHTML("afterbegin",`<span class="say" data-say="${Parent.cfg?Parent.cfg().role:"mom"}" role="button" tabindex="0" style="position:absolute;top:10px;right:10px;float:none;margin:0">🔊</span>`); }
   $("osApps").innerHTML=OS_APPS.map(osAppHTML).join("");
   $("osDock").innerHTML=OS_DOCK.map(osAppHTML).join("");
   renderOsSheets();

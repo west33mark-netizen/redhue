@@ -101,3 +101,11 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - **Pro:** chat med figuren via `/api/coach` (`persona`). Varm og støttende, men ærlig; siger ærligt at den er en AI; opmuntrer til kontakt med rigtige mennesker; ingen skyld eller pres.
 - **Sikkerhedsnet:** både figuren og den gratis guide henviser til Livslinien (70 201 201) og 112 ved tegn på krise. På engelsk: findahelpline.com.
 
+## 🔊 Blide stemmer (tekst til tale)
+- Bruger telefonens egne stemmer (Web Speech API): gratis, ingen server, teksten forlader aldrig telefonen.
+- 🔊-knap på dagens besked (også på hjemmeskærmen), mor/far/mentor-svar, coach-svar og guidens beskeder. Tryk igen for at stoppe.
+- Blødt: tempo 0,9× som standard (0,7–1,1× under Indstillinger → Stemmer), Mor lidt lysere tone, Far lidt dybere, egen stemme pr. figur (automatisk valg eller manuelt), "Prøv"-knap.
+- Teksten renses før oplæsning: emojis, fed skrift og listetegn fjernes, og punkter får pauser imellem.
+- Stopper når man skifter skærm eller lukker appen. Browsere uden stemmer får en pæn besked og ingen knapper.
+- Mere naturlige stemmer (fx ElevenLabs) kan kobles på senere via en serverfunktion; det kræver en nøgle og koster pr. oplæsning.
+
