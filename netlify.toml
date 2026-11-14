@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Lokal udvikling: app + agenter (functions) på én samlet port
+[dev]
+  framework = "#static"
+  publish = "."
+  port = 8888
+  autoLaunch = true
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

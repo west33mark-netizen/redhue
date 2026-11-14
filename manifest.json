@@ -1,0 +1,60 @@
+{
+  "name": "REDHUE OS",
+  "short_name": "REDHUE",
+  "description": "Dit eget creator-styresystem: 90-dages mission, pipeline, profit og AI-agenter.",
+  "start_url": "/index.html#home",
+  "scope": "/",
+  "display": "fullscreen",
+  "background_color": "#06060e",
+  "theme_color": "#06060e",
+  "lang": "da",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "orientation": "portrait",
+  "shortcuts": [
+    {
+      "name": "Ny indtægt",
+      "url": "/index.html#wallet"
+    },
+    {
+      "name": "Pipeline",
+      "url": "/index.html#pipeline"
+    },
+    {
+      "name": "Mission",
+      "url": "/index.html#mission"
+    }
+  ],
+  "share_target": {
+    "action": "/index.html",
+    "method": "GET",
+    "params": {
+      "title": "share_title",
+      "text": "share_text",
+      "url": "share_url"
+    }
+  }
+}

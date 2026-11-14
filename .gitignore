@@ -1,0 +1,4 @@
+.env
+.netlify/
+.baby/
+node_modules/

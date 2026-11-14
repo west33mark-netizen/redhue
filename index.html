@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06060e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>REDHUE · Mission Control</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0d; --panel:#121217; --panel2:#18181f; --line:#26262f;
+  --text:#ecebf0; --muted:#8b8a96; --red:#ff2d46; --red2:#ff6a3d;
+  --ok:#3ddc97; --warn:#ffb020;
+  --s-in:#3b8cff; --s-out:#e8384f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;min-height:100vh;
+  background-image:radial-gradient(circle at 15% -10%,rgba(255,45,70,.12),transparent 45%),radial-gradient(circle at 110% 20%,rgba(255,106,61,.06),transparent 40%);
+  background-attachment:fixed}
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:inherit}
+
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.app>*{min-width:0}
+aside{border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;background:rgba(10,10,13,.6);backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px 16px}
+.brand .dot{width:11px;height:11px;border-radius:50%;background:var(--red);box-shadow:0 0 14px var(--red);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.4}}
+.brand h1{font-size:19px;letter-spacing:.14em}
+.brand h1 span{color:var(--red)}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:9px;border:1px solid transparent;background:none;color:var(--muted);font:inherit;font-size:14px;cursor:pointer}
+.nav-btn:hover{color:var(--text);background:var(--panel)}
+.nav-btn.active{color:var(--text);background:var(--panel);border-color:var(--line);box-shadow:inset 3px 0 0 var(--red)}
+.nav-btn .ic{width:20px;text-align:center}
+.nav-btn .pro{margin-left:auto;font-size:9px;border:1px solid var(--red);color:var(--red);border-radius:4px;padding:1px 4px;font-family:'JetBrains Mono',monospace}
+.side-foot{margin-top:auto;padding:8px;display:flex;gap:6px}
+main{padding:22px 24px 100px;max-width:1180px;width:100%;margin:0 auto}
+.topbar{display:none}
+
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  aside{display:none}
+  main{padding:12px 16px 110px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 4px;position:sticky;top:0;z-index:20;background:rgba(10,10,13,.9);backdrop-filter:blur(8px)}
+  .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:rgba(12,12,16,.96);border-top:1px solid var(--line);scrollbar-width:none}
+  .bottomnav::-webkit-scrollbar{display:none}
+  .bottomnav .nav-btn{flex-direction:column;gap:2px;font-size:10.5px;padding:6px 10px;min-width:64px;align-items:center;text-align:center;box-shadow:none}
+  .bottomnav .nav-btn .ic{font-size:18px}
+  .bottomnav .nav-btn .pro{display:none}
+  .bottomnav .nav-btn.active{box-shadow:inset 0 -2px 0 var(--red)}
+}
+@media(min-width:861px){.bottomnav{display:none}}
+
+/* ---------- Components ---------- */
+h2.sec{font-size:22px;margin-bottom:4px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:980px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.card h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h3 a,.card h3 button{text-transform:none;letter-spacing:0}
+.kpi .v{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi .l{font-size:12px;color:var(--muted);margin-top:4px}
+.pos{color:var(--ok)} .neg{color:var(--red)}
+.bar{height:8px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--red2));border-radius:99px;transition:width .4s}
+
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 14px;border-radius:9px;font-size:14px;text-decoration:none;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+button:hover,.btn:hover{border-color:var(--red)}
+.primary{background:linear-gradient(135deg,var(--red),var(--red2));border:none;font-weight:700;color:#fff}
+.primary:disabled{opacity:.5;cursor:wait}
+.small{padding:6px 10px;font-size:12px}
+.ghost{background:none;border-color:transparent;color:var(--muted)}
+.ghost:hover{color:var(--text)}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}
+input,textarea,select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;font:inherit;font-size:16px}
+textarea{min-height:110px;resize:vertical;font-size:14px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--red)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:520px){.row3{grid-template-columns:1fr 1fr}}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.empty{color:var(--muted);font-size:13px;padding:14px 0}
+
+table.list{width:100%;border-collapse:collapse;font-size:14px}
+table.list th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.list td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.list td.num,table.list th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+.x{background:none;border:none;color:var(--muted);padding:4px 6px;font-size:16px}
+.x:hover{color:var(--red)}
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;margin-bottom:14px;padding:18px}
+.hero img{width:86px;height:86px;border-radius:50%;object-fit:cover;object-position:top;background:#fff;border:2px solid var(--red)}
+.hero .greet{font-size:22px;font-weight:700}
+.hero .meta{color:var(--muted);font-size:14px;margin-top:4px}
+.robot{text-align:center}
+.robot .face{font-size:40px;line-height:1}
+.robot .lvl{font-size:11px;color:var(--muted);margin-top:4px}
+@media(max-width:620px){.hero{grid-template-columns:auto 1fr}.robot{display:none}.hero img{width:64px;height:64px}}
+
+/* Mission */
+.days{display:grid;grid-template-columns:repeat(15,1fr);gap:4px;margin-top:12px;max-width:560px}
+.days i{aspect-ratio:1;border-radius:4px;background:var(--panel2);border:1px solid var(--line)}
+.days i.done{background:var(--red);border-color:var(--red)}
+.days i.past{background:#2a1c20}
+.days i.today{outline:2px solid var(--text);outline-offset:1px}
+.check{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px}
+.check:last-child{border-bottom:none}
+.check .box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line);display:grid;place-items:center;flex-shrink:0;font-size:13px}
+.check.on .box{background:var(--red);border-color:var(--red);color:#fff}
+.check.on span{color:var(--muted);text-decoration:line-through}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;min-height:200px}
+.col h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;display:flex;justify-content:space-between;padding:4px 4px 10px}
+.kc{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;font-size:14px}
+.kc .t{font-weight:500;margin-bottom:6px;word-break:break-word}
+.kc .n{font-size:12px;color:var(--muted);margin-bottom:6px;white-space:pre-wrap;max-height:60px;overflow:hidden}
+.kc .ctl{display:flex;gap:4px;justify-content:space-between;align-items:center}
+.kc .ctl button{padding:3px 8px;font-size:12px}
+
+/* Chart */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.tip{position:absolute;pointer-events:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .1s;z-index:5}
+.tip b{display:block;margin-bottom:3px}
+
+/* Agents */
+.agents{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(max-width:980px){.agents{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.agent-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:.15s;position:relative}
+.agent-card:hover{transform:translateY(-2px)}
+.agent-card.active{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 8px 30px rgba(255,45,70,.15)}
+.agent-card .ico{font-size:22px;margin-bottom:6px}
+.agent-card h4{font-size:15px;margin-bottom:3px}
+.agent-card p{font-size:12px;color:var(--muted);line-height:1.4}
+.agent-card .state{position:absolute;top:12px;right:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+.agent-card .state.run{color:var(--warn)} .agent-card .state.done{color:var(--ok)}
+.ag-grid{display:grid;grid-template-columns:340px 1fr;gap:12px}
+@media(max-width:900px){.ag-grid{grid-template-columns:1fr}}
+.output{min-height:300px;line-height:1.6;font-size:14.5px;overflow-x:auto}
+.output h5{font-size:16px;margin:16px 0 6px}
+.output h5:first-child{margin-top:0}
+.output strong{color:#fff}
+.output ul,.output ol{padding-left:20px;margin:4px 0}
+.output p{margin:4px 0}
+.output table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
+.output th,.output td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.output th{background:var(--panel2)}
+.loader{display:flex;gap:6px;justify-content:center;padding-top:60px}
+.loader i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:b 1s infinite}
+.loader i:nth-child(2){animation-delay:.15s}.loader i:nth-child(3){animation-delay:.3s}
+@keyframes b{50%{transform:translateY(-8px);opacity:.4}}
+.err{color:var(--red);font-size:14px;padding:10px;border:1px solid var(--red);border-radius:9px;background:rgba(255,45,70,.07)}
+.lock{text-align:center;padding:26px 16px}
+.lock .big{font-size:34px;margin-bottom:8px}
+.chain{margin-top:10px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.chain input{width:auto}
+.hist-item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer}
+.hist-item:hover{color:var(--red)}
+.hist-item span:last-child{color:var(--muted);font-size:11px;white-space:nowrap}
+
+.feed{font-size:13px}
+.feed div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line)}
+.feed div:last-child{border:none}
+.feed span:last-child{color:var(--muted);white-space:nowrap}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--red);padding:10px 16px;border-radius:9px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
+.toast.show{opacity:1}
+.xp-pop{position:fixed;top:18px;right:18px;background:var(--red);color:#fff;font-weight:700;padding:6px 12px;border-radius:99px;font-size:13px;opacity:0;transform:translateY(-8px);transition:.25s;z-index:60}
+.xp-pop.show{opacity:1;transform:none}
+.section{display:none}
+.section.active{display:block;animation:fade .2s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}}
+
+/* =========================================================
+   CRYSTAL INTERFACE  (farve- og glaslag oven på basis-designet)
+   ========================================================= */
+:root{
+  --bg:#06060e; --panel:rgba(255,255,255,.045); --panel2:rgba(255,255,255,.07); --line:rgba(255,255,255,.10);
+  --text:#f2f1f8; --muted:#9a98b0;
+  --cy:#3ee8ff; --bl:#4d8dff; --vi:#9b6bff; --ma:#ff4fd8; --red:#ff2d46; --red2:#ff7a3d; --am:#ffc247; --ok:#3ddc97; --warn:#ffc247;
+  --s-in:#3ee8ff; --s-out:#ff4fd8;
+  --crystal:linear-gradient(120deg,var(--cy),var(--vi) 45%,var(--ma) 75%,var(--red));
+  --glass:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.02) 60%);
+  --acc:var(--vi);
+}
+html,body{background:var(--bg)}
+body{background:transparent;background-image:none}
+body::before{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;filter:blur(60px) saturate(150%);opacity:1;
+  background:
+    radial-gradient(38% 32% at 12% 8%,rgba(62,232,255,.30),transparent 70%),
+    radial-gradient(34% 30% at 88% 12%,rgba(255,79,216,.26),transparent 70%),
+    radial-gradient(40% 36% at 70% 88%,rgba(155,107,255,.30),transparent 70%),
+    radial-gradient(30% 28% at 18% 85%,rgba(255,45,70,.20),transparent 70%);
+  animation:aurora 28s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(ellipse at 50% 30%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 50% 30%,#000 20%,transparent 75%)}
+@keyframes aurora{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(3%,-2%) rotate(8deg)}100%{transform:translate(-3%,3%) rotate(-6deg)}}
+
+/* Glas-flader */
+.card,.col,.agent-card{background:var(--glass),rgba(14,14,28,.45);border:1px solid var(--line);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px rgba(255,255,255,.02),0 12px 36px -12px rgba(0,0,0,.6);
+  position:relative;overflow:hidden;overflow:clip;border-radius:18px}
+.card::before,.col::before,.agent-card::before{content:"";position:absolute;left:14px;right:14px;top:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:.9;pointer-events:none}
+.card::after,.agent-card::after{content:"";position:absolute;width:180px;height:180px;right:-60px;top:-80px;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--acc) 28%,transparent),transparent 70%);pointer-events:none}
+.card>*,.agent-card>*{position:relative;z-index:1}
+.card:hover{border-color:color-mix(in srgb,var(--acc) 45%,transparent)}
+
+/* Farve pr. kort (nøgletal m.m.) */
+.grid>.card:nth-child(6n+1){--acc:var(--cy)}
+.grid>.card:nth-child(6n+2){--acc:var(--vi)}
+.grid>.card:nth-child(6n+3){--acc:var(--ma)}
+.grid>.card:nth-child(6n+4){--acc:var(--am)}
+.grid>.card:nth-child(6n+5){--acc:var(--ok)}
+.grid>.card:nth-child(6n+6){--acc:var(--bl)}
+.hero{--acc:var(--ma)}
+.kpi .v{color:var(--acc);text-shadow:0 0 22px color-mix(in srgb,var(--acc) 55%,transparent)}
+.kpi .v.pos{color:var(--ok)} .kpi .v.neg{color:var(--ma)}
+.card h3{color:color-mix(in srgb,var(--acc) 55%,var(--muted))}
+
+/* Sidebar + brand */
+aside{background:linear-gradient(180deg,rgba(20,18,40,.55),rgba(8,8,18,.55));border-right:1px solid var(--line);backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%)}
+.brand .dot{background:conic-gradient(var(--cy),var(--vi),var(--ma),var(--red),var(--am),var(--cy));box-shadow:0 0 16px var(--vi),0 0 30px rgba(62,232,255,.4);animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand h1 span{background:var(--crystal);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Menu – hver sektion sin farve */
+.nav-btn[data-go="overview"]{--acc:var(--cy)}
+.nav-btn[data-go="mission"]{--acc:var(--ma)}
+.nav-btn[data-go="pipeline"]{--acc:var(--vi)}
+.nav-btn[data-go="agents"]{--acc:var(--bl)}
+.nav-btn[data-go="wallet"]{--acc:var(--ok)}
+.nav-btn[data-go="portfolio"]{--acc:var(--am)}
+.nav-btn[data-go="products"]{--acc:var(--red)}
+.nav-btn[data-go="settings"]{--acc:#b9b7cc}
+.nav-btn{border-radius:12px;transition:.18s}
+.nav-btn .ic{color:var(--acc);filter:drop-shadow(0 0 6px color-mix(in srgb,var(--acc) 60%,transparent))}
+.nav-btn:hover{background:color-mix(in srgb,var(--acc) 10%,transparent)}
+.nav-btn.active{background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 24%,transparent),color-mix(in srgb,var(--acc) 4%,transparent));
+  border-color:color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:inset 3px 0 0 var(--acc),0 0 22px -6px var(--acc)}
+.nav-btn .pro{border-color:var(--bl);color:var(--bl)}
+.topbar{background:rgba(8,8,18,.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+@media(max-width:860px){
+  .bottomnav{background:rgba(10,10,22,.7);backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);border-top:1px solid var(--line)}
+  .bottomnav .nav-btn.active{box-shadow:inset 0 -2px 0 var(--acc),0 0 18px -6px var(--acc)}
+}
+
+/* Overskrifter */
+h2.sec{background:linear-gradient(90deg,#fff 30%,color-mix(in srgb,var(--vi) 70%,#fff));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* Knapper + felter */
+button,.btn{background:rgba(255,255,255,.06);border-color:var(--line);border-radius:11px;backdrop-filter:blur(8px)}
+button:hover,.btn:hover{border-color:color-mix(in srgb,var(--vi) 60%,transparent);box-shadow:0 0 16px -6px var(--vi)}
+.primary{background:var(--crystal);background-size:200% 100%;border:none;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25);
+  box-shadow:0 6px 22px -8px var(--ma),inset 0 1px 0 rgba(255,255,255,.35);transition:background-position .4s,transform .15s}
+.primary:hover{background-position:100% 0;transform:translateY(-1px);box-shadow:0 10px 26px -8px var(--vi),inset 0 1px 0 rgba(255,255,255,.35)}
+.ghost{background:none;box-shadow:none;backdrop-filter:none}
+input,textarea,select{background:rgba(0,0,0,.28);border-color:var(--line);border-radius:11px}
+input:focus,textarea:focus,select:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(62,232,255,.15)}
+
+/* Fremdrift */
+.bar{background:rgba(255,255,255,.07)}
+.bar i{background:var(--crystal);box-shadow:0 0 14px rgba(155,107,255,.6)}
+.hero img{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,var(--crystal) border-box;box-shadow:0 0 24px -4px var(--ma)}
+.robot .face{filter:drop-shadow(0 0 12px rgba(62,232,255,.6))}
+
+/* Mission */
+.days i{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
+.days i.done{background:var(--crystal);background-size:600% 100%;border-color:transparent;box-shadow:0 0 10px -2px var(--vi)}
+.days i:nth-child(15n+1).done{background-position:0 0}.days i:nth-child(15n+5).done{background-position:30% 0}.days i:nth-child(15n+10).done{background-position:70% 0}
+.days i.past{background:rgba(255,45,70,.12)}
+.days i.today{outline-color:var(--cy)}
+.check .box{border-color:rgba(255,255,255,.2)}
+.check.on .box{background:var(--crystal);border-color:transparent;box-shadow:0 0 12px -2px var(--ma)}
+
+/* Kanban – hver kolonne sin farve */
+.col:nth-child(1){--acc:var(--cy)} .col:nth-child(2){--acc:var(--vi)} .col:nth-child(3){--acc:var(--am)} .col:nth-child(4){--acc:var(--ok)}
+.col h4{color:var(--acc)}
+.kc{background:rgba(255,255,255,.05);border-color:var(--line);border-left:2px solid var(--acc);border-radius:12px}
+
+/* Agenter – hver agent sin farve */
+.agent-card:nth-child(4n+1){--acc:var(--cy)} .agent-card:nth-child(4n+2){--acc:var(--ma)} .agent-card:nth-child(4n+3){--acc:var(--am)} .agent-card:nth-child(4n+4){--acc:var(--ok)}
+.agent-card .ico{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--acc) 70%,transparent))}
+.agent-card:hover{border-color:color-mix(in srgb,var(--acc) 50%,transparent)}
+.agent-card.active{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 10px 36px -8px var(--acc),inset 0 1px 0 rgba(255,255,255,.14)}
+.loader i{background:var(--cy)} .loader i:nth-child(2){background:var(--vi)} .loader i:nth-child(3){background:var(--ma)}
+.output th{background:rgba(255,255,255,.06)}
+
+/* Tabeller, tip, toast */
+table.list tr:hover td{background:rgba(255,255,255,.025)}
+.tip{background:rgba(14,14,28,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.toast{background:rgba(14,14,28,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid color-mix(in srgb,var(--vi) 60%,transparent);box-shadow:0 0 24px -6px var(--vi)}
+.xp-pop{background:var(--crystal);box-shadow:0 6px 24px -6px var(--ma)}
+.legend i{box-shadow:0 0 8px currentColor}
+.err{color:#ff7a8a;border-color:rgba(255,45,70,.5)}
+.x:hover{color:var(--ma)}
+::selection{background:rgba(155,107,255,.45)}
+
+@media (prefers-reduced-motion:reduce){body::before,.brand .dot{animation:none}}
+
+/* Filtjek-rapport */
+.imp-report{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;background:rgba(0,0,0,.25)}
+.imp-report.ok{border-color:color-mix(in srgb,var(--ok) 55%,transparent);box-shadow:0 0 18px -8px var(--ok)}
+.imp-report.warn{border-color:color-mix(in srgb,var(--am) 55%,transparent);box-shadow:0 0 18px -8px var(--am)}
+.imp-report.bad{border-color:color-mix(in srgb,var(--red) 60%,transparent);box-shadow:0 0 18px -8px var(--red)}
+.imp-report b{display:block;font-size:14px;margin-bottom:4px}
+.imp-report.ok b{color:var(--ok)} .imp-report.warn b{color:var(--am)} .imp-report.bad b{color:#ff7a8a}
+.imp-report .fix{color:var(--muted);margin-top:6px}
+.imp-report dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+.imp-report dd{color:var(--text);word-break:break-all}
+/* ---------- Profit ---------- */
+.nav-btn[data-go="profit"]{--acc:var(--ok)}
+.pbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:190px;padding-top:6px;position:relative;margin-bottom:6px}
+.pbars .pc{display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;gap:6px;min-width:0}
+.pbars .pb{width:70%;max-width:44px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--ok),color-mix(in srgb,var(--ok) 35%,transparent));min-height:3px}
+.pbars .pb.zero{background:var(--panel2)}
+.pbars .pb.neg{background:linear-gradient(0deg,var(--red),color-mix(in srgb,var(--red) 35%,transparent));border-radius:3px 3px 8px 8px}
+.pbars .v{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+.pbars .m{font-size:11px;color:var(--muted);text-transform:capitalize}
+.pbars .pc.now .m{color:var(--text);font-weight:600}
+.share{display:grid;gap:10px}
+.share .r{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px}
+.share .r .t{height:6px;grid-column:1/-1;border-radius:99px;background:var(--panel2);overflow:hidden}
+.share .r .t i{display:block;height:100%;border-radius:99px;background:var(--c,var(--ok))}
+.pgoal-row{display:flex;gap:8px;align-items:flex-end}
+.pgoal-row>div{flex:1}
+/* ---------- REDHUE OS: hjemmeskærm ---------- */
+#navSide [data-go="home"]{display:none}
+.os{position:fixed;inset:0;z-index:50;overflow-y:auto;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent}
+.os[hidden],.buyLink[hidden]{display:none!important}
+html.os-on .app,html.os-on .bottomnav{visibility:hidden}
+.os-w.wide .big{font-size:19px}
+.os-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 18px calc(14px + env(safe-area-inset-bottom))}
+.os-status{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;height:22px}
+.os-status .r{display:flex;gap:12px;align-items:center}
+.os-status .live{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);display:inline-block;margin-right:6px}
+.os-clock{text-align:center;padding:30px 0 22px}
+.os-clock .time{font-family:'JetBrains Mono',monospace;font-size:clamp(64px,22vw,96px);font-weight:600;line-height:1;letter-spacing:-.04em;background:var(--crystal);-webkit-background-clip:text;background-clip:text;color:transparent}
+.os-clock .date{margin-top:10px;font-size:16px;color:var(--text)}
+.os-clock .date::first-letter{text-transform:uppercase}
+.os-clock .greet{margin-top:4px;font-size:13px;color:var(--muted)}
+.os-wg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.os-w{position:relative;text-align:left;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:22px;padding:14px;color:var(--text);min-height:112px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;overflow:clip}
+.os-w:active{transform:scale(.97)}
+.os-w .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.os-w .big{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;line-height:1.1}
+.os-w .sm{font-size:12px;color:var(--muted)}
+.os-w.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;justify-content:flex-start;min-height:0}
+.os-ring{width:78px;height:78px;flex:none;position:relative}
+.os-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.os-ring .n{position:absolute;inset:0;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px}
+.os-xp{height:6px;border-radius:99px;background:var(--panel2);overflow:hidden;margin-top:8px}
+.os-xp i{display:block;height:100%;background:var(--crystal);border-radius:99px}
+.os-pipe{display:flex;gap:6px;margin-top:6px}
+.os-pipe span{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;padding:6px 0;border-radius:10px;background:var(--panel2)}
+.os-pipe small{display:block;font-family:'Space Grotesk',sans-serif;font-size:9px;font-weight:400;color:var(--muted);margin-top:2px;text-transform:uppercase}
+.os-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px;margin:26px 0 18px}
+.os-app{background:none;border:none;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:7px;font:inherit;font-size:11.5px;cursor:pointer;padding:0;min-width:0}
+.os-app .ico{width:60px;height:60px;border-radius:19px;display:grid;place-items:center;font-size:27px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:relative;box-shadow:0 6px 20px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.04)}
+.os-app .ico::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(145deg,var(--c,var(--vi)),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.9}
+.os-app .ico .pro{position:absolute;top:-5px;right:-6px;font-size:8px;font-family:'JetBrains Mono',monospace;background:var(--red);color:#fff;border-radius:6px;padding:2px 4px}
+.os-app span.t{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.os-app:active .ico{transform:scale(.9)}
+.os-dock{margin-top:auto;display:flex;justify-content:space-around;padding:12px 10px;border-radius:28px;background:rgba(255,255,255,.06);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.os-dock .os-app .ico{width:54px;height:54px;font-size:24px}
+.os-dock .os-app span.t{display:none}
+/* OS 2: kontrolpanel, app-skuffe */
+.os-back{position:fixed;inset:0;z-index:58;background:rgba(4,4,10,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s}
+.os-back.on{opacity:1;pointer-events:auto}
+.os-sheet{position:fixed;left:0;right:0;z-index:60;max-width:520px;margin:0 auto;background:rgba(14,14,28,.92);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border:1px solid var(--line);transition:transform .28s cubic-bezier(.2,.8,.2,1);padding:16px 18px}
+.os-panel{top:0;border-radius:0 0 28px 28px;border-top:0;transform:translateY(-105%);padding-top:calc(14px + env(safe-area-inset-top))}
+.os-drawer{bottom:0;border-radius:28px 28px 0 0;border-bottom:0;transform:translateY(105%);padding-bottom:calc(18px + env(safe-area-inset-bottom));max-height:82vh;overflow-y:auto}
+.os-sheet.open{transform:none}
+@media(prefers-reduced-motion:reduce){.os-sheet,.os-back{transition:none}}
+.os-sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.os-sh b{font-size:17px}
+.os-sh span{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.os-qs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.os-q{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:16px;padding:10px 6px;font:inherit;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;min-width:0}
+.os-q .i{font-size:19px;line-height:1.2}
+.os-q.on{border-color:color-mix(in srgb,var(--cy) 60%,var(--line));background:color-mix(in srgb,var(--cy) 14%,transparent)}
+.os-panel .check{padding:9px 10px}
+.os-pq{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.os-grab{width:42px;height:5px;border-radius:9px;background:rgba(255,255,255,.25);margin:14px auto 0;cursor:pointer}
+.os-drawer .os-grab{margin:0 auto 14px}
+.os-drawer .os-apps{margin:4px 0 0}
+.os-hint{display:block;margin:12px auto 0;background:none;border:0;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;padding:6px 12px}
+.os-hint::before{content:"";display:block;width:36px;height:4px;border-radius:9px;background:rgba(255,255,255,.3);margin:0 auto 6px}
+.os-status{cursor:pointer}
+@media(min-width:861px){.os{background:rgba(6,6,14,.55);backdrop-filter:blur(6px)}.os-in{border-left:1px solid var(--line);border-right:1px solid var(--line);background:rgba(6,6,14,.35)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside id="side">
+    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
+    <nav id="navSide"></nav>
+    <div class="side-foot"><button class="small" id="langBtn">EN</button></div>
+  </aside>
+
+  <div>
+    <div class="topbar">
+      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
+      <button class="small" id="langBtnM">EN</button>
+    </div>
+    <main id="main">
+
+      <!-- OVERVIEW -->
+      <section class="section" id="s-overview">
+        <div class="card hero">
+          <img src="avatar.png" alt="">
+          <div>
+            <div class="greet" id="greet"></div>
+            <div class="meta" id="heroMeta"></div>
+            <div class="bar" style="max-width:420px"><i id="heroBar"></i></div>
+          </div>
+          <div class="robot"><div class="face" id="robotFace">🥚</div><div class="lvl mono" id="robotLvl"></div></div>
+        </div>
+        <div class="grid g4" id="kpis"></div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card">
+            <h3><span data-t="cashflow"></span><button class="small ghost" data-go="wallet" data-t="open"></button></h3>
+            <div id="chartOverview"></div>
+          </div>
+          <div class="card">
+            <h3><span data-t="today"></span><button class="small ghost" data-go="mission" data-t="open"></button></h3>
+            <div id="todayChecks"></div>
+          </div>
+        </div>
+        <div class="grid g3" style="margin-top:12px">
+          <div class="card">
+            <h3><span data-t="pipeline"></span><button class="small ghost" data-go="pipeline" data-t="open"></button></h3>
+            <div id="pipeSummary"></div>
+          </div>
+          <div class="card">
+            <h3><span data-t="agents"></span><button class="small ghost" data-go="agents" data-t="open"></button></h3>
+            <div id="agentSummary"></div>
+          </div>
+          <div class="card">
+            <h3><span data-t="activity"></span></h3>
+            <div class="feed" id="feed"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MISSION -->
+      <section class="section" id="s-mission">
+        <h2 class="sec" data-t="missionTitle"></h2>
+        <p class="sub" data-t="missionSub"></p>
+        <div class="grid g3">
+          <div class="card kpi"><div class="v mono" id="mDay"></div><div class="l" data-t="missionDay"></div></div>
+          <div class="card kpi"><div class="v mono" id="mStreak"></div><div class="l" data-t="streak"></div></div>
+          <div class="card kpi"><div class="v mono" id="mIncome"></div><div class="l" id="mIncomeL"></div><div class="bar"><i id="mBar"></i></div></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card">
+            <h3 data-t="todayChecklist"></h3>
+            <div id="missionChecks"></div>
+          </div>
+          <div class="card">
+            <h3 data-t="settingsMission"></h3>
+            <div class="row">
+              <div><label data-t="startDate"></label><input type="date" id="mStart"></div>
+              <div><label data-t="goalMonth"></label><input type="number" id="mGoal" inputmode="numeric" min="0"></div>
+            </div>
+            <div class="row">
+              <div><label data-t="niche"></label><input type="text" id="mNiche"></div>
+              <div><label data-t="currency"></label><input type="text" id="mCur" maxlength="4"></div>
+            </div>
+            <div class="actions"><button class="primary" id="mSave" data-t="save"></button><button id="mRestart" data-t="restart"></button></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h3 data-t="ninetyDays"></h3>
+          <div class="days" id="daysGrid"></div>
+        </div>
+      </section>
+
+      <!-- PIPELINE -->
+      <section class="section" id="s-pipeline">
+        <h2 class="sec" data-t="pipeline"></h2>
+        <p class="sub" data-t="pipelineSub"></p>
+        <div class="card" style="margin-bottom:12px">
+          <form id="kForm" class="row3" style="align-items:end">
+            <div style="grid-column:span 1"><label data-t="title"></label><input id="kTitle" required></div>
+            <div><label data-t="platform"></label>
+              <select id="kPlat"><option>TikTok</option><option>Reels</option><option>Shorts</option><option value="all">Alle / All</option></select></div>
+            <div><button class="primary" type="submit" style="width:100%;justify-content:center" data-t="addCard"></button></div>
+          </form>
+        </div>
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+      <!-- WALLET -->
+      <section class="section" id="s-wallet">
+        <h2 class="sec" data-t="wallet"></h2>
+        <p class="sub" data-t="walletSub"></p>
+        <div class="grid g3">
+          <div class="card kpi"><div class="v mono" id="wBal"></div><div class="l" data-t="balance"></div></div>
+          <div class="card kpi"><div class="v mono pos" id="wIn"></div><div class="l" data-t="in30"></div></div>
+          <div class="card kpi"><div class="v mono neg" id="wOut"></div><div class="l" data-t="out30"></div></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card">
+            <h3 data-t="addEntry"></h3>
+            <form id="wForm">
+              <div class="row">
+                <div><label data-t="type"></label><select id="wType"><option value="in" data-t="income"></option><option value="out" data-t="expense"></option></select></div>
+                <div><label data-t="amount"></label><input id="wAmt" type="number" step="0.01" min="0" inputmode="decimal" required></div>
+              </div>
+              <div class="row">
+                <div><label data-t="category"></label><select id="wCat"></select></div>
+                <div><label data-t="date"></label><input id="wDate" type="date" required></div>
+              </div>
+              <label data-t="note"></label><input id="wNote" type="text">
+              <div class="actions"><button class="primary" type="submit" data-t="add"></button></div>
+            </form>
+          </div>
+          <div class="card">
+            <h3 data-t="last6"></h3>
+            <div id="chartWallet"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h3 data-t="entries"></h3>
+          <div class="tbl-wrap"><table class="list" id="wTable"></table></div>
+        </div>
+      </section>
+
+      <!-- PORTFOLIO -->
+      <section class="section" id="s-profit">
+        <h2 class="sec" data-t="profit"></h2>
+        <p class="sub" data-t="profitSub"></p>
+        <div class="grid g4" id="pKpis"></div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card"><h3 data-t="pMonths"></h3><div class="pbars" id="pBars"></div><div class="tbl-wrap" style="margin-top:14px"><table class="list" id="pTable"></table></div></div>
+          <div class="card">
+            <h3 data-t="pGoal"></h3>
+            <div class="mono" id="pGoalTxt" style="font-size:14px"></div>
+            <div class="bar"><i id="pGoalBar" style="width:0%"></i></div>
+            <div class="sub" id="pGoalHint" style="margin:10px 0 0"></div>
+            <div class="pgoal-row" style="margin-top:12px"><div><label data-t="pGoalSet"></label><input id="pGoalIn" type="number" min="0" step="100" inputmode="numeric"></div><button class="primary" id="pGoalSave" data-t="save"></button></div>
+          </div>
+          <div class="card"><h3 data-t="pSources"></h3><div class="share" id="pSources"></div></div>
+          <div class="card"><h3 data-t="pCosts"></h3><div class="share" id="pCosts"></div></div>
+        </div>
+      </section>
+
+      <section class="section" id="s-portfolio">
+        <h2 class="sec" data-t="portfolio"></h2>
+        <p class="sub" data-t="portfolioSub"></p>
+        <div class="grid g3">
+          <div class="card kpi"><div class="v mono" id="pTotal"></div><div class="l" data-t="totalValue"></div></div>
+          <div class="card kpi"><div class="v mono" id="pCrypto"></div><div class="l">Crypto</div></div>
+          <div class="card kpi"><div class="v mono" id="pFunds"></div><div class="l" data-t="funds"></div></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px">
+          <div class="card">
+            <h3><span>Crypto</span><button class="small" id="pRefresh" data-t="refreshPrices"></button></h3>
+            <form id="cForm" class="row3" style="align-items:end">
+              <div><label>CoinGecko ID</label><input id="cId" placeholder="bitcoin" required autocapitalize="off"></div>
+              <div><label data-t="quantity"></label><input id="cAmt" type="number" step="any" min="0" inputmode="decimal" required></div>
+              <div><button class="primary" type="submit" style="width:100%;justify-content:center" data-t="add"></button></div>
+            </form>
+            <div class="tbl-wrap" style="margin-top:10px"><table class="list" id="cTable"></table></div>
+            <div class="empty mono" id="pUpdated" style="padding:8px 0 0"></div>
+          </div>
+          <div class="card">
+            <h3 data-t="fundsEtf"></h3>
+            <form id="fForm" class="row3" style="align-items:end">
+              <div><label data-t="name"></label><input id="fName" required></div>
+              <div><label data-t="value"></label><input id="fVal" type="number" step="any" min="0" inputmode="decimal" required></div>
+              <div><button class="primary" type="submit" style="width:100%;justify-content:center" data-t="add"></button></div>
+            </form>
+            <div class="tbl-wrap" style="margin-top:10px"><table class="list" id="fTable"></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section class="section" id="s-products">
+        <h2 class="sec" data-t="products"></h2>
+        <p class="sub" data-t="productsSub"></p>
+        <div class="card" style="margin-bottom:12px">
+          <form id="prForm" class="grid" style="grid-template-columns:2fr 1fr 2fr auto;align-items:end;gap:8px">
+            <div><label data-t="name"></label><input id="prName" required></div>
+            <div><label data-t="price"></label><input id="prPrice" type="number" step="any" min="0" inputmode="decimal" required></div>
+            <div><label data-t="payLink"></label><input id="prLink" type="url" placeholder="https://…"></div>
+            <div><button class="primary" type="submit" data-t="add"></button></div>
+          </form>
+        </div>
+        <div class="card"><div class="tbl-wrap"><table class="list" id="prTable"></table></div></div>
+      </section>
+
+      <!-- AGENTS -->
+      <section class="section" id="s-agents">
+        <h2 class="sec" data-t="agentsTitle"></h2>
+        <p class="sub" data-t="agentsSub"></p>
+        <div class="agents" id="agentCards"></div>
+        <div id="agentLocked" class="card lock" style="display:none">
+          <div class="big">🔒</div>
+          <p style="margin-bottom:12px" data-t="lockedText"></p>
+          <div style="display:flex;gap:8px;max-width:460px;margin:0 auto;flex-wrap:wrap">
+            <input id="licInline" data-tp="licPh" style="flex:1;min-width:200px">
+            <button id="licInlineSave" data-t="unlock"></button>
+          </div>
+          <div class="actions" style="justify-content:center"><a class="btn primary buyLink" target="_blank" rel="noopener" data-t="buy"></a></div>
+        </div>
+        <div class="ag-grid" id="agentWork">
+          <div class="card">
+            <h3 id="agFormTitle"></h3>
+            <form id="agForm"></form>
+            <div class="actions"><button class="primary" id="agRun" data-t="run"></button></div>
+            <label class="chain" id="chainWrap"><input type="checkbox" id="chainBox"> <span data-t="chain"></span></label>
+            <h3 style="margin-top:18px" data-t="history"></h3>
+            <div id="agHist"></div>
+          </div>
+          <div class="card">
+            <h3><span id="agOutTitle" data-t="output"></span>
+              <span style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="small" id="agCopy" data-t="copy"></button>
+                <button class="small" id="agToHooks" data-t="toHooks"></button>
+                <button class="small" id="agToPipe" data-t="toPipe"></button>
+              </span></h3>
+            <div class="output" id="agOut"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="section" id="s-settings">
+        <h2 class="sec" data-t="settings"></h2>
+        <p class="sub" data-t="settingsSub"></p>
+        <div class="grid g2">
+          <div class="card">
+            <h3>REDHUE Pro</h3>
+            <div class="mono" id="licStatus" style="font-size:12px;margin-bottom:6px"></div>
+            <label data-t="licKey"></label>
+            <input id="licInput" autocomplete="off" data-tp="licPh">
+            <div class="actions"><button class="primary" id="licSave" data-t="save"></button><a class="btn buyLink" target="_blank" rel="noopener" data-t="buy"></a></div>
+          </div>
+          <div class="card">
+            <h3 data-t="profT"></h3>
+            <label data-t="profName"></label>
+            <div class="pgoal-row"><div><input id="profName" maxlength="40" autocomplete="given-name"></div><button class="primary" id="profSave" data-t="save"></button></div>
+          </div>
+          <div class="card">
+            <h3 data-t="tzT"></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="tzSub"></p>
+            <select id="tzSel"></select>
+            <div class="mono" id="tzNow" style="font-size:12px;margin-top:8px;color:var(--muted)"></div>
+          </div>
+          <div class="card">
+            <h3 data-t="backup"></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="backupSub"></p>
+            <div class="actions" style="margin-top:0">
+              <button id="expBtn" data-t="export"></button>
+              <button id="impBtn" data-t="import"></button>
+              <input type="file" id="impFile" hidden>
+            </div>
+            <div id="impReport" class="imp-report" hidden></div>
+          </div>
+          <div class="card" style="grid-column:1/-1">
+            <h3 data-t="legacy"></h3>
+            <p class="sub" style="margin-bottom:8px" data-t="legacySub"></p>
+            <div class="tbl-wrap"><table class="list" id="legacyTable"></table></div>
+            <div class="actions"><button id="legacyExp" data-t="legacyExport"></button></div>
+          </div>
+          <div class="card" style="grid-column:1/-1">
+            <h3 data-t="danger"></h3>
+            <button id="resetBtn" style="border-color:var(--red);color:var(--red)" data-t="resetAll"></button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+<div class="os" id="os" hidden>
+  <div class="os-in">
+    <div class="os-status"><span><span class="live"></span>REDHUE OS 2</span><span class="r"><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
+    <div class="os-clock"><div class="time" id="osClock"></div><div class="date" id="osDate"></div><div class="greet" id="osGreet"></div></div>
+    <div class="os-wg" id="osWidgets"></div>
+    <div class="os-apps" id="osApps"></div>
+    <div class="os-dock" id="osDock"></div>
+    <button class="os-hint" id="osHint" data-t="osHint"></button>
+  </div>
+</div>
+<div class="os-back" id="osBack"></div>
+<div class="os-sheet os-panel" id="osPanel" aria-hidden="true">
+  <div class="os-sh"><b data-t="osPanel"></b><span id="osPanelInfo"></span></div>
+  <div class="os-qs" id="osQs"></div>
+  <div class="checks" id="osPanelChecks"></div>
+  <div class="os-pq"><button class="primary" data-os="q-in" data-t="osQIn2"></button><button data-os="q-idea" data-t="osQIdea2"></button></div>
+  <div class="os-grab" data-sheet-close></div>
+</div>
+<div class="os-sheet os-drawer" id="osDrawer" aria-hidden="true">
+  <div class="os-grab" data-sheet-close></div>
+  <div class="os-sh"><b data-t="osAll"></b><span>REDHUE OS 2</span></div>
+  <div class="os-apps" id="osAllApps"></div>
+</div>
+<nav class="bottomnav" id="navBottom"></nav>
+<div class="toast" id="toast"></div>
+<div class="xp-pop" id="xpPop"></div>
+
+<script>
+/* =========================================================
+   REDHUE · Mission Control  (single-file PWA)
+   ========================================================= */
+const CFG = {
+  GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
+  API: "/api/agents"
+};
+const K = { state:"redhue_v3_state", lang:"redhue_lang", lic:"redhue_pro_license", hist:"redhue_agent_history" };
+
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch{ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} }
+};
+const uid = () => Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+// Tidszone: låst til Marks zone (kan ændres under Indstillinger), uafhængigt af enhedens indstilling
+const TZ_KEY="redhue_tz", TZ_DEFAULT="Europe/Copenhagen";
+const TZ = () => { try{ const z=JSON.parse(localStorage.getItem(TZ_KEY)||"null"); if(z){ Intl.DateTimeFormat("en",{timeZone:z}); return z; } }catch{} return TZ_DEFAULT; };
+function zparts(d=new Date()){ const o={}; new Intl.DateTimeFormat("en-CA",{timeZone:TZ(),year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(p=>o[p.type]=p.value); return o; }
+const today = () => { const p=zparts(); return `${p.year}-${p.month}-${p.day}`; };
+const nowHour = () => +zparts().hour;
+const addDays = (ymdStr,n) => { const [y,m,d]=ymdStr.split("-").map(Number); const x=new Date(Date.UTC(y,m-1,d+n)); return x.toISOString().slice(0,10); };
+const DAY = 864e5;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+/* ---------- State ---------- */
+const DEFAULT = {
+  v:3,
+  profile:{ name:"" },
+  mission:{ start:today(), goal:5000, currency:"kr", niche:"" , checks:{} },
+  wallet:[], crypto:[], prices:{}, pricesAt:null, funds:[], products:[],
+  kanban:[], xp:0, log:[], agentDrafts:{}
+};
+let S = Object.assign(structuredClone(DEFAULT), store.get(K.state,{}));
+S.mission = Object.assign(structuredClone(DEFAULT.mission), S.mission||{});
+const save = () => { store.set(K.state,S); updateBadge(); };
+
+let lang = store.get(K.lang,"da");
+
+/* ---------- i18n ---------- */
+const T = {
+ da:{
+  overview:"Overblik", mission:"Mission", pipeline:"Pipeline", wallet:"Wallet", portfolio:"Portefølje", products:"Produkter", agents:"Agenter", settings:"Indstillinger",
+  hi:"Godmorgen", hiDay:"Hej", hiEve:"Godaften", open:"Åbn →", cashflow:"Pengestrøm · 6 mdr", today:"I dag", activity:"Seneste aktivitet",
+  heroMeta:(d,p)=>`Dag ${d} af 90 · ${p}% af månedsmålet`,
+  kBal:"Saldo", kIncome30:"Indtægt 30 dage", kAssets:"Aktiver", kXP:"XP",
+  missionTitle:"90-dages mission", missionSub:"Én ting om dagen. Hold streaken, så kommer tallene.",
+  missionDay:"Missionsdag", streak:"Dages streak", todayChecklist:"Dagens tjekliste", settingsMission:"Mission-opsætning",
+  startDate:"Startdato", goalMonth:"Indkomstmål / md", niche:"Niche", currency:"Valuta", save:"Gem", restart:"Start forfra i dag",
+  ninetyDays:"De 90 dage", incomeL:(g,c)=>`Seneste 30 dage · mål ${g} ${c}`,
+  checks:["Post mindst 1 video","Skriv/generér 1 nyt manuskript","15 min engagement (svar, kommentér)","Log dagens tal"],
+  pipelineSub:"Fra idé til postet video. Flyt kortene med pilene.",
+  cols:{ idea:"Idé", script:"Manuskript", produce:"Produktion", posted:"Postet" },
+  title:"Titel", platform:"Platform", addCard:"Tilføj kort", noCards:"Tomt",
+  walletSub:"Alle indtægter og udgifter samlet.", balance:"Saldo", in30:"Ind · 30 dage", out30:"Ud · 30 dage",
+  addEntry:"Ny postering", type:"Type", income:"Indtægt", expense:"Udgift", amount:"Beløb", category:"Kategori", date:"Dato", note:"Note", add:"Tilføj",
+  last6:"Ind vs. ud · 6 mdr", entries:"Posteringer", noEntries:"Ingen posteringer endnu.",
+  catsIn:["Creator-fond","Affiliate","Produktsalg","Sponsor","Løn","Andet"], catsOut:["Værktøjer/AI","Annoncer","Udstyr","Abonnement","Andet"],
+  portfolioSub:"Crypto med live-priser og dine fonde/ETF'er.", totalValue:"Samlet værdi", funds:"Fonde/ETF", fundsEtf:"Fonde & ETF'er",
+  refreshPrices:"Opdater priser", quantity:"Antal", name:"Navn", value:"Værdi", price:"Pris", coin:"Mønt",
+  pricesAt:t=>`Priser opdateret ${t}`, noPrices:"Tryk 'Opdater priser' for live-kurser.",
+  productsSub:"Dine digitale produkter. Registrér et salg, og det lander direkte i Wallet.", payLink:"Betalingslink", sales:"Salg", revenue:"Omsætning", sell:"+1 salg", noProducts:"Ingen produkter endnu.",
+  agentsTitle:"AI-agent-team", agentsSub:"Fire agenter, der arbejder for din mission. Output kan sendes direkte til Pipeline.",
+  lockedText:"Agenterne er en del af REDHUE Pro. Indsæt din licensnøgle for at låse op.", unlock:"Lås op", buy:"Køb Pro",
+  run:"Kør agent", running:"Arbejder…", chain:"Send automatisk manuskriptet videre til Hook-agenten", history:"Historik", output:"Output",
+  copy:"Kopiér", toHooks:"→ Hooks", toPipe:"→ Pipeline", copied:"Kopieret", addedPipe:n=>`${n} kort lagt i Pipeline`,
+  emptyOut:"Vælg en agent, udfyld felterne og tryk Kør.", noHist:"Ingen kørsler endnu.",
+  f:{ niche:"Niche", topic:"Emne", length:"Længde (sek)", tone:"Tone", count:"Varianter", script:"Manuskript (valgfrit)", platforms:"Platforme", perWeek:"Videoer/uge", hours:"Timer/uge", day:"Missionsdag", goal:"Indkomstmål", stats:"Dine tal (indsæt frit)" },
+  ph:{ niche:"fx facts om rummet", topic:"fx hvorfor Venus drejer baglæns", tone:"nysgerrig og energisk", goal:"fx 5.000 kr/md", stats:"Video 1: 12.400 views, 6% delinger, 41% watch time…\nFølgere: 830 (+120)\nIndtjening: 0 kr" },
+  ag:{ script:["Script-agent","Faceless manuskripter med hook, voiceover, visuals og CTA."], hooks:["Hook & Caption","10 hooks + captions og hashtags til hver platform."], planner:["Planlægger","Ugeplan og batch-produktion mod 90-dages målet."], analyst:["Analytiker","Læser dine tal og giver 3 konkrete eksperimenter."] },
+  errors:{ pro_required:"Pro-licens mangler eller er ugyldig.", rate_limited:"For mange kørsler, prøv igen om lidt.", missing_fields:"Udfyld de påkrævede felter.", network:"Ingen forbindelse til serveren. Agenterne kræver at siden kører på Netlify.", default:"Noget gik galt. Prøv igen." },
+  runs:"kørsler", lastRun:"Seneste", proOn:"● PRO AKTIV", proOff:"○ INGEN LICENS", licKey:"Gumroad licensnøgle", licPh:"Indsæt din licensnøgle", licSaved:"Licens gemt",
+  settingsSub:"Licens, backup og dine gamle data.", backup:"Backup", backupSub:"Gem alt som én fil, eller hent en backup ind igen.", export:"Eksportér backup", import:"Importér backup",
+  imported:"Backup indlæst", badFile:"Filen kunne ikke læses.",
+  fc:{ file:"Fil", size:"Størrelse", type:"Type", found:"Indhold",
+    empty:["Filen er tom","Den fylder 0 bytes. Eksportér en ny backup og prøv igen."],
+    big:["Filen er for stor","En REDHUE-backup er normalt under 5 MB. Tjek at det er den rigtige fil."],
+    image:k=>[`Det er et billede (${k}), ikke en backup`,"Vælg den .json-fil, du fik fra ”Eksportér backup”."],
+    binary:k=>[`Det er en ${k}-fil, ikke en backup`,"Vælg den .json-fil, du fik fra ”Eksportér backup”."],
+    mangled:(k,n)=>[`Filen er ødelagt${k?` – det var oprindeligt et ${k}`:""}`,`${n.toLocaleString("da-DK")} tegn er erstattet med ”\uFFFD”. Det sker, når en binær fil gemmes eller sendes som tekst (.txt). Dataene kan ikke gendannes – send den originale fil.`],
+    notJson:pos=>["Filen er ikke gyldig JSON",`Den stopper med at give mening ${pos}. Filen er måske blevet redigeret eller skåret over.`],
+    legacy:["Det er en eksport af dine gamle data","Den kan ikke indlæses direkte. Send filen til Claude, så bliver den flyttet ind i v3-formatet."],
+    wrong:["Det er JSON, men ikke en REDHUE-backup","Der mangler en ”state”-del. Brug filen fra ”Eksportér backup”."],
+    newer:v=>[`Backuppen er fra en nyere version (v${v})`,"Opdatér appen, før du indlæser den."],
+    fixed:n=>[`Backup indlæst – ${n} felt(er) blev repareret`,"Felter med forkert type blev nulstillet, resten er bevaret."],
+    ok:["Backup indlæst","Alt så fint ud."],
+    confirm:(c)=>`Erstat dine nuværende data med denne backup?\n\n${c}`,
+    counts:c=>`${c.wallet} posteringer · ${c.kanban} pipeline-kort · ${c.products} produkter · ${c.crypto+c.funds} aktiver · ${c.xp} XP`,
+    atLine:(l,c)=>`ved linje ${l}, tegn ${c}`, atEnd:"til sidst" },
+  legacy:"Data fra din gamle REDHUE", legacySub:"Alt det din tidligere version har gemt i denne browser. Eksportér det som fil, og send det til Claude, så kobles det ind.",
+  legacyExport:"Eksportér gamle data", noLegacy:"Ingen gamle data fundet i denne browser.", key:"Nøgle", size:"Størrelse",
+  danger:"Nulstil", resetAll:"Slet alle REDHUE v3-data", confirmReset:"Er du sikker? Dette sletter alle data i den nye REDHUE (gamle data røres ikke).",
+  confirmRestart:"Starte missionen forfra fra i dag? Tjeklisten nulstilles.",
+  feed:{ wallet:"Postering", kanban:"Pipeline", agent:"Agent", check:"Tjekliste", product:"Salg", mission:"Mission" },
+  noActivity:"Ingen aktivitet endnu.", pipeEmpty:"Ingen kort i pipeline.", legendIn:"Ind", legendOut:"Ud", saved:"Gemt", del:"Slet",
+  profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
+  pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
+  pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  osPanel:"Kontrolpanel", osAll:"Alle apps", osHint:"Stryg op for alle apps", osQIn2:"+ Indtægt", osQIdea2:"+ Idé", osHaptic:"Vibration", osLangQ:"Sprog", osTz:"Tidszone", osStreakQ:"Streak", osShared:"Idé gemt fra deling", osLeft:n=>n?`${n} opgaver tilbage i dag`:"Alle dagens opgaver er klaret 🎉",
+  profT:"Profil", profName:"Dit navn (bruges i hilsenen)",
+  tzT:"Tidszone", tzSub:"Ur, dato, dagens tjek og missionsdag følger denne zone – også hvis telefonen står forkert.", tzNow:(t,dev)=>`Nu: ${t}${dev?` · telefonen siger ${dev}`:""}`,
+  home:"Hjem", osDay:(d)=>`DAG ${d}/90`, osMission:"Mission", osOfGoal:p=>`${p}% af månedsmålet`, osToday:(n)=>`I dag: ${n}/4 ✓`, osLevel:"Level", osQIn:"Indtægt", osQIdea:"Ny idé", osPipeS:["Idé","Manus","Prod.","Postet"]
+ },
+ en:{
+  overview:"Overview", mission:"Mission", pipeline:"Pipeline", wallet:"Wallet", portfolio:"Portfolio", products:"Products", agents:"Agents", settings:"Settings",
+  hi:"Good morning", hiDay:"Hi", hiEve:"Good evening", open:"Open →", cashflow:"Cash flow · 6 mo", today:"Today", activity:"Recent activity",
+  heroMeta:(d,p)=>`Day ${d} of 90 · ${p}% of monthly goal`,
+  kBal:"Balance", kIncome30:"Income 30 days", kAssets:"Assets", kXP:"XP",
+  missionTitle:"90-day mission", missionSub:"One thing a day. Keep the streak and the numbers follow.",
+  missionDay:"Mission day", streak:"Day streak", todayChecklist:"Today's checklist", settingsMission:"Mission setup",
+  startDate:"Start date", goalMonth:"Income goal / mo", niche:"Niche", currency:"Currency", save:"Save", restart:"Restart from today",
+  ninetyDays:"The 90 days", incomeL:(g,c)=>`Last 30 days · goal ${g} ${c}`,
+  checks:["Post at least 1 video","Write/generate 1 new script","15 min engagement (reply, comment)","Log today's numbers"],
+  pipelineSub:"From idea to posted video. Move cards with the arrows.",
+  cols:{ idea:"Idea", script:"Script", produce:"Production", posted:"Posted" },
+  title:"Title", platform:"Platform", addCard:"Add card", noCards:"Empty",
+  walletSub:"All income and expenses in one place.", balance:"Balance", in30:"In · 30 days", out30:"Out · 30 days",
+  addEntry:"New entry", type:"Type", income:"Income", expense:"Expense", amount:"Amount", category:"Category", date:"Date", note:"Note", add:"Add",
+  last6:"In vs. out · 6 mo", entries:"Entries", noEntries:"No entries yet.",
+  catsIn:["Creator fund","Affiliate","Product sale","Sponsor","Salary","Other"], catsOut:["Tools/AI","Ads","Gear","Subscription","Other"],
+  portfolioSub:"Crypto with live prices plus your funds/ETFs.", totalValue:"Total value", funds:"Funds/ETF", fundsEtf:"Funds & ETFs",
+  refreshPrices:"Refresh prices", quantity:"Quantity", name:"Name", value:"Value", price:"Price", coin:"Coin",
+  pricesAt:t=>`Prices updated ${t}`, noPrices:"Hit 'Refresh prices' for live rates.",
+  productsSub:"Your digital products. Log a sale and it lands straight in Wallet.", payLink:"Payment link", sales:"Sales", revenue:"Revenue", sell:"+1 sale", noProducts:"No products yet.",
+  agentsTitle:"AI agent team", agentsSub:"Four agents working for your mission. Output can go straight to Pipeline.",
+  lockedText:"The agents are part of REDHUE Pro. Paste your license key to unlock.", unlock:"Unlock", buy:"Get Pro",
+  run:"Run agent", running:"Working…", chain:"Automatically pass the script on to the Hook agent", history:"History", output:"Output",
+  copy:"Copy", toHooks:"→ Hooks", toPipe:"→ Pipeline", copied:"Copied", addedPipe:n=>`${n} card(s) added to Pipeline`,
+  emptyOut:"Pick an agent, fill in the fields and hit Run.", noHist:"No runs yet.",
+  f:{ niche:"Niche", topic:"Topic", length:"Length (sec)", tone:"Tone", count:"Variants", script:"Script (optional)", platforms:"Platforms", perWeek:"Videos/week", hours:"Hours/week", day:"Mission day", goal:"Income goal", stats:"Your numbers (paste freely)" },
+  ph:{ niche:"e.g. space facts", topic:"e.g. why Venus spins backwards", tone:"curious and energetic", goal:"e.g. $750/month", stats:"Video 1: 12,400 views, 6% shares, 41% watch time…\nFollowers: 830 (+120)\nEarnings: $0" },
+  ag:{ script:["Script Agent","Faceless scripts with hook, voiceover, visuals and CTA."], hooks:["Hook & Caption","10 hooks + captions and hashtags per platform."], planner:["Planner","Weekly plan and batch production toward the 90-day goal."], analyst:["Analyst","Reads your numbers and gives 3 concrete experiments."] },
+  errors:{ pro_required:"Pro license missing or invalid.", rate_limited:"Too many runs, try again shortly.", missing_fields:"Fill in the required fields.", network:"Can't reach the server. The agents need the site running on Netlify.", default:"Something went wrong. Try again." },
+  runs:"runs", lastRun:"Latest", proOn:"● PRO ACTIVE", proOff:"○ NO LICENSE", licKey:"Gumroad license key", licPh:"Paste your license key", licSaved:"License saved",
+  settingsSub:"License, backup and your old data.", backup:"Backup", backupSub:"Save everything as one file, or load a backup back in.", export:"Export backup", import:"Import backup",
+  imported:"Backup loaded", badFile:"Couldn't read that file.",
+  fc:{ file:"File", size:"Size", type:"Type", found:"Contents",
+    empty:["The file is empty","It is 0 bytes. Export a new backup and try again."],
+    big:["The file is too large","A REDHUE backup is normally under 5 MB. Check it's the right file."],
+    image:k=>[`That's an image (${k}), not a backup`,"Pick the .json file you got from “Export backup”."],
+    binary:k=>[`That's a ${k} file, not a backup`,"Pick the .json file you got from “Export backup”."],
+    mangled:(k,n)=>[`The file is corrupted${k?` – it was originally a ${k}`:""}`,`${n.toLocaleString("en-US")} characters were replaced with “\uFFFD”. This happens when a binary file is saved or sent as text (.txt). The data can't be recovered – send the original file.`],
+    notJson:pos=>["The file isn't valid JSON",`It stops making sense ${pos}. It may have been edited or cut off.`],
+    legacy:["That's an export of your old data","It can't be loaded directly. Send it to Claude to migrate it to the v3 format."],
+    wrong:["That's JSON, but not a REDHUE backup","The “state” part is missing. Use the file from “Export backup”."],
+    newer:v=>[`This backup is from a newer version (v${v})`,"Update the app before loading it."],
+    fixed:n=>[`Backup loaded – ${n} field(s) repaired`,"Fields with the wrong type were reset; everything else was kept."],
+    ok:["Backup loaded","Everything looked fine."],
+    confirm:(c)=>`Replace your current data with this backup?\n\n${c}`,
+    counts:c=>`${c.wallet} entries · ${c.kanban} pipeline cards · ${c.products} products · ${c.crypto+c.funds} assets · ${c.xp} XP`,
+    atLine:(l,c)=>`at line ${l}, char ${c}`, atEnd:"at the end" },
+  legacy:"Data from your old REDHUE", legacySub:"Everything your previous version stored in this browser. Export it as a file and send it to Claude to wire it in.",
+  legacyExport:"Export old data", noLegacy:"No old data found in this browser.", key:"Key", size:"Size",
+  danger:"Reset", resetAll:"Delete all REDHUE v3 data", confirmReset:"Are you sure? This deletes all data in the new REDHUE (old data is untouched).",
+  confirmRestart:"Restart the mission from today? The checklist resets.",
+  feed:{ wallet:"Entry", kanban:"Pipeline", agent:"Agent", check:"Checklist", product:"Sale", mission:"Mission" },
+  noActivity:"No activity yet.", pipeEmpty:"No cards in pipeline.", legendIn:"In", legendOut:"Out", saved:"Saved", del:"Delete",
+  profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
+  pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
+  pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  osPanel:"Control panel", osAll:"All apps", osHint:"Swipe up for all apps", osQIn2:"+ Income", osQIdea2:"+ Idea", osHaptic:"Haptics", osLangQ:"Language", osTz:"Time zone", osStreakQ:"Streak", osShared:"Idea saved from share", osLeft:n=>n?`${n} tasks left today`:"All of today's tasks done 🎉",
+  profT:"Profile", profName:"Your name (used in the greeting)",
+  tzT:"Time zone", tzSub:"Clock, date, daily checks and mission day follow this zone – even if the phone is set wrong.", tzNow:(t,dev)=>`Now: ${t}${dev?` · phone says ${dev}`:""}`,
+  home:"Home", osDay:(d)=>`DAY ${d}/90`, osMission:"Mission", osOfGoal:p=>`${p}% of monthly goal`, osToday:(n)=>`Today: ${n}/4 ✓`, osLevel:"Level", osQIn:"Income", osQIdea:"New idea", osPipeS:["Idea","Script","Prod.","Posted"]
+ }
+};
+const t = () => T[lang];
+
+/* ---------- Navigation ---------- */
+const NAV = [
+  ["home","⌂"],["overview","◎"],["mission","🎯"],["pipeline","▦"],["agents","🤖"],["wallet","💳"],["profit","💰"],["portfolio","📈"],["products","🛒"],["settings","⚙︎"]
+];
+const IS_PHONE = matchMedia("(max-width:860px)").matches;
+let current = location.hash.slice(1) || (IS_PHONE ? "home" : "overview");
+function renderNav(){
+  const html = NAV.map(([id,ic]) =>
+    `<button class="nav-btn ${id===current?"active":""}" data-go="${id}"><span class="ic">${ic}</span>${t()[id]}${id==="agents"?'<span class="pro">PRO</span>':""}</button>`).join("");
+  $("navSide").innerHTML = html; $("navBottom").innerHTML = html;
+}
+function go(id){
+  if(!NAV.some(n=>n[0]===id)) id="overview";
+  const from = current; current = id;
+  // Fra hjemmeskærmen ind i en app: nyt historik-trin, så Androids tilbage-knap fører hjem igen
+  if(from==="home" && id!=="home") history.pushState(null,"","#"+id); else history.replaceState(null,"","#"+id);
+  $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); document.documentElement.classList.toggle("os-on", id==="home");
+  document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active", s.id==="s-"+id));
+  renderNav(); renderSection(id); window.scrollTo(0,0);
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if(b){ e.preventDefault(); go(b.dataset.go); } });
+
+/* ---------- Helpers ---------- */
+const cur = () => S.mission.currency || "kr";
+function money(n, withCur=true){
+  const v = Math.round((+n||0)*100)/100;
+  const s = v.toLocaleString(lang==="da"?"da-DK":"en-US",{maximumFractionDigits: Math.abs(v)<100 && v%1 ? 2 : 0});
+  return withCur ? `${s} ${cur()}` : s;
+}
+function fmtDate(d, opts={day:"2-digit",month:"short"}){ const iso=typeof d==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(d); return new Date(iso?d+"T12:00:00Z":d).toLocaleDateString(lang==="da"?"da-DK":"en-GB",{...opts,timeZone:iso?"UTC":TZ()}); }
+function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),1700); }
+function logAct(type, text){ S.log.unshift({type,text,at:Date.now()}); S.log = S.log.slice(0,40); }
+function addXP(n){
+  const before = level(); S.xp += n; save();
+  const el=$("xpPop"); el.textContent = `+${n} XP` + (level()>before ? ` · LVL ${level()} 🎉` : "");
+  el.classList.add("show"); clearTimeout(addXP._t); addXP._t=setTimeout(()=>el.classList.remove("show"),1400);
+}
+const level = () => Math.floor(S.xp/100)+1;
+const robot = () => { const l=level(); return l<=1?"🥚":l<=3?"🐣":l<=6?"🤖":l<=9?"🦾":"🚀"; };
+
+/* ---------- Derived numbers ---------- */
+function missionDay(){ const d = Math.round((Date.parse(today()+"T00:00:00Z") - Date.parse(S.mission.start+"T00:00:00Z"))/DAY)+1; return Math.max(1,Math.min(90,d)); }
+function sumWallet(days, type){
+  const from = Date.now() - days*DAY;
+  const fromDay=addDays(today(),-days);
+  return S.wallet.filter(w=>w.type===type && String(w.date).slice(0,10)>=fromDay).reduce((a,w)=>a+ +w.amount,0);
+}
+const balance = () => S.wallet.reduce((a,w)=>a + (w.type==="in"?1:-1)*(+w.amount),0);
+const cryptoValue = () => S.crypto.reduce((a,c)=>a + (+c.amount)*(S.prices[c.coin]||0),0);
+const fundsValue = () => S.funds.reduce((a,f)=>a + +f.value,0);
+function dayDone(date){ const c=S.mission.checks[date]; return !!c && c.filter(Boolean).length>=2; }
+function streak(){
+  let n=0, d=today();
+  if(!dayDone(d)) d=addDays(d,-1);
+  while(dayDone(d)){ n++; d=addDays(d,-1); }
+  return n;
+}
+function goalPct(){ const g=+S.mission.goal||0; return g? Math.min(100,Math.round(sumWallet(30,"in")/g*100)) : 0; }
+
+/* ---------- Chart: In vs Out, last 6 months ---------- */
+function monthly(){
+  const out=[]; const [ty,tm]=today().split("-").map(Number);
+  for(let i=5;i>=0;i--){
+    const m=new Date(ty, tm-1-i, 1); const key=ymd(m).slice(0,7);
+    const rows=S.wallet.filter(w=>w.date.slice(0,7)===key);
+    out.push({ label:m.toLocaleDateString(lang==="da"?"da-DK":"en-GB",{month:"short"}), key,
+      in:rows.filter(r=>r.type==="in").reduce((a,r)=>a+ +r.amount,0),
+      out:rows.filter(r=>r.type==="out").reduce((a,r)=>a+ +r.amount,0) });
+  }
+  return out;
+}
+function niceMax(v){ if(v<=0) return 100; const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; return (n<=1?1:n<=2?2:n<=5?5:10)*p; }
+function drawChart(el){
+  const data=monthly(), W=560, H=220, L=48, R=8, Tp=10, B=26;
+  const max=niceMax(Math.max(...data.flatMap(d=>[d.in,d.out])));
+  const cw=(W-L-R)/data.length, bw=Math.min(18,(cw-14)/2);
+  const y=v=>Tp+(H-Tp-B)*(1-v/max);
+  let g="";
+  for(let i=0;i<=4;i++){ const v=max*i/4, yy=y(v);
+    g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>`+
+       `<text x="${L-8}" y="${yy+4}" fill="#9a98b0" font-size="11" text-anchor="end" font-family="JetBrains Mono">${abbr(v)}</text>`; }
+  const bar=(x,v,c)=>{ if(v<=0) return ""; const top=y(v), h=(H-B)-top, r=Math.min(4,h);
+    return `<path d="M${x},${H-B} V${top+r} Q${x},${top} ${x+r},${top} H${x+bw-r} Q${x+bw},${top} ${x+bw},${top+r} V${H-B} Z" fill="${c}"/>`; };
+  data.forEach((d,i)=>{
+    const cx=L+cw*i+cw/2;
+    g+=bar(cx-bw-1,d.in,"var(--s-in)")+bar(cx+1,d.out,"var(--s-out)");
+    g+=`<text x="${cx}" y="${H-8}" fill="#9a98b0" font-size="11" text-anchor="middle">${esc(d.label)}</text>`;
+    g+=`<rect class="hit" data-i="${i}" x="${L+cw*i}" y="${Tp}" width="${cw}" height="${H-Tp-B}" fill="transparent"/>`;
+  });
+  el.innerHTML = `<div class="legend"><span><i style="background:var(--s-in)"></i>${t().legendIn}</span><span><i style="background:var(--s-out)"></i>${t().legendOut}</span></div>
+    <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t().last6)}">${g}</svg><div class="tip"></div></div>`;
+  const tip=el.querySelector(".tip"), wrap=el.querySelector(".chart");
+  el.querySelectorAll(".hit").forEach(h=>{
+    const show=()=>{ const d=data[+h.dataset.i]; h.setAttribute("fill","rgba(255,255,255,.04)");
+      tip.innerHTML=`<b>${esc(d.label)}</b><span style="color:var(--muted)">${t().legendIn}</span> ${money(d.in)}<br><span style="color:var(--muted)">${t().legendOut}</span> ${money(d.out)}<br><span style="color:var(--muted)">Netto</span> ${money(d.in-d.out)}`;
+      const r=h.getBoundingClientRect(), wr=wrap.getBoundingClientRect();
+      tip.style.left=Math.min(wr.width-150, Math.max(0, r.left-wr.left+r.width/2-70))+"px"; tip.style.top="0px"; tip.style.opacity=1; };
+    const hide=()=>{ h.setAttribute("fill","transparent"); tip.style.opacity=0; };
+    h.addEventListener("mouseenter",show); h.addEventListener("mouseleave",hide);
+    h.addEventListener("touchstart",show,{passive:true});
+  });
+}
+function abbr(v){ return v>=1e6? (v/1e6).toFixed(1).replace(".0","")+"M" : v>=1e3? (v/1e3).toFixed(v%1000?1:0).replace(".0","")+"k" : Math.round(v); }
+
+/* ---------- Checklist ---------- */
+function checklistHTML(){
+  const c = S.mission.checks[today()] || [];
+  return t().checks.map((txt,i)=>`<div class="check ${c[i]?"on":""}" data-ci="${i}"><div class="box">${c[i]?"✓":""}</div><span>${esc(txt)}</span></div>`).join("");
+}
+document.addEventListener("click", e=>{
+  const c=e.target.closest(".check"); if(!c) return;
+  const i=+c.dataset.ci, d=today(); const arr=S.mission.checks[d] || [false,false,false,false];
+  arr[i]=!arr[i]; S.mission.checks[d]=arr;
+  if(arr[i]){ logAct("check", t().checks[i]); addXP(5); } else save();
+  save(); renderSection(current);
+});
+
+/* ---------- Section renderers ---------- */
+function renderOverview(){
+  const h=nowHour();
+  $("greet").textContent = [h<10?t().hi:h<18?t().hiDay:t().hiEve, S.profile.name].filter(Boolean).join(", ");
+  $("heroMeta").textContent = t().heroMeta(missionDay(), goalPct());
+  $("heroBar").style.width = goalPct()+"%";
+  $("robotFace").textContent = robot(); $("robotLvl").textContent = `LVL ${level()} · ${S.xp} XP`;
+  const assets = balance()+cryptoValue()+fundsValue();
+  const kp = [
+    [money(balance()), t().kBal, balance()<0?"neg":""],
+    [money(sumWallet(30,"in")), t().kIncome30, "pos"],
+    [money(assets), t().kAssets, ""],
+    [`${streak()} 🔥`, t().streak, ""]
+  ];
+  $("kpis").innerHTML = kp.map(([v,l,c])=>`<div class="card kpi"><div class="v mono ${c}">${v}</div><div class="l">${l}</div></div>`).join("");
+  drawChart($("chartOverview"));
+  $("todayChecks").innerHTML = checklistHTML();
+  const cols=t().cols;
+  $("pipeSummary").innerHTML = S.kanban.length ? Object.keys(cols).map(k=>{
+      const n=S.kanban.filter(c=>c.col===k).length;
+      return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)"><span>${cols[k]}</span><b class="mono">${n}</b></div>`; }).join("")
+    : `<div class="empty">${t().pipeEmpty}</div>`;
+  const hist=store.get(K.hist,[]);
+  $("agentSummary").innerHTML = `<div class="kpi"><div class="v mono">${hist.length}</div><div class="l">${t().runs}</div></div>`+
+    (hist[0]? `<div class="feed" style="margin-top:10px"><div><span>${AGENT_ICO[hist[0].agent]} ${esc(hist[0].label)}</span><span>${fmtDate(hist[0].at)}</span></div></div>`:"")+
+    `<div class="mono" style="font-size:11px;margin-top:10px;color:${hasLic()?"var(--ok)":"var(--muted)"}">${hasLic()?t().proOn:t().proOff}</div>`;
+  $("feed").innerHTML = S.log.length ? S.log.slice(0,6).map(l=>`<div><span>${esc(t().feed[l.type]||"")} · ${esc(l.text)}</span><span>${fmtDate(l.at)}</span></div>`).join("") : `<div class="empty" style="border:none">${t().noActivity}</div>`;
+}
+
+function renderMission(){
+  $("mDay").textContent = missionDay();
+  $("mStreak").textContent = streak()+" 🔥";
+  $("mIncome").textContent = money(sumWallet(30,"in"));
+  $("mIncomeL").textContent = t().incomeL(money(S.mission.goal,false), cur());
+  $("mBar").style.width = goalPct()+"%";
+  $("missionChecks").innerHTML = checklistHTML();
+  $("mStart").value=S.mission.start; $("mGoal").value=S.mission.goal; $("mNiche").value=S.mission.niche||""; $("mCur").value=cur();
+  const [sy,sm,sd]=S.mission.start.split("-").map(Number), start=new Date(sy,sm-1,sd), md=missionDay(); let g="";
+  for(let i=0;i<90;i++){ const d=ymd(new Date(start.getFullYear(),start.getMonth(),start.getDate()+i));
+    const cls = dayDone(d)?"done": i+1<md?"past":""; g+=`<i class="${cls} ${i+1===md?"today":""}" title="${i+1} · ${d}"></i>`; }
+  $("daysGrid").innerHTML=g;
+}
+$("mSave").onclick=()=>{ S.mission.start=$("mStart").value||today(); S.mission.goal=+$("mGoal").value||0; S.mission.niche=$("mNiche").value.trim(); S.mission.currency=$("mCur").value.trim()||"kr"; save(); toast(t().saved); renderMission(); };
+$("mRestart").onclick=()=>{ if(!confirm(t().confirmRestart)) return; S.mission.start=today(); S.mission.checks={}; logAct("mission","Restart"); save(); renderMission(); };
+
+const COLS=["idea","script","produce","posted"];
+function renderPipeline(){
+  $("kanban").innerHTML = COLS.map((col,ci)=>{
+    const cards=S.kanban.filter(c=>c.col===col);
+    return `<div class="col"><h4><span>${t().cols[col]}</span><span class="mono">${cards.length}</span></h4>`+
+      (cards.length? cards.map(c=>`<div class="kc"><div class="t">${esc(c.title)}</div>${c.notes?`<div class="n">${esc(c.notes)}</div>`:""}
+        <div class="ctl"><span class="tag">${esc(c.platform==="all"?"All":c.platform)}</span><span>
+        ${ci>0?`<button data-mv="${c.id}" data-d="-1" aria-label="back">←</button>`:""}
+        ${ci<3?`<button data-mv="${c.id}" data-d="1" aria-label="forward">→</button>`:""}
+        <button class="x" data-kdel="${c.id}" aria-label="${t().del}">×</button></span></div></div>`).join("") : `<div class="empty">${t().noCards}</div>`)+`</div>`;
+  }).join("");
+}
+$("kForm").onsubmit=e=>{ e.preventDefault(); const title=$("kTitle").value.trim(); if(!title) return;
+  S.kanban.push({id:uid(),title,platform:$("kPlat").value,col:"idea",notes:"",created:Date.now()}); logAct("kanban",title); $("kTitle").value=""; addXP(3); renderPipeline(); };
+$("kanban").addEventListener("click",e=>{
+  const mv=e.target.closest("[data-mv]"), del=e.target.closest("[data-kdel]");
+  if(mv){ const c=S.kanban.find(x=>x.id===mv.dataset.mv); const ni=COLS.indexOf(c.col)+ +mv.dataset.d; c.col=COLS[ni];
+    if(c.col==="posted"){ logAct("kanban","✓ "+c.title); addXP(15); } else save(); renderPipeline(); }
+  if(del){ S.kanban=S.kanban.filter(x=>x.id!==del.dataset.kdel); save(); renderPipeline(); }
+});
+
+function fillCats(){ const cats = $("wType").value==="in"? t().catsIn : t().catsOut; $("wCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join(""); }
+$("wType").onchange=fillCats;
+/* ---------- Profit ---------- */
+function monthSum(key){ const r=S.wallet.filter(w=>String(w.date).slice(0,7)===key);
+  const i=r.filter(x=>x.type==="in").reduce((a,x)=>a+ +x.amount,0), o=r.filter(x=>x.type==="out").reduce((a,x)=>a+ +x.amount,0);
+  return {in:i,out:o,profit:i-o,margin:i?Math.round((i-o)/i*100):0}; }
+function profitNow(){ return monthSum(today().slice(0,7)); }
+function catShare(type,days){ const from=addDays(today(),-days), m={};
+  S.wallet.filter(w=>w.type===type && String(w.date).slice(0,10)>=from).forEach(w=>{ m[w.cat||"–"]=(m[w.cat||"–"]||0)+ +w.amount; });
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]); }
+function shareHTML(list,color){ const tot=list.reduce((a,[,v])=>a+v,0);
+  return list.length? list.slice(0,6).map(([k,v])=>`<div class="r" style="--c:${color}"><span>${esc(k)}</span><span class="mono">${money(v)} · ${Math.round(v/tot*100)}%</span><span class="t"><i style="width:${Math.max(2,v/tot*100)}%"></i></span></div>`).join("")
+    : `<div class="empty">${t().pNone}</div>`; }
+function renderProfit(){
+  const L=t(), td=today(), [y,mo,d]=td.split("-").map(Number), dim=new Date(y,mo,0).getDate();
+  const M=monthly().map(m=>({...m,profit:m.in-m.out})), now=M[M.length-1], last=M[M.length-2];
+  const vs = last.profit ? Math.round((now.profit-last.profit)/Math.abs(last.profit)*100) : null;
+  const forecast = Math.round(now.profit/d*dim);
+  const margin = now.in? Math.round(now.profit/now.in*100) : 0;
+  $("pKpis").innerHTML=[
+    [money(now.profit), L.pThis, now.profit<0?"neg":"pos", L.pVs(vs)],
+    [money(last.profit), L.pLast, last.profit<0?"neg":"", last.in?L.pMarginShort(Math.round(last.profit/last.in*100)):"–"],
+    [now.in? margin+"%":"–", L.pMargin, margin<0?"neg":"", `${money(now.in)} / −${money(now.out)}`],
+    [money(forecast), L.pForecast, forecast<0?"neg":"", `${d}/${dim}`]
+  ].map(([v,l,c,s])=>`<div class="card kpi"><div class="v mono ${c}">${v}</div><div class="l">${l}</div><div class="l mono" style="margin-top:2px">${s}</div></div>`).join("");
+  const mx=Math.max(1,...M.map(m=>Math.abs(m.profit)));
+  $("pBars").innerHTML=M.map((m,i)=>`<div class="pc ${i===M.length-1?"now":""}"><span class="v">${m.profit?(m.profit<0?"−":"")+String(abbr(Math.abs(Math.round(m.profit)))):"0"}</span><div class="pb ${m.profit<0?"neg":m.profit===0?"zero":""}" style="height:${Math.abs(m.profit)/mx*120}px"></div><span class="m">${m.label}</span></div>`).join("");
+  $("pTable").innerHTML=`<tr><th>${L.pMonth}</th><th class="num">${L.pIn}</th><th class="num">${L.pOut}</th><th class="num">${L.profit}</th></tr>`+
+    [...M].reverse().map(m=>`<tr><td style="text-transform:capitalize">${m.label}</td><td class="num mono">${money(m.in,false)}</td><td class="num mono">${money(m.out,false)}</td><td class="num mono ${m.profit<0?"neg":"pos"}">${money(m.profit,false)}</td></tr>`).join("");
+  const g=+S.profitGoal||0; $("pGoalIn").value=g||"";
+  if(!g){ $("pGoalTxt").textContent=L.pNoGoal; $("pGoalBar").style.width="0%"; $("pGoalHint").textContent=""; }
+  else { const pc=Math.max(0,Math.min(100,Math.round(now.profit/g*100))), left=dim-d+1;
+    $("pGoalTxt").textContent=`${money(now.profit)} / ${money(g)} · ${pc}%`; $("pGoalBar").style.width=pc+"%";
+    $("pGoalHint").textContent = now.profit>=g ? L.pHit : L.pGapD(money(g-now.profit), left, money(Math.ceil((g-now.profit)/left))); }
+  $("pSources").innerHTML=shareHTML(catShare("in",90),"var(--ok)");
+  $("pCosts").innerHTML=shareHTML(catShare("out",90),"var(--red)");
+}
+$("pGoalSave").onclick=()=>{ const v=Math.max(0,+$("pGoalIn").value||0); S.profitGoal=v; save(); addXP(2); toast(t().saved); renderProfit(); };
+
+function renderWallet(){
+  $("wBal").textContent=money(balance()); $("wBal").className="v mono "+(balance()<0?"neg":"");
+  $("wIn").textContent=money(sumWallet(30,"in")); $("wOut").textContent=money(sumWallet(30,"out"));
+  if(!$("wDate").value) $("wDate").value=today();
+  fillCats(); drawChart($("chartWallet"));
+  const rows=[...S.wallet].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,100);
+  $("wTable").innerHTML = rows.length? `<tr><th>${t().date}</th><th>${t().category}</th><th>${t().note}</th><th class="num">${t().amount}</th><th></th></tr>`+
+    rows.map(r=>`<tr><td class="mono">${fmtDate(r.date)}</td><td>${esc(r.cat)}</td><td style="color:var(--muted)">${esc(r.note)}</td>
+    <td class="num mono ${r.type==="in"?"pos":"neg"}">${r.type==="in"?"+":"−"}${money(r.amount)}</td><td><button class="x" data-wdel="${r.id}" aria-label="${t().del}">×</button></td></tr>`).join("")
+    : `<tr><td class="empty">${t().noEntries}</td></tr>`;
+}
+$("wForm").onsubmit=e=>{ e.preventDefault(); const amt=+$("wAmt").value; if(!(amt>0)) return;
+  const r={id:uid(),type:$("wType").value,amount:amt,cat:$("wCat").value,date:$("wDate").value||today(),note:$("wNote").value.trim()};
+  S.wallet.push(r); logAct("wallet",`${r.type==="in"?"+":"−"}${money(amt)} ${r.cat}`); $("wAmt").value=""; $("wNote").value=""; addXP(10); renderWallet(); };
+$("wTable").addEventListener("click",e=>{ const b=e.target.closest("[data-wdel]"); if(!b) return; S.wallet=S.wallet.filter(w=>w.id!==b.dataset.wdel); save(); renderWallet(); });
+
+function renderPortfolio(){
+  $("pCrypto").textContent=money(cryptoValue()); $("pFunds").textContent=money(fundsValue()); $("pTotal").textContent=money(cryptoValue()+fundsValue());
+  $("cTable").innerHTML = S.crypto.length? `<tr><th>${t().coin}</th><th class="num">${t().quantity}</th><th class="num">${t().price}</th><th class="num">${t().value}</th><th></th></tr>`+
+    S.crypto.map(c=>{ const p=S.prices[c.coin]; return `<tr><td>${esc(c.coin)}</td><td class="num mono">${(+c.amount).toLocaleString()}</td><td class="num mono">${p!=null?money(p):"–"}</td><td class="num mono">${p!=null?money(p*c.amount):"–"}</td><td><button class="x" data-cdel="${c.id}">×</button></td></tr>`; }).join("") : "";
+  $("pUpdated").textContent = S.pricesAt? t().pricesAt(new Date(S.pricesAt).toLocaleString(lang==="da"?"da-DK":"en-GB",{timeZone:TZ(),hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short"})) : (S.crypto.length? t().noPrices:"");
+  $("fTable").innerHTML = S.funds.length? `<tr><th>${t().name}</th><th class="num">${t().value}</th><th></th></tr>`+
+    S.funds.map(f=>`<tr><td>${esc(f.name)}</td><td class="num mono">${money(f.value)}</td><td><button class="x" data-fdel="${f.id}">×</button></td></tr>`).join("") : "";
+}
+async function refreshPrices(){
+  const ids=[...new Set(S.crypto.map(c=>c.coin))]; if(!ids.length) return;
+  const vs = (cur().toLowerCase()==="kr"?"dkk":cur().toLowerCase());
+  try{
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(ids.join(","))}&vs_currencies=${encodeURIComponent(vs)}`);
+    const d=await r.json(); ids.forEach(id=>{ if(d[id] && d[id][vs]!=null) S.prices[id]=d[id][vs]; });
+    S.pricesAt=Date.now(); save(); if(current==="portfolio") renderPortfolio();
+  }catch{ toast(t().errors.network.split(".")[0]); }
+}
+$("pRefresh").onclick=refreshPrices;
+$("cForm").onsubmit=e=>{ e.preventDefault(); const coin=$("cId").value.trim().toLowerCase(), amount=+$("cAmt").value; if(!coin||!(amount>0)) return;
+  const ex=S.crypto.find(c=>c.coin===coin); if(ex) ex.amount= +ex.amount + amount; else S.crypto.push({id:uid(),coin,amount});
+  $("cId").value=""; $("cAmt").value=""; addXP(5); renderPortfolio(); refreshPrices(); };
+$("fForm").onsubmit=e=>{ e.preventDefault(); const name=$("fName").value.trim(), value=+$("fVal").value; if(!name) return;
+  const ex=S.funds.find(f=>f.name.toLowerCase()===name.toLowerCase()); if(ex) ex.value=value; else S.funds.push({id:uid(),name,value});
+  $("fName").value=""; $("fVal").value=""; addXP(5); renderPortfolio(); };
+$("s-portfolio").addEventListener("click",e=>{
+  const c=e.target.closest("[data-cdel]"), f=e.target.closest("[data-fdel]");
+  if(c){ S.crypto=S.crypto.filter(x=>x.id!==c.dataset.cdel); save(); renderPortfolio(); }
+  if(f){ S.funds=S.funds.filter(x=>x.id!==f.dataset.fdel); save(); renderPortfolio(); }
+});
+
+function renderProducts(){
+  $("prTable").innerHTML = S.products.length? `<tr><th>${t().name}</th><th class="num">${t().price}</th><th class="num">${t().sales}</th><th class="num">${t().revenue}</th><th></th><th></th></tr>`+
+    S.products.map(p=>`<tr><td>${esc(p.name)} ${p.link?`<a href="${esc(p.link)}" target="_blank" rel="noopener" style="color:var(--muted);font-size:12px">↗</a>`:""}</td>
+      <td class="num mono">${money(p.price)}</td><td class="num mono">${p.sales||0}</td><td class="num mono">${money((p.sales||0)*p.price)}</td>
+      <td><button class="small" data-sell="${p.id}">${t().sell}</button></td><td><button class="x" data-prdel="${p.id}">×</button></td></tr>`).join("")
+    : `<tr><td class="empty">${t().noProducts}</td></tr>`;
+}
+$("prForm").onsubmit=e=>{ e.preventDefault(); const name=$("prName").value.trim(); if(!name) return;
+  let link=$("prLink").value.trim(); if(link && !/^https?:\/\//i.test(link)) link="";
+  S.products.push({id:uid(),name,price:+$("prPrice").value||0,link,sales:0}); $("prForm").reset(); addXP(5); renderProducts(); };
+$("prTable").addEventListener("click",e=>{
+  const s=e.target.closest("[data-sell]"), d=e.target.closest("[data-prdel]");
+  if(s){ const p=S.products.find(x=>x.id===s.dataset.sell); p.sales=(p.sales||0)+1;
+    S.wallet.push({id:uid(),type:"in",amount:p.price,cat:t().catsIn[2],date:today(),note:p.name});
+    logAct("product",`${p.name} · ${money(p.price)}`); addXP(20); renderProducts(); }
+  if(d){ S.products=S.products.filter(x=>x.id!==d.dataset.prdel); save(); renderProducts(); }
+});
+
+/* ---------- Agents ---------- */
+const AGENT_ICO={script:"🎬",hooks:"🪝",planner:"🗓️",analyst:"📊"};
+const SCHEMA={
+  script:[["niche","text",1],["topic","text",1],["row",["length","number"],["count","number"]],["tone","text"]],
+  hooks:[["niche","text",1],["topic","text",1],["script","textarea"]],
+  planner:[["niche","text",1],["platforms","text"],["row",["perWeek","number"],["hours","number"]],["row",["day","number"],["goal","text"]]],
+  analyst:[["niche","text",1],["row",["day","number"],["goal","text"]],["stats","textarea",1]]
+};
+const AG_DEF={length:30,count:2,platforms:"TikTok, Reels, Shorts",perWeek:7,hours:5};
+let agCur="script", agLast={agent:null,text:""}; const agState={};
+const hasLic = () => !!store.get(K.lic,"");
+
+function agFieldVal(k){
+  const d=(S.agentDrafts[agCur]||{})[k];
+  if(d!=null && d!=="") return d;
+  if(k==="niche") return S.mission.niche||"";
+  if(k==="day") return missionDay();
+  if(k==="goal") return S.mission.goal? `${S.mission.goal} ${cur()}/md`:"";
+  return AG_DEF[k] ?? "";
+}
+function agField(k,type,req){
+  const v=esc(agFieldVal(k)), ph=esc(t().ph[k]||"");
+  const input = type==="textarea" ? `<textarea name="${k}" placeholder="${ph}" ${req?"required":""}>${v}</textarea>`
+    : `<input name="${k}" type="${type}" value="${v}" placeholder="${ph}" ${req?"required":""} ${type==="number"?'inputmode="numeric" min="1"':""}>`;
+  return `<div><label>${t().f[k]}${req?" *":""}</label>${input}</div>`;
+}
+function renderAgents(){
+  const lic=hasLic();
+  $("agentLocked").style.display = lic?"none":"block";
+  $("agentWork").style.display = lic?"grid":"none";
+  $("agentCards").innerHTML = Object.keys(SCHEMA).map(id=>{ const s=agState[id]||""; const [n,d]=t().ag[id];
+    return `<div class="agent-card ${id===agCur?"active":""}" data-ag="${id}"><span class="state ${s}">${s==="run"?"RUNNING":s==="done"?"READY":"IDLE"}</span><div class="ico">${AGENT_ICO[id]}</div><h4>${n}</h4><p>${d}</p></div>`; }).join("");
+  $("agFormTitle").textContent = t().ag[agCur][0];
+  $("agForm").innerHTML = SCHEMA[agCur].map(f=> f[0]==="row" ? `<div class="row">${agField(...f[1])}${agField(...f[2])}</div>` : agField(...f)).join("");
+  $("chainWrap").style.display = agCur==="script"?"flex":"none";
+  renderAgHist();
+  if(agLast.text) showAgOut(agLast.text, agLast.agent); else { $("agOut").innerHTML=`<div class="empty" style="text-align:center;padding-top:40px">${t().emptyOut}</div>`; agButtons(null); }
+}
+$("agentCards").addEventListener("click",e=>{ const c=e.target.closest("[data-ag]"); if(!c) return; saveAgDraft(); agCur=c.dataset.ag; renderAgents(); });
+function agCollect(){ return Object.fromEntries(new FormData($("agForm")).entries()); }
+function saveAgDraft(){ if(!$("agForm").elements.length) return; S.agentDrafts[agCur]=agCollect(); save(); }
+$("agForm").addEventListener("input", saveAgDraft);
+function agButtons(agent){ $("agToHooks").style.display = agent==="script"?"":"none"; $("agToPipe").style.display = (agent==="script"||agent==="planner"||agent==="hooks")?"":"none"; $("agCopy").style.display = agent?"":"none"; }
+function renderAgHist(){
+  const h=store.get(K.hist,[]);
+  $("agHist").innerHTML = h.length? h.slice(0,12).map((it,i)=>`<div class="hist-item" data-hi="${i}"><span>${AGENT_ICO[it.agent]||""} ${esc(it.label)}</span><span class="mono">${fmtDate(it.at,{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</span></div>`).join("") : `<div class="empty">${t().noHist}</div>`;
+}
+$("agHist").addEventListener("click",e=>{ const it=e.target.closest("[data-hi]"); if(!it) return; const h=store.get(K.hist,[])[+it.dataset.hi]; agLast={agent:h.agent,text:h.text}; showAgOut(h.text,h.agent); });
+
+function inl(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/(^|\W)\*(.+?)\*(?=\W|$)/g,"$1<em>$2</em>"); }
+function md(src){
+  const L=src.split("\n"); let h="", list=null, i=0; const close=()=>{ if(list){ h+=`</${list}>`; list=null; } };
+  const row=r=>r.trim().replace(/^\||\|$/g,"").split("|").map(c=>c.trim());
+  while(i<L.length){ const l=L[i]; let m;
+    if(/^\s*\|.*\|\s*$/.test(l) && /^\s*\|[\s:|-]+\|\s*$/.test(L[i+1]||"")){ close();
+      h+="<table><tr>"+row(l).map(c=>`<th>${inl(c)}</th>`).join("")+"</tr>"; i+=2;
+      while(i<L.length && /^\s*\|.*\|\s*$/.test(L[i])){ h+="<tr>"+row(L[i]).map(c=>`<td>${inl(c)}</td>`).join("")+"</tr>"; i++; }
+      h+="</table>"; continue; }
+    if((m=l.match(/^#{1,4}\s+(.*)/))){ close(); h+=`<h5>${inl(m[1])}</h5>`; }
+    else if((m=l.match(/^\s*[-*•]\s+(.*)/))){ if(list!=="ul"){ close(); h+="<ul>"; list="ul"; } h+=`<li>${inl(m[1])}</li>`; }
+    else if((m=l.match(/^\s*\d+[.)]\s+(.*)/))){ if(list!=="ol"){ close(); h+="<ol>"; list="ol"; } h+=`<li>${inl(m[1])}</li>`; }
+    else if(!l.trim()) close();
+    else { close(); h+=`<p>${inl(l)}</p>`; }
+    i++; }
+  close(); return h;
+}
+function showAgOut(text,agent){ $("agOutTitle").textContent=`${t().output} · ${t().ag[agent][0]}`; $("agOut").innerHTML=md(text); agButtons(agent); }
+
+async function callAgent(agent, fields){
+  agState[agent]="run"; renderAgentCardsOnly();
+  $("agOut").innerHTML=`<div class="loader"><i></i><i></i><i></i></div>`;
+  try{
+    const r=await fetch(CFG.API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({agent,lang,fields,license:store.get(K.lic,"")})});
+    const d=await r.json().catch(()=>({error: r.status===404?"network":"default"}));
+    if(!r.ok) throw new Error(d.error||"default");
+    agState[agent]="done"; agLast={agent,text:d.text}; showAgOut(d.text,agent);
+    const h=store.get(K.hist,[]); h.unshift({agent,text:d.text,at:Date.now(),label:(fields.topic||fields.niche||"").slice(0,40)}); store.set(K.hist,h.slice(0,30));
+    logAct("agent", t().ag[agent][0]); addXP(20); renderAgHist(); renderAgentCardsOnly();
+    return d.text;
+  }catch(e){
+    agState[agent]=""; renderAgentCardsOnly();
+    const key = e.message==="Failed to fetch" ? "network" : e.message;
+    $("agOut").innerHTML=`<div class="err">${t().errors[key]||t().errors.default}</div>`; agButtons(null);
+    return null;
+  }
+}
+function renderAgentCardsOnly(){ document.querySelectorAll(".agent-card").forEach(c=>{ const s=agState[c.dataset.ag]||""; const el=c.querySelector(".state"); el.className="state "+s; el.textContent=s==="run"?"RUNNING":s==="done"?"READY":"IDLE"; }); }
+$("agRun").onclick=async()=>{
+  if(!$("agForm").reportValidity()) return; saveAgDraft();
+  const b=$("agRun"); b.disabled=true; b.textContent=t().running;
+  const f=agCollect(); const text=await callAgent(agCur,f);
+  if(text && agCur==="script" && $("chainBox").checked) await callAgent("hooks",{niche:f.niche,topic:f.topic,script:text});
+  b.disabled=false; b.textContent=t().run;
+};
+$("agCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText(agLast.text); toast(t().copied); }catch{} };
+$("agToHooks").onclick=()=>{ const d=S.agentDrafts.script||{}; S.agentDrafts.hooks={niche:d.niche,topic:d.topic,script:agLast.text}; save(); agCur="hooks"; renderAgents(); window.scrollTo({top:0,behavior:"smooth"}); };
+$("agToPipe").onclick=()=>{
+  const txt=agLast.text; if(!txt) return; let cards=[];
+  if(agLast.agent==="script"){
+    const parts=txt.split(/\n(?=#{1,4}\s)/).filter(p=>/^#{1,4}\s/.test(p.trim()));
+    cards = (parts.length?parts:[txt]).map(p=>{ const first=p.trim().split("\n")[0].replace(/^#+\s*/,"").replace(/\*\*/g,""); const title=first.split(/[–-]\s*/).slice(1).join("- ").trim()||first;
+      return {title:title.slice(0,80),notes:p.trim().split("\n").slice(1).join("\n").slice(0,1500),col:"script"}; });
+  } else if(agLast.agent==="planner"){
+    const rows=txt.split("\n").filter(l=>/^\s*\|/.test(l) && !/^\s*\|[\s:|-]+\|\s*$/.test(l)).slice(1);
+    cards = rows.map(r=>{ const c=r.trim().replace(/^\||\|$/g,"").split("|").map(x=>x.trim().replace(/\*\*/g,"")); return {title:`${c[0]||""}: ${c[3]||""}`.slice(0,80),notes:[c[1],c[2],c[4],c[5]].filter(Boolean).join(" · "),col:"idea"}; });
+  } else {
+    const d=S.agentDrafts.hooks||{}; cards=[{title:(d.topic||"Hooks").slice(0,80),notes:txt.slice(0,1500),col:"script"}];
+  }
+  cards.filter(c=>c.title.trim()).forEach(c=>S.kanban.push({id:uid(),platform:"all",created:Date.now(),...c}));
+  logAct("kanban",`+${cards.length}`); save(); toast(t().addedPipe(cards.length));
+};
+$("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) return; store.set(K.lic,v); toast(t().licSaved); renderAgents(); };
+
+/* ---------- Settings ---------- */
+function legacyKeys(){
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  return out.sort((a,b)=>b[1]-a[1]);
+}
+function renderSettings(){
+  renderTZ(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
+  $("licInput").value=store.get(K.lic,"");
+  $("licStatus").textContent = hasLic()?t().proOn:t().proOff; $("licStatus").style.color = hasLic()?"var(--ok)":"var(--muted)";
+  const lk=legacyKeys();
+  $("legacyTable").innerHTML = lk.length? `<tr><th>${t().key}</th><th class="num">${t().size}</th></tr>`+lk.map(([k,n])=>`<tr><td class="mono" style="font-size:13px;word-break:break-all">${esc(k)}</td><td class="num mono">${n<1024?n+" B":(n/1024).toFixed(1)+" KB"}</td></tr>`).join("") : `<tr><td class="empty">${t().noLegacy}</td></tr>`;
+  $("legacyExp").style.display = lk.length?"":"none";
+}
+function download(name,obj){ const b=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+$("licSave").onclick=()=>{ store.set(K.lic,$("licInput").value.trim()); toast(t().licSaved); renderSettings(); };
+$("expBtn").onclick=()=>download(`redhue-backup-${today()}.json`,{app:"REDHUE",v:3,exported:new Date().toISOString(),state:S,agentHistory:store.get(K.hist,[])});
+$("impBtn").onclick=()=>$("impFile").click();
+/* ---------- Filtjek ved import ---------- */
+const SIGS=[ // [bytes, navn, billede?]
+  [[0x89,0x50,0x4E,0x47],"PNG",1],[[0xFF,0xD8,0xFF],"JPEG",1],[[0x47,0x49,0x46,0x38],"GIF",1],[[0x52,0x49,0x46,0x46],"WebP/RIFF",1],
+  [[0x25,0x50,0x44,0x46],"PDF",0],[[0x50,0x4B,0x03,0x04],"ZIP",0],[[0x4D,0x5A],"Windows .exe",0],[[0x1F,0x8B],"GZIP",0],[[0x7B,0x5C,0x72,0x74,0x66],"RTF",0]];
+const fmtSize=n=>n<1024?n+" B":n<1048576?(n/1024).toFixed(1)+" KB":(n/1048576).toFixed(1)+" MB";
+function sniff(u8,off=0){ for(const [sig,name,img] of SIGS) if(sig.every((b,i)=>u8[off+i]===b)) return {name,img}; return null; }
+function checkBackupBytes(buf){
+  const u8=new Uint8Array(buf), F=t().fc;
+  if(!u8.length) return {lvl:"bad",msg:F.empty,type:"—"};
+  if(u8.length>20*1048576) return {lvl:"bad",msg:F.big,type:"?"};
+  const sig=sniff(u8);
+  if(sig) return {lvl:"bad",msg:sig.img?F.image(sig.name):F.binary(sig.name),type:sig.name};
+  // Binær fil der er blevet "tekst-konverteret": starter med U+FFFD + signatur (fx "(U+FFFD)PNG")
+  const REPL=[0xEF,0xBF,0xBD];
+  const starts=REPL.every((b,i)=>u8[i]===b);
+  let n=0; for(let i=0;i<u8.length-2;i++) if(u8[i]===0xEF&&u8[i+1]===0xBF&&u8[i+2]===0xBD){n++;i+=2;}
+  const txt=new TextDecoder("utf-8").decode(u8);
+  if(starts||n>20){ const orig=starts?(sniff(u8,3)||{name:({PNG:"PNG",PDF:"PDF"})[txt.slice(1,4)]||""}).name:""; 
+    const guess=orig||(/^\uFFFDPNG/.test(txt)?"PNG":"");
+    return {lvl:"bad",msg:F.mangled(guess?guess+"-billede":"",n),type:"Tekst (ødelagt binær)"}; }
+  let d; try{ d=JSON.parse(txt.replace(/^﻿/,"")); }catch(err){
+    const m=/position (\d+)/.exec(err.message||""); let pos=F.atEnd;
+    if(m){ const k=+m[1], before=txt.slice(0,k).split("\n"); pos=F.atLine(before.length,before.at(-1).length+1); }
+    return {lvl:"bad",msg:F.notJson(pos),type:"Tekst"}; }
+  if(d&&d.app==="REDHUE-legacy") return {lvl:"warn",msg:F.legacy,type:"JSON (gamle data)"};
+  if(!d||typeof d!=="object"||!d.state||typeof d.state!=="object") return {lvl:"bad",msg:F.wrong,type:"JSON"};
+  const v=+(d.v||d.state.v||3); if(v>3) return {lvl:"bad",msg:F.newer(v),type:"JSON"};
+  // Reparér felter med forkert type
+  const st=d.state; let fixed=0;
+  for(const k of ["wallet","crypto","funds","products","kanban","log"]) if(k in st && !Array.isArray(st[k])){ st[k]=[]; fixed++; }
+  for(const k of ["prices","agentDrafts","mission","profile"]) if(k in st && (typeof st[k]!=="object"||Array.isArray(st[k])||st[k]===null)){ delete st[k]; fixed++; }
+  if("xp" in st && !Number.isFinite(+st.xp)){ st.xp=0; fixed++; } else if("xp" in st) st.xp=+st.xp;
+  if(Array.isArray(st.wallet)){ const before=st.wallet.length; st.wallet=st.wallet.filter(r=>r&&Number.isFinite(+r.amt||+r.amount||0)); fixed+=before-st.wallet.length; }
+  if(d.agentHistory && !Array.isArray(d.agentHistory)){ d.agentHistory=null; fixed++; }
+  const c={wallet:(st.wallet||[]).length,kanban:(st.kanban||[]).length,products:(st.products||[]).length,crypto:(st.crypto||[]).length,funds:(st.funds||[]).length,xp:st.xp||0};
+  return {lvl:fixed?"warn":"ok",msg:fixed?F.fixed(fixed):F.ok,type:"REDHUE backup v"+v,data:d,counts:c};
+}
+function showImpReport(f,r){
+  const F=t().fc, el=$("impReport");
+  el.className="imp-report "+r.lvl; el.hidden=false;
+  el.innerHTML=`<b>${esc(r.msg[0])}</b><div>${esc(r.msg[1])}</div>
+    <dl><dt>${F.file}</dt><dd>${esc(f.name)}</dd><dt>${F.size}</dt><dd>${fmtSize(f.size)}</dd><dt>${F.type}</dt><dd>${esc(r.type)}</dd>
+    ${r.counts?`<dt>${F.found}</dt><dd>${esc(F.counts(r.counts))}</dd>`:""}</dl>`;
+}
+$("impFile").onchange=async e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  let r; try{ r=checkBackupBytes(await f.arrayBuffer()); }catch{ r={lvl:"bad",msg:[t().badFile,""],type:"?"}; }
+  if(!r.data){ showImpReport(f,r); toast(r.msg[0]); return; }
+  if(!confirm(t().fc.confirm(t().fc.counts(r.counts)))) { $("impReport").hidden=true; return; }
+  const d=r.data; S=Object.assign(structuredClone(DEFAULT),d.state); S.mission=Object.assign(structuredClone(DEFAULT.mission),S.mission||{});
+  if(Array.isArray(d.agentHistory)) store.set(K.hist,d.agentHistory);
+  save(); showImpReport(f,r); toast(r.msg[0]); renderAll();
+};
+$("legacyExp").onclick=()=>{ const o={}; legacyKeys().forEach(([k])=>{ const raw=localStorage.getItem(k); try{ o[k]=JSON.parse(raw); }catch{ o[k]=raw; } }); download(`redhue-gamle-data-${today()}.json`,{app:"REDHUE-legacy",exported:new Date().toISOString(),origin:location.origin,data:o}); };
+$("resetBtn").onclick=()=>{ if(!confirm(t().confirmReset)) return; S=structuredClone(DEFAULT); save(); store.set(K.hist,[]); renderAll(); };
+
+
+/* ---------- Render ---------- */
+/* ---------- REDHUE OS: hjemmeskærm ---------- */
+const OS_APPS = [["mission","🎯","var(--red)"],["pipeline","▦","var(--cy)"],["agents","🤖","var(--vi)"],["wallet","💳","var(--ok)"],
+  ["profit","💰","var(--ok)"],["portfolio","📈","var(--bl)"],["products","🛒","var(--am)"],["q-in","＋","var(--ok)"]];
+const OS_DOCK = [["overview","◎","var(--cy)"],["mission","🎯","var(--red)"],["wallet","💳","var(--ok)"],["settings","⚙︎","var(--muted)"]];
+function osAppHTML([id,ic,c]){
+  const L=t(), name = id==="q-in"?L.osQIn : id==="q-idea"?L.osQIdea : L[id];
+  return `<button class="os-app" data-os="${id}" style="--c:${c}"><span class="ico">${ic}${id==="agents"&&!hasLic()?'<span class="pro">PRO</span>':""}</span><span class="t">${esc(name)}</span></button>`;
+}
+function osClock(){
+  if(current!=="home") return;
+  const d=new Date(), loc=lang==="da"?"da-DK":"en-GB", hm=d.toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone:TZ()});
+  $("osClock").textContent=hm.replace(".",":"); $("osTime").textContent=hm.replace(".",":");
+  $("osDate").textContent=d.toLocaleDateString(loc,{weekday:"long",day:"numeric",month:"long",timeZone:TZ()});
+}
+function renderHome(){
+  const L=t(), md=missionDay(), pct=goalPct(), h=nowHour();
+  osClock();
+  $("osGreet").textContent=[h<10?L.hi:h<18?L.hiDay:L.hiEve, S.profile.name].filter(Boolean).join(", ");
+  $("osDayTag").textContent=L.osDay(Math.min(md,90));
+  const doneToday=(S.mission.checks[today()]||[]).filter(Boolean).length;
+  const C=2*Math.PI*34, dayPct=Math.min(1,md/90);
+  const cols=Object.keys(L.cols), cnt=cols.map(k=>S.kanban.filter(c=>c.col===k).length);
+  const xpIn=S.xp%100;
+  $("osWidgets").innerHTML=`
+    <button class="os-w wide" data-os="mission">
+      <div class="os-ring"><svg viewBox="0 0 80 80"><defs><linearGradient id="osg" x1="0" x2="1"><stop offset="0" stop-color="#3ee8ff"/><stop offset=".5" stop-color="#9b6bff"/><stop offset="1" stop-color="#ff4fd8"/></linearGradient></defs>
+        <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+        <circle cx="40" cy="40" r="34" fill="none" stroke="url(#osg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-dayPct)}"/></svg>
+        <div class="n">${Math.min(md,90)}</div></div>
+      <div style="min-width:0"><div class="lbl">${L.osMission} · ${esc(S.mission.niche||"")}</div><div class="big" style="margin-top:4px">${L.osOfGoal(pct)}</div><div class="sm" style="margin-top:4px">${L.osToday(doneToday)} · ${streak()} 🔥</div></div>
+    </button>
+    ${(()=>{ const P=profitNow(); return `<button class="os-w" data-os="profit"><div class="lbl">${L.pThisShort}</div><div><div class="big ${P.profit<0?"neg":"pos"}">${money(P.profit)}</div><div class="sm">${P.in?L.pMarginShort(P.margin):L.kBal+" "+money(balance())}</div></div></button>`; })()}
+    <button class="os-w" data-os="overview"><div class="lbl">${L.osLevel} ${level()}</div><div><div class="big">${robot()} ${S.xp} XP</div><div class="os-xp"><i style="width:${xpIn}%"></i></div></div></button>
+    <button class="os-w wide" data-os="pipeline" style="flex-direction:column;align-items:stretch;gap:2px"><div class="lbl">${L.pipeline}</div>
+      <div class="os-pipe">${cnt.map((n,i)=>`<span>${n}<small>${L.osPipeS[i]||""}</small></span>`).join("")}</div></button>`;
+  $("osApps").innerHTML=OS_APPS.map(osAppHTML).join("");
+  $("osDock").innerHTML=OS_DOCK.map(osAppHTML).join("");
+  renderOsSheets();
+}
+function renderOsSheets(){
+  const L=t(), left=4-(S.mission.checks[today()]||[]).filter(Boolean).length, hap=store.get("redhue_haptic",true);
+  $("osPanelInfo").textContent=L.osLeft(left);
+  $("osQs").innerHTML=[
+    ["streak","🔥",`${streak()} · ${L.osStreakQ}`,false],
+    ["lang","🌐",`${L.osLangQ} · ${lang.toUpperCase()}`,false],
+    ["haptic","📳",L.osHaptic,hap],
+    ["tz","🕑",L.osTz,false]
+  ].map(([id,i,l,on])=>`<button class="os-q ${on?"on":""}" data-q="${id}"><span class="i">${i}</span>${esc(l)}</button>`).join("");
+  $("osPanelChecks").innerHTML=checklistHTML();
+  const all=[["overview","◎","var(--cy)"],...OS_APPS.filter(a=>!a[0].startsWith("q-")),["settings","⚙︎","var(--muted)"]];
+  $("osAllApps").innerHTML=all.map(osAppHTML).join("");
+}
+$("os").addEventListener("click",e=>{
+  const b=e.target.closest("[data-os]"); if(!b) return;
+  const id=b.dataset.os;
+  if(id==="q-in"){ go("wallet"); setTimeout(()=>{ $("wType").value="in"; fillCats(); $("wAmt").focus(); },80); return; }
+  if(id==="q-idea"){ go("pipeline"); setTimeout(()=>$("kTitle").focus(),80); return; }
+  go(id);
+});
+/* --- OS 2: ark, gestus, haptik, badge, deling --- */
+function sheetOpen(){ return $("osPanel").classList.contains("open")||$("osDrawer").classList.contains("open"); }
+function hideSheets(){ ["osPanel","osDrawer"].forEach(id=>{ $(id).classList.remove("open"); $(id).setAttribute("aria-hidden","true"); }); $("osBack").classList.remove("on"); }
+function openSheet(id){ if(current!=="home") return; renderOsSheets(); hideSheets(); $(id).classList.add("open"); $(id).setAttribute("aria-hidden","false"); $("osBack").classList.add("on"); buzz(10);
+  if(!(history.state&&history.state.sheet)) history.pushState({sheet:id},"","#home"); }
+function closeSheets(){ if(history.state&&history.state.sheet) history.back(); else hideSheets(); }
+window.addEventListener("popstate",()=>{ if(sheetOpen()) hideSheets(); });
+$("osBack").onclick=closeSheets;
+document.querySelectorAll("[data-sheet-close]").forEach(el=>el.onclick=closeSheets);
+$("osHint").onclick=()=>openSheet("osDrawer");
+document.querySelector(".os-status").onclick=()=>openSheet("osPanel");
+// Gestus: stryg ned fra toppen = kontrolpanel, stryg op = alle apps, stryg væk = luk
+let tY=null,tX=null,tEl=null;
+document.addEventListener("touchstart",e=>{ if(current!=="home") return; const p=e.touches[0]; tY=p.clientY; tX=p.clientX; tEl=e.target; },{passive:true});
+document.addEventListener("touchend",e=>{ if(tY===null) return; const p=e.changedTouches[0], dy=p.clientY-tY, dx=p.clientX-tX; const startY=tY; tY=null;
+  if(Math.abs(dy)<60 || Math.abs(dx)>Math.abs(dy)) return;
+  const inPanel=tEl&&tEl.closest("#osPanel"), inDrawer=tEl&&tEl.closest("#osDrawer");
+  if(inPanel && dy<0) return closeSheets();
+  if(inDrawer && dy>0 && $("osDrawer").scrollTop<=0) return closeSheets();
+  if(sheetOpen()) return;
+  const os=$("os");
+  if(dy>0 && os.scrollTop<=0 && startY<innerHeight*.4) openSheet("osPanel");
+  else if(dy<0 && os.scrollTop+os.clientHeight>=os.scrollHeight-4) openSheet("osDrawer");
+},{passive:true});
+$("osPanel").addEventListener("click",e=>{ const q=e.target.closest("[data-q]"); if(!q) return; buzz();
+  const id=q.dataset.q;
+  if(id==="lang"){ toggleLang(); renderOsSheets(); }
+  else if(id==="haptic"){ store.set("redhue_haptic",!store.get("redhue_haptic",true)); renderOsSheets(); }
+  else if(id==="tz"){ hideSheets(); go("settings"); }
+  else if(id==="streak"){ hideSheets(); go("mission"); }
+});
+// Tryk i ark der åbner en app: luk arket først
+document.addEventListener("click",e=>{ const b=e.target.closest("#osPanel [data-os],#osDrawer [data-os]"); if(!b) return; e.stopPropagation(); hideSheets();
+  const id=b.dataset.os; if(id==="q-in"){ go("wallet"); setTimeout(()=>{ $("wType").value="in"; fillCats(); $("wAmt").focus(); },80); } else if(id==="q-idea"){ go("pipeline"); setTimeout(()=>$("kTitle").focus(),80); } else go(id); },true);
+// Tjek i kontrolpanelet: opdatér panel og badge
+document.addEventListener("click",e=>{ if(e.target.closest("#osPanel .check")) setTimeout(()=>{ renderOsSheets(); },0); });
+// Haptik
+function buzz(ms=8){ try{ if(store.get("redhue_haptic",true) && navigator.vibrate) navigator.vibrate(ms); }catch{} }
+document.addEventListener("click",e=>{ if(e.target.closest(".os-app,.check,.nav-btn,button.primary")) buzz(); },true);
+// App-badge: antal af dagens opgaver der mangler
+function updateBadge(){ try{ if(!navigator.setAppBadge) return; const left=4-((S.mission.checks||{})[today()]||[]).filter(Boolean).length; left>0?navigator.setAppBadge(left):navigator.clearAppBadge(); }catch{} }
+// Del til REDHUE (Android): link/tekst fra andre apps bliver en idé i Pipeline
+(function shareIn(){
+  const q=new URLSearchParams(location.search); if(!q.has("share_url")&&!q.has("share_text")&&!q.has("share_title")) return;
+  const text=(q.get("share_text")||"").trim(); let url=(q.get("share_url")||"").trim();
+  if(!url){ const m=text.match(/https?:\/\/\S+/); if(m) url=m[0]; }
+  let title=(q.get("share_title")||"").trim() || text.replace(url,"").trim();
+  if(!title && url){ try{ title=new URL(url).hostname.replace(/^www\./,""); }catch{ title=url; } }
+  const host=(()=>{ try{ return new URL(url).hostname; }catch{ return ""; } })();
+  const platform=/tiktok/.test(host)?"TikTok":/instagram/.test(host)?"Reels":/youtu/.test(host)?"Shorts":"all";
+  if(title||url){ S.kanban.push({id:uid(),title:(title||url).slice(0,140),platform,col:"idea",notes:url,created:Date.now()}); logAct("kanban",(title||url).slice(0,60)); addXP(3); save(); }
+  history.replaceState(null,"",location.pathname+"#pipeline"); current="pipeline";
+  setTimeout(()=>toast(t().osShared),300);
+})();
+setInterval(osClock,10000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && current==="home") renderHome(); });
+if(navigator.getBattery) navigator.getBattery().then(b=>{ const f=()=>{ $("osBatt").textContent=`${b.charging?"⚡":"▮"}${Math.round(b.level*100)}%`; }; f(); b.onlevelchange=b.onchargingchange=f; }).catch(()=>{});
+
+const TZ_LIST=["Europe/Copenhagen","Europe/Stockholm","Europe/Oslo","Europe/Berlin","Europe/London","Atlantic/Faroe","America/Godthab","America/New_York","America/Los_Angeles","Asia/Bangkok","Asia/Dubai","UTC"];
+function renderTZ(){
+  const devZ=Intl.DateTimeFormat().resolvedOptions().timeZone, list=[...new Set([TZ(),...TZ_LIST,devZ].filter(Boolean))];
+  $("tzSel").innerHTML=list.map(z=>`<option value="${esc(z)}" ${z===TZ()?"selected":""}>${esc(z.replace(/_/g," "))}</option>`).join("");
+  const loc=lang==="da"?"da-DK":"en-GB", f=z=>new Date().toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone:z}).replace(".",":");
+  const a=f(TZ()), b=f(devZ); $("tzNow").textContent=t().tzNow(`${a} (${today()})`, a!==b?b:"");
+}
+$("profSave").onclick=()=>{ S.profile=Object.assign({},S.profile,{name:$("profName").value.trim().slice(0,40)}); save(); toast(t().saved); };
+$("tzSel").onchange=()=>{ store.set(TZ_KEY,$("tzSel").value); renderTZ(); toast(t().saved); };
+function applyStatic(){
+  document.documentElement.lang=lang;
+  $("langBtn").textContent = $("langBtnM").textContent = lang==="da"?"EN":"DA";
+  document.querySelectorAll("[data-t]").forEach(el=>{ const v=t()[el.dataset.t]; if(typeof v==="string") el.textContent=v; });
+  document.querySelectorAll("[data-tp]").forEach(el=>el.placeholder=t()[el.dataset.tp]);
+  const buyOk=/^https:\/\/[^/]+\/l\//.test(CFG.GUMROAD_URL) && !/YOUR_NAME/.test(CFG.GUMROAD_URL);
+  document.querySelectorAll(".buyLink").forEach(a=>{ a.href=CFG.GUMROAD_URL; a.hidden=!buyOk; });
+}
+function renderSection(id){
+  ({overview:renderOverview,mission:renderMission,pipeline:renderPipeline,wallet:renderWallet,portfolio:renderPortfolio,products:renderProducts,agents:renderAgents,settings:renderSettings,home:renderHome,profit:renderProfit}[id]||(()=>{}))();
+}
+function renderAll(){ applyStatic(); go(current); }
+const toggleLang=()=>{ lang = lang==="da"?"en":"da"; store.set(K.lang,lang); renderAll(); };
+$("langBtn").onclick=toggleLang; $("langBtnM").onclick=toggleLang;
+window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h && h!==current) go(h); });
+
+// Gumroad redirect: ?license=KEY
+const qLic=new URLSearchParams(location.search).get("license");
+if(qLic){ store.set(K.lic,qLic); history.replaceState(null,"",location.pathname+"#agents"); current="agents"; }
+
+renderAll();
+if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices();
+if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
