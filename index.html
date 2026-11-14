@@ -237,6 +237,11 @@ body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opa
 .grid>.card:nth-child(6n+5){--acc:var(--ok)}
 .grid>.card:nth-child(6n+6){--acc:var(--bl)}
 .hero{--acc:var(--ma)}
+.av-ini{width:86px;height:86px;border-radius:50%;display:grid;place-items:center;font:700 34px 'Space Grotesk',sans-serif;color:#08081a;background:var(--crystal);box-shadow:0 0 24px -4px var(--ma);flex:none;user-select:none}
+@media(max-width:620px){.av-ini{width:64px;height:64px;font-size:26px}}
+.av-set{display:flex;align-items:center;gap:14px;margin:4px 0 12px}
+.av-set .av-ini,.av-set img{width:64px;height:64px;font-size:26px;border-radius:50%;object-fit:cover;object-position:top}
+.av-set img{border:2px solid transparent;background:linear-gradient(#fff,#fff) padding-box,var(--crystal) border-box}
 .kpi .v{color:var(--acc);text-shadow:0 0 22px color-mix(in srgb,var(--acc) 55%,transparent)}
 .kpi .v.pos{color:var(--ok)} .kpi .v.neg{color:var(--ma)}
 .card h3{color:color-mix(in srgb,var(--acc) 55%,var(--muted))}
@@ -420,7 +425,7 @@ html.d4 .os.d4-in .os-in{animation:d4home .7s cubic-bezier(.16,.84,.24,1) both}
 /* ---------- REDHUE OS: hjemmeskærm ---------- */
 #navSide [data-go="home"]{display:none}
 .os{position:fixed;inset:0;z-index:50;overflow-y:auto;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent}
-.os[hidden],.buyLink[hidden],.ch-box[hidden]{display:none!important}
+.os[hidden],.buyLink[hidden],.ch-box[hidden],#avDel[hidden]{display:none!important}
 html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-w.wide .big{font-size:19px}
 .os-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 18px calc(14px + env(safe-area-inset-bottom))}
@@ -508,7 +513,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
       <!-- OVERVIEW -->
       <section class="section" id="s-overview">
         <div class="card hero">
-          <img src="avatar.png" alt="">
+          <span id="heroAv"></span>
           <div>
             <div class="greet" id="greet"></div>
             <div class="meta" id="heroMeta"></div>
@@ -767,6 +772,8 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           </div>
           <div class="card">
             <h3 data-t="profT"></h3>
+            <div class="av-set"><span id="avPrev"></span><div class="actions" style="margin:0"><button id="avPick" data-t="avPick"></button><button id="avDel" class="small" data-t="avDel"></button></div></div>
+            <input type="file" id="avFile" accept="image/*" hidden>
             <label data-t="profName"></label>
             <div class="pgoal-row"><div><input id="profName" maxlength="40" autocomplete="given-name"></div><button class="primary" id="profSave" data-t="save"></button></div>
           </div>
@@ -864,13 +871,16 @@ const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").repl
 /* ---------- State ---------- */
 const DEFAULT = {
   v:3,
-  profile:{ name:"" },
+  profile:{ name:"", avatar:"" },
   mission:{ start:today(), goal:5000, currency:"kr", niche:"" , checks:{} },
   wallet:[], crypto:[], prices:{}, pricesAt:null, funds:[], products:[],
   kanban:[], xp:0, log:[], agentDrafts:{}
 };
 let S = Object.assign(structuredClone(DEFAULT), store.get(K.state,{}));
 S.mission = Object.assign(structuredClone(DEFAULT.mission), S.mission||{});
+// Profilbillede: nye brugere starter neutralt (forbogstav). Eksisterende installationer fra før
+// profilbilleder fandtes (dvs. ejerens egen) beholder den oprindelige buste.
+{ const saved=store.get(K.state,null); if(saved && (!saved.profile || saved.profile.avatar===undefined)) S.profile=Object.assign({},S.profile,{avatar:"avatar.png"}); S.profile=Object.assign({name:"",avatar:""},S.profile); }
 const save = () => { store.set(K.state,S); updateBadge(); };
 
 let lang = store.get(K.lang,"da");
@@ -941,7 +951,7 @@ const T = {
   chLockedText:"Chat er en del af REDHUE Pro. Indsæt din licensnøgle for at låse op.", chHello:"Hej! Jeg kan se dine tal i appen. Hvad vil du have hjælp til i dag?",
   chSuggs:["Hvad skal jeg poste i dag?","Hvordan når jeg mit profitmål?","Analyser min måned","Giv mig 5 video-idéer"], chRoomInfo:n=>`Fællesskab · ${n} beskeder`, chYou:"dig", chOwner:"REDHUE", chEmpty:"Ingen beskeder endnu. Sig hej 👋", chDel:"Slet beskeden?", chNameHint:n=>`Du skriver som ${n}`, chSlow:"Vent et øjeblik mellem beskederne.",
   osPanel:"Kontrolpanel", osAll:"Alle apps", osHint:"Stryg op for alle apps", osQIn2:"+ Indtægt", osQIdea2:"+ Idé", osHaptic:"Vibration", osLangQ:"Sprog", osTz:"Tidszone", osStreakQ:"Streak", osShared:"Idé gemt fra deling", osLeft:n=>n?`${n} opgaver tilbage i dag`:"Alle dagens opgaver er klaret 🎉",
-  profT:"Profil", profName:"Dit navn (bruges i hilsenen)",
+  profT:"Profil", profName:"Dit navn (bruges i hilsenen)", avPick:"Vælg billede", avDel:"Fjern billede", avSaved:"Profilbillede gemt", avBad:"Kunne ikke læse billedet. Prøv et JPG eller PNG.",
   tzT:"Tidszone", tzSub:"Ur, dato, dagens tjek og missionsdag følger denne zone – også hvis telefonen står forkert.", tzNow:(t,dev)=>`Nu: ${t}${dev?` · telefonen siger ${dev}`:""}`,
   home:"Hjem", osDay:(d)=>`DAG ${d}/90`, osMission:"Mission", osOfGoal:p=>`${p}% af månedsmålet`, osToday:(n)=>`I dag: ${n}/4 ✓`, osLevel:"Level", osQIn:"Indtægt", osQIdea:"Ny idé", osPipeS:["Idé","Manus","Prod.","Postet"]
  },
@@ -1009,7 +1019,7 @@ const T = {
   chLockedText:"Chat is part of REDHUE Pro. Paste your license key to unlock.", chHello:"Hi! I can see your numbers in the app. What do you want help with today?",
   chSuggs:["What should I post today?","How do I reach my profit goal?","Analyse my month","Give me 5 video ideas"], chRoomInfo:n=>`Community · ${n} messages`, chYou:"you", chOwner:"REDHUE", chEmpty:"No messages yet. Say hi 👋", chDel:"Delete the message?", chNameHint:n=>`You're posting as ${n}`, chSlow:"Wait a moment between messages.",
   osPanel:"Control panel", osAll:"All apps", osHint:"Swipe up for all apps", osQIn2:"+ Income", osQIdea2:"+ Idea", osHaptic:"Haptics", osLangQ:"Language", osTz:"Time zone", osStreakQ:"Streak", osShared:"Idea saved from share", osLeft:n=>n?`${n} tasks left today`:"All of today's tasks done 🎉",
-  profT:"Profile", profName:"Your name (used in the greeting)",
+  profT:"Profile", profName:"Your name (used in the greeting)", avPick:"Choose photo", avDel:"Remove photo", avSaved:"Profile photo saved", avBad:"Couldn't read the image. Try a JPG or PNG.",
   tzT:"Time zone", tzSub:"Clock, date, daily checks and mission day follow this zone – even if the phone is set wrong.", tzNow:(t,dev)=>`Now: ${t}${dev?` · phone says ${dev}`:""}`,
   home:"Home", osDay:(d)=>`DAY ${d}/90`, osMission:"Mission", osOfGoal:p=>`${p}% of monthly goal`, osToday:(n)=>`Today: ${n}/4 ✓`, osLevel:"Level", osQIn:"Income", osQIdea:"New idea", osPipeS:["Idea","Script","Prod.","Posted"]
  }
@@ -1136,6 +1146,7 @@ document.addEventListener("click", e=>{
 
 /* ---------- Section renderers ---------- */
 function renderOverview(){
+  renderAvatars();
   const h=nowHour();
   $("greet").textContent = [h<10?t().hi:h<18?t().hiDay:t().hiEve, S.profile.name].filter(Boolean).join(", ");
   $("heroMeta").textContent = t().heroMeta(missionDay(), goalPct());
@@ -1740,7 +1751,7 @@ function legacyKeys(){
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
-  renderTZ(); D4.renderBtn(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
+  renderTZ(); D4.renderBtn(); renderAvatars(); if(document.activeElement!==$("profName")) $("profName").value=S.profile.name||"";
   $("licInput").value=store.get(K.lic,"");
   $("licStatus").textContent = hasLic()?t().proOn:t().proOff; $("licStatus").style.color = hasLic()?"var(--ok)":"var(--muted)";
   const lk=legacyKeys();
@@ -1934,8 +1945,24 @@ function renderTZ(){
   const loc=lang==="da"?"da-DK":"en-GB", f=z=>new Date().toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit",hourCycle:"h23",timeZone:z}).replace(".",":");
   const a=f(TZ()), b=f(devZ); $("tzNow").textContent=t().tzNow(`${a} (${today()})`, a!==b?b:"");
 }
-$("profSave").onclick=()=>{ S.profile=Object.assign({},S.profile,{name:$("profName").value.trim().slice(0,40)}); save(); toast(t().saved); };
+$("profSave").onclick=()=>{ S.profile=Object.assign({},S.profile,{name:$("profName").value.trim().slice(0,40)}); save(); renderAvatars(); toast(t().saved); };
 $("tzSel").onchange=()=>{ store.set(TZ_KEY,$("tzSel").value); renderTZ(); toast(t().saved); };
+/* ---------- Profilbillede ---------- */
+function avatarHTML(){ const a=S.profile.avatar;
+  if(a) return `<img src="${esc(a)}" alt="">`;
+  const ch=(S.profile.name||"").trim().charAt(0).toUpperCase()||"✦";
+  return `<span class="av-ini" aria-hidden="true">${esc(ch)}</span>`; }
+function renderAvatars(){ ["heroAv","avPrev"].forEach(id=>{ const el=$(id); if(el) el.innerHTML=avatarHTML(); }); if($("avDel")) $("avDel").hidden=!S.profile.avatar; }
+// Beskær til kvadrat og skalér til 320 px, så billedet fylder lidt (ca. 20-40 KB)
+function loadAvatar(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onerror=rej; fr.onload=()=>{ const im=new Image(); im.onerror=rej; im.onload=()=>{
+  const s=Math.min(im.width,im.height), c=document.createElement("canvas"); c.width=c.height=320;
+  c.getContext("2d").drawImage(im,(im.width-s)/2,Math.max(0,(im.height-s)/4),s,s,0,0,320,320);
+  res(c.toDataURL("image/jpeg",.86)); }; im.src=fr.result; }; fr.readAsDataURL(file); }); }
+$("avPick").onclick=()=>$("avFile").click();
+$("avFile").onchange=async()=>{ const f=$("avFile").files[0]; $("avFile").value=""; if(!f) return;
+  try{ S.profile=Object.assign({},S.profile,{avatar:await loadAvatar(f)}); save(); renderAvatars(); toast(t().avSaved); }catch{ toast(t().avBad); } };
+$("avDel").onclick=()=>{ S.profile=Object.assign({},S.profile,{avatar:""}); save(); renderAvatars(); };
+
 function applyStatic(){
   document.documentElement.lang=lang;
   $("langBtn").textContent = $("langBtnM").textContent = lang==="da"?"EN":"DA";
