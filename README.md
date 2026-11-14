@@ -151,3 +151,9 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - Ny udgivelse: hæv `VERSION` i `index.html` og `CACHE` i `sw.js`, og push. Åbne apps finder den nye version inden for 30 min (eller når appen åbnes igen) og viser «Ny version klar · Genstart». Brugerens data røres ikke.
 - Indstillinger → Beta: «Søg efter opdatering» og «Genstart app» (rydder cache og genindlæser – hjælper hvis en tester sidder fast).
 - Forhåndsvisning (fx i Claude-appen): en bjælke viser, at feedback, AI og deling virker på redhue.netlify.app. Alle API-kald går dertil (`CFG.SITE`), og funktionerne svarer med CORS.
+
+### Offline (fra 0.9.2-beta)
+- Alt gemmes på telefonen; appen starter og virker uden net, når den har været åbnet én gang online.
+- Uden net vises «📴 Offline». AI-kørsler og feedback lægges i kø (`redhue_outbox`) og sendes automatisk, når nettet er tilbage (AI-svar lander i Historik).
+- SOS virker uden internet: GPS-position i SMS'en, og 112 – begge går over telefonnettet.
+- Skrifttyper indlæses uden at blokere opstart og gemmes til offline brug. Appen beder browseren om at beskytte sine data mod oprydning.

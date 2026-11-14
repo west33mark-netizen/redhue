@@ -11,7 +11,7 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 :root{
   --bg:#0a0a0d; --panel:#121217; --panel2:#18181f; --line:#26262f;
@@ -580,6 +580,8 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .upd-bar button{white-space:nowrap}
 .pv-bar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;padding:7px 12px;font-size:12.5px;background:rgba(155,107,255,.14);border-bottom:1px solid var(--line);color:var(--text)}
 .pv-bar a{color:#c9b6ff;font-weight:600}
+.net-pill{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,194,71,.13);border:1px solid rgba(255,194,71,.45);color:var(--am,#ffc247)}
+.net-pill[hidden]{display:none!important}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -608,14 +610,14 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </div>
 <div class="app">
   <aside id="side">
-    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1></div>
+    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>📴 Offline</span></div>
     <nav id="navSide"></nav>
     <div class="side-foot"><button class="talk" data-talk id="talkD">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtn">EN</button></div>
   </aside>
 
   <div>
     <div class="topbar">
-      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1></div>
+      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>📴 Offline</span></div>
       <div class="tb-r"><button class="talk" data-talk id="talkM">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtnM">EN</button></div>
     </div>
     <main id="main">
@@ -955,7 +957,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             <p class="sub" style="margin-bottom:8px" id="btSub"></p>
             <div id="btRows"></div>
             <div class="actions"><button class="primary" id="btFb"></button><a class="btn" id="btPriv" href="privatliv.html" target="_blank" rel="noopener"></a><button id="btInbox" hidden></button></div>
-            <div class="actions" style="margin-top:6px"><button class="small" id="btUpd"></button><button class="small" id="btRestart"></button></div>
+            <div class="actions" style="margin-top:6px"><button class="small" id="btUpd"></button><button class="small" id="btRestart"></button><button class="small" id="btQueue"></button></div>
             <div id="btInboxList"></div>
           </div>
           <div class="card">
@@ -1081,7 +1083,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.1-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.2-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1160,7 +1162,7 @@ const T = {
   f:{ niche:"Niche", topic:"Emne", length:"Længde (sek)", tone:"Tone", count:"Varianter", script:"Manuskript (valgfrit)", platforms:"Platforme", perWeek:"Videoer/uge", hours:"Timer/uge", day:"Missionsdag", goal:"Indkomstmål", stats:"Dine tal (indsæt frit)" },
   ph:{ niche:"fx facts om rummet", topic:"fx hvorfor Venus drejer baglæns", tone:"nysgerrig og energisk", goal:"fx 5.000 kr/md", stats:"Video 1: 12.400 views, 6% delinger, 41% watch time…\nFølgere: 830 (+120)\nIndtjening: 0 kr" },
   ag:{ script:["Script-agent","Faceless manuskripter med hook, voiceover, visuals og CTA."], hooks:["Hook & Caption","10 hooks + captions og hashtags til hver platform."], planner:["Planlægger","Ugeplan og batch-produktion mod 90-dages målet."], analyst:["Analytiker","Læser dine tal og giver 3 konkrete eksperimenter."] },
-  errors:{ pro_required:"Pro-licens mangler eller er ugyldig.", rate_limited:"For mange kørsler, prøv igen om lidt.", missing_fields:"Udfyld de påkrævede felter.", network:"Ingen forbindelse til serveren. Agenterne kræver at siden kører på Netlify.", default:"Noget gik galt. Prøv igen." },
+  errors:{ pro_required:"Pro-licens mangler eller er ugyldig.", rate_limited:"For mange kørsler, prøv igen om lidt.", missing_fields:"Udfyld de påkrævede felter.", network:"Ingen forbindelse til serveren. Tjek nettet, eller åbn appen på redhue.netlify.app.", default:"Noget gik galt. Prøv igen." },
   runs:"kørsler", lastRun:"Seneste", proOn:"● PRO AKTIV", proOff:"○ INGEN LICENS", licKey:"Gumroad licensnøgle", licPh:"Indsæt din licensnøgle", licSaved:"Licens gemt",
   settingsSub:"Licens, backup og dine gamle data.", backup:"Backup", backupSub:"Gem alt som én fil, eller hent en backup ind igen.", export:"Eksportér backup", import:"Importér backup",
   imported:"Backup indlæst", badFile:"Filen kunne ikke læses.",
@@ -1275,7 +1277,7 @@ const T = {
   f:{ niche:"Niche", topic:"Topic", length:"Length (sec)", tone:"Tone", count:"Variants", script:"Script (optional)", platforms:"Platforms", perWeek:"Videos/week", hours:"Hours/week", day:"Mission day", goal:"Income goal", stats:"Your numbers (paste freely)" },
   ph:{ niche:"e.g. space facts", topic:"e.g. why Venus spins backwards", tone:"curious and energetic", goal:"e.g. $750/month", stats:"Video 1: 12,400 views, 6% shares, 41% watch time…\nFollowers: 830 (+120)\nEarnings: $0" },
   ag:{ script:["Script Agent","Faceless scripts with hook, voiceover, visuals and CTA."], hooks:["Hook & Caption","10 hooks + captions and hashtags per platform."], planner:["Planner","Weekly plan and batch production toward the 90-day goal."], analyst:["Analyst","Reads your numbers and gives 3 concrete experiments."] },
-  errors:{ pro_required:"Pro license missing or invalid.", rate_limited:"Too many runs, try again shortly.", missing_fields:"Fill in the required fields.", network:"Can't reach the server. The agents need the site running on Netlify.", default:"Something went wrong. Try again." },
+  errors:{ pro_required:"Pro license missing or invalid.", rate_limited:"Too many runs, try again shortly.", missing_fields:"Fill in the required fields.", network:"Can't reach the server. Check your connection or open the app at redhue.netlify.app.", default:"Something went wrong. Try again." },
   runs:"runs", lastRun:"Latest", proOn:"● PRO ACTIVE", proOff:"○ NO LICENSE", licKey:"Gumroad license key", licPh:"Paste your license key", licSaved:"License saved",
   settingsSub:"License, backup and your old data.", backup:"Backup", backupSub:"Save everything as one file, or load a backup back in.", export:"Export backup", import:"Import backup",
   imported:"Backup loaded", badFile:"Couldn't read that file.",
@@ -1620,7 +1622,8 @@ const Safe=(()=>{
   const L=()=>t(), loc=()=>lang==="da"?"da-DK":"en-GB";
   function devKey(){ let k=store.get(K_DEV,""); if(!/^[a-f0-9]{40}$/.test(k)){ k=[...crypto.getRandomValues(new Uint8Array(20))].map(b=>b.toString(16).padStart(2,"0")).join(""); store.set(K_DEV,k); } return k; }
   async function api(body){ const headers={"content-type":"application/json","x-device":devKey()}; if(store.get(K.lic,"")) headers["x-license"]=store.get(K.lic,"");
-    const r=await fetch(API,{method:"POST",headers,body:JSON.stringify(body)}); const j=await r.json().catch(()=>({})); return {ok:r.ok,status:r.status,j}; }
+    if(!Net.online()) return {ok:false,status:0,j:{error:"offline"}};
+    const r=await Net.tfetch(API,{method:"POST",headers,body:JSON.stringify(body)},12000); const j=await r.json().catch(()=>({})); return {ok:r.ok,status:r.status,j}; }
   let lastPos=null, watchId=null, lastSent=0, timer=null;
   function getPos(timeout=10000){ return new Promise(res=>{ if(!navigator.geolocation) return res(lastPos);
     navigator.geolocation.getCurrentPosition(p=>{ lastPos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy||0)}; res(lastPos); },()=>res(lastPos),{enableHighAccuracy:true,timeout,maximumAge:30000}); }); }
@@ -1656,7 +1659,7 @@ const Safe=(()=>{
     let code=null; try{ const r=await api({action:"share_start",name:nm,sos:true,pos}); if(r.ok){ code=r.j.code; store.set(K_SH,myShares().concat({code,exp:r.j.exp,label:"SOS",sos:true})); startLive(); } }catch{}
     const text=X.sosMsg(nm, pos?`${mapUrl(pos)} (±${pos.acc} m)`:"", clockNow(), code?liveUrl(code):"");
     const ec=store.get(K_EC,[]), nums=ec.map(c=>c.phone.replace(/[^\d+]/g,"")).filter(Boolean);
-    out.innerHTML=`${pos?"":`<p style="margin:0 0 8px;color:var(--red)">${esc(X.sosNoPos)}</p>`}<p style="margin:0 0 6px">${esc(nums.length?X.sosReady:X.sosNoContacts)}</p>
+    out.innerHTML=`${Net.online()?"":`<p style="margin:0 0 8px;color:var(--am,#ffc247)">${esc(lang==="en"?"No internet – SMS and 112 still work over the phone network. Your position from GPS is in the message.":"Intet internet – SMS og 112 virker stadig over telefonnettet. Din GPS-position står i beskeden.")}</p>`}${pos?"":`<p style="margin:0 0 8px;color:var(--red)">${esc(X.sosNoPos)}</p>`}<p style="margin:0 0 6px">${esc(nums.length?X.sosReady:X.sosNoContacts)}</p>
       <div class="mono" style="font-size:12.5px;color:var(--muted);overflow-wrap:anywhere" id="sosText">${esc(text)}</div>
       <div class="actions">${nums.length?`<a class="btn primary" id="sosSms" href="${esc(smsHref(nums,text))}">${esc(X.sosSms(nums.length))}</a>`:""}
         <a class="btn" id="sosWa" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">${esc(X.waBtn)}</a>
@@ -2432,8 +2435,13 @@ function showAgOut(text,agent){ $("agOutTitle").textContent=`${t().output} · ${
 async function callAgent(agent, fields){
   agState[agent]="run"; renderAgentCardsOnly();
   $("agOut").innerHTML=`<div class="loader"><i></i><i></i><i></i></div>`;
+  if(!Net.online()){
+    Net.enqueue({type:"agent",body:{agent,lang,fields}}); agState[agent]=""; renderAgentCardsOnly();
+    $("agOut").innerHTML=`<div class="err" style="border-color:var(--am,#ffc247);color:var(--am,#ffc247)">${esc(lang==="en"?"You're offline. The request is queued and runs by itself when you're back online – the result appears under History.":"Du er offline. Kørslen er sat i kø og kører af sig selv, når du er online igen – svaret kommer under Historik.")}</div>`;
+    return null;
+  }
   try{
-    const r=await fetch(CFG.API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({agent,lang,fields,license:store.get(K.lic,"")})});
+    const r=await Net.tfetch(CFG.API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({agent,lang,fields,license:store.get(K.lic,"")})},60000);
     const d=await r.json().catch(()=>({error: r.status===404?"network":"default"}));
     if(!r.ok) throw new Error(d.error||"default");
     agState[agent]="done"; agLast={agent,text:d.text}; showAgOut(d.text,agent);
@@ -2442,7 +2450,7 @@ async function callAgent(agent, fields){
     return d.text;
   }catch(e){
     agState[agent]=""; renderAgentCardsOnly();
-    const key = e.message==="Failed to fetch" ? "network" : e.message;
+    const key = (e.message==="Failed to fetch"||e.message==="timeout") ? "network" : e.message;
     $("agOut").innerHTML=`<div class="err">${t().errors[key]||t().errors.default}</div>`; agButtons(null);
     return null;
   }
@@ -2476,7 +2484,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -2488,6 +2496,44 @@ function renderSettings(){
   $("legacyExp").style.display = lk.length?"":"none";
   Beta.render();
 }
+/* ---------- Offline først ----------
+   Alt i appen gemmes på telefonen og virker uden net. Det, der kræver server
+   (AI, feedback), lægges i en kø og sendes automatisk, når nettet er tilbage. */
+const Net=(()=>{
+  const L=(da,en)=>lang==="en"?en:da, KQ="redhue_outbox";
+  let busy=false;
+  const online=()=>navigator.onLine!==false;
+  const queue=()=>store.get(KQ,[]);
+  // fetch med tidsgrænse, så en dårlig forbindelse ikke hænger appen
+  async function tfetch(url,opts={},ms=15000){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms);
+    try{ return await fetch(url,{...opts,signal:c.signal}); } catch(e){ throw new Error(e.name==="AbortError"?"timeout":"network"); } finally{ clearTimeout(t); } }
+  function enqueue(item){ const q=queue(); q.push({...item,at:Date.now(),id:uid()}); store.set(KQ,q.slice(-50)); paint(); }
+  function paint(){ const n=queue().length;
+    document.querySelectorAll("[data-net]").forEach(el=>{ el.hidden=online()&&!n; el.textContent=online()?(n?"⏳ "+n+L(" venter"," waiting"):""):"📴 Offline"+(n?" · "+n:""); el.title=online()?L("Sendes nu","Sending now"):L("Alt gemmes på telefonen","Everything is saved on your phone"); });
+    const b=$("btQueue"); if(b) b.textContent=n?L(n+" i kø – sendes når du er online",n+" queued – sent when you're online"):L("Intet i kø","Nothing queued"); }
+  async function flush(){
+    if(busy||!online()) return; const q=queue(); if(!q.length) return; busy=true; let sent=0;
+    for(const it of q){
+      try{
+        if(it.type==="feedback"){ const r=await tfetch(apiUrl("/api/feedback"),{method:"POST",headers:it.headers,body:JSON.stringify(it.body)}); if(!r.ok&&r.status>=500) throw 0; }
+        else if(it.type==="agent"){ const r=await tfetch(CFG.API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...it.body,license:store.get(K.lic,"")})},60000);
+          const d=await r.json().catch(()=>({})); if(!r.ok){ if(r.status>=500||r.status===429) throw 0; } else {
+            const h=store.get(K.hist,[]); h.unshift({agent:it.body.agent,text:d.text,at:Date.now(),label:(it.body.fields.topic||it.body.fields.niche||"").slice(0,40)+" ⏳"}); store.set(K.hist,h.slice(0,30)); try{ renderAgHist(); }catch(e){} } }
+        store.set(KQ,queue().filter(x=>x.id!==it.id)); sent++;
+      }catch(e){ break; }
+    }
+    busy=false; paint();
+    if(sent) toast(L(`Online igen – ${sent} ventende sendt ✓`,`Back online – ${sent} queued item(s) sent ✓`));
+  }
+  function init(){
+    addEventListener("online",()=>{ paint(); flush(); });
+    addEventListener("offline",()=>{ paint(); toast(L("Du er offline – alt du laver gemmes på telefonen","You're offline – everything you do is saved on your phone")); });
+    paint(); setTimeout(flush,1500);
+    // Bed browseren om ikke at rydde appens data, når lageret bliver fyldt
+    try{ navigator.storage&&navigator.storage.persist&&navigator.storage.persisted().then(p=>p||navigator.storage.persist()); }catch(e){}
+  }
+  return {online,tfetch,enqueue,flush,paint,init,queue};
+})();
 /* ---------- Opdatering og genstart ----------
    Ny udgave hentes i baggrunden. Når den er klar, vises "Ny version klar · Genstart".
    Data ligger i telefonens lager og røres ikke af en genstart. */
@@ -2550,6 +2596,7 @@ const Beta=(()=>{
     $("btInbox").hidden=!lic||isBetaKey(lic);
     $("btUpd").textContent=L("Søg efter opdatering","Check for update");
     $("btRestart").textContent=L("Genstart app","Restart app");
+    Net.paint(); $("btQueue").onclick=()=>{ if(!Net.queue().length) return; if(!Net.online()) return toast(L("Sendes, når du er online","Sent when you're online")); Net.flush(); };
   }
   function open(k){
     kind=k||"idea"; const sh=$("fbSheet");
@@ -2570,7 +2617,9 @@ const Beta=(()=>{
     const body={kind,text,contact:$("fbContact").value.trim(),version:VERSION};
     if(incl){ body.page=current; body.errors=(window.__errs||[]).join("\n"); }
     const headers={"content-type":"application/json"}; const lic=store.get(K.lic,""); if(lic) headers["x-license"]=lic;
-    try{ const r=await fetch(API,{method:"POST",headers,body:JSON.stringify(body)}); const j=await r.json().catch(()=>({}));
+    if(!Net.online()){ Net.enqueue({type:"feedback",headers,body}); $("fbText").value=""; close(); toast(L("Offline – feedback gemt og sendes, når du er online","Offline – feedback saved and sent when you're online")); btn.disabled=false; return; }
+    try{ let r; try{ r=await Net.tfetch(API,{method:"POST",headers,body:JSON.stringify(body)}); }catch(e){ Net.enqueue({type:"feedback",headers,body}); $("fbText").value=""; close(); toast(L("Ingen forbindelse – feedback gemt og sendes senere","No connection – feedback saved and sent later")); return; }
+      const j=await r.json().catch(()=>({}));
       if(!r.ok) throw new Error(j.error||r.status);
       $("fbText").value=""; close(); toast(L("Tak! Feedback sendt 💜","Thanks! Feedback sent 💜"));
     }catch(e){ toast(String(e.message)==="rate_limited"?L("Du har sendt meget – prøv igen om lidt","You've sent a lot – try again later"):L("Kunne ikke sende. Åbn appen på redhue.netlify.app.","Couldn't send. Open the app at redhue.netlify.app.")); }
@@ -2833,7 +2882,7 @@ __safeRun("render",()=>renderAll());
 __safeRun("4D",()=>D4.apply());
 __safeRun("tale",()=>Talk.refresh());
 __safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
-__safeRun("opdatering",()=>Updater.init());
+__safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init());
 </script>
 </body>
 </html>
