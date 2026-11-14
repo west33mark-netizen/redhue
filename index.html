@@ -575,6 +575,20 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-hint::before{content:"";display:block;width:36px;height:4px;border-radius:9px;background:rgba(255,255,255,.3);margin:0 auto 6px}
 .os-status{cursor:pointer}
 @media(min-width:861px){.os{background:rgba(6,6,14,.55);backdrop-filter:blur(6px)}.os-in{border-left:1px solid var(--line);border-right:1px solid var(--line);background:rgba(6,6,14,.35)}}
+.beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
+.fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.fb-sheet[hidden],#btInbox[hidden]{display:none!important}
+.fb-in{width:min(560px,100%);max-height:92vh;overflow:auto;background:#101018;border:1px solid var(--line);border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media(min-width:620px){.fb-sheet{align-items:center}.fb-in{border-radius:18px}}
+.fb-kinds{display:flex;gap:8px;margin:10px 0}
+.fb-kinds button[aria-pressed="true"]{border-color:var(--vi);background:var(--panel2)}
+.fb-in textarea{width:100%;min-height:120px}
+.fb-err{font:11px/1.4 ui-monospace,monospace;color:var(--muted);background:var(--panel);border-radius:8px;padding:8px;max-height:90px;overflow:auto;white-space:pre-wrap}
+.fb-item{border-top:1px solid var(--line);padding:10px 0;font-size:14px}
+.fb-item.done{opacity:.5}
+.fb-meta{font-size:11px;color:var(--muted);margin-bottom:4px}
+.beta-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:4px 0;color:var(--muted)}
+.beta-row b{color:var(--text);font-weight:600}
 </style>
 </head>
 <body>
@@ -588,14 +602,14 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </div>
 <div class="app">
   <aside id="side">
-    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
+    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1></div>
     <nav id="navSide"></nav>
     <div class="side-foot"><button class="talk" data-talk id="talkD">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtn">EN</button></div>
   </aside>
 
   <div>
     <div class="topbar">
-      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
+      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1></div>
       <div class="tb-r"><button class="talk" data-talk id="talkM">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtnM">EN</button></div>
     </div>
     <main id="main">
@@ -930,6 +944,13 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
         <h2 class="sec" data-t="settings"></h2>
         <p class="sub" data-t="settingsSub"></p>
         <div class="grid g2">
+          <div class="card" id="betaCard">
+            <h3 id="btTitle"></h3>
+            <p class="sub" style="margin-bottom:8px" id="btSub"></p>
+            <div id="btRows"></div>
+            <div class="actions"><button class="primary" id="btFb"></button><a class="btn" id="btPriv" href="privatliv.html" target="_blank" rel="noopener"></a><button id="btInbox" hidden></button></div>
+            <div id="btInboxList"></div>
+          </div>
           <div class="card">
             <h3>REDHUE Pro</h3>
             <div class="mono" id="licStatus" style="font-size:12px;margin-bottom:6px"></div>
@@ -988,6 +1009,19 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
     </main>
   </div>
 </div>
+<div class="fb-sheet" id="fbSheet" hidden role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+  <div class="fb-in">
+    <h3 id="fbTitle" style="margin:0 0 4px"></h3>
+    <p class="sub" id="fbSub" style="margin:0"></p>
+    <div class="fb-kinds" id="fbKinds"></div>
+    <textarea id="fbText" maxlength="2000"></textarea>
+    <label id="fbContactL" for="fbContact" style="margin-top:10px"></label>
+    <input id="fbContact" maxlength="120" autocomplete="email">
+    <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px"><input type="checkbox" id="fbIncl" checked style="width:auto"> <span id="fbInclL"></span></label>
+    <div class="fb-err" id="fbErr" hidden></div>
+    <div class="actions"><button class="primary" id="fbSend"></button><button id="fbCancel"></button></div>
+  </div>
+</div>
 <div class="os" id="os" hidden>
   <div class="os-in">
     <div class="os-status"><span><span class="live"></span>REDHUE OS 2</span><span class="r"><span class="loc-pill" id="osLoc" hidden>📍</span><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
@@ -1022,12 +1056,16 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
    (history.pushState/replaceState). Det må aldrig stoppe appen: fejler et adresse-skift, fortsætter vi uden. */
 ["pushState","replaceState"].forEach(m=>{ try{ const orig=history[m].bind(history); history[m]=function(){ try{ return orig.apply(null,arguments); }catch(e){ return undefined; } }; }catch(e){} });
 // Lille, lukbar fejlboks: viser uventede fejl i stedet for en tom skærm (hjælper med fejlfinding på telefonen)
+window.__errs=[];
 (function(){ let box=null, shown=0;
-  function show(msg){ if(shown>=3) return; shown++; try{
+  function show(msg){ try{ window.__errs.push((()=>{ try{ return new Date().toLocaleTimeString("da-DK",{timeZone:JSON.parse(localStorage.getItem("redhue_tz")||"null")||"Europe/Copenhagen"}); }catch(e){ return new Date().toISOString().slice(11,19)+"Z"; } })()+" "+String(msg).slice(0,240)); window.__errs=window.__errs.slice(-8); }catch(e){}
+    if(shown>=3) return; shown++; try{
     if(!box){ box=document.createElement("div"); box.id="errBox"; box.setAttribute("role","alert");
       box.style.cssText="position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:9999;background:#2a0b14;color:#ffd6de;border:1px solid #e8113a;border-radius:12px;padding:10px 12px;font:12px/1.4 system-ui,sans-serif;max-height:30vh;overflow:auto";
       box.onclick=()=>{ box.remove(); box=null; }; (document.body||document.documentElement).appendChild(box); }
-    const d=document.createElement("div"); d.textContent="⚠️ "+String(msg).slice(0,300)+" (tryk for at lukke)"; box.appendChild(d); }catch(e){} }
+    const d=document.createElement("div"); d.textContent="⚠️ "+String(msg).slice(0,300)+" (tryk for at lukke)"; box.appendChild(d);
+    if(!box.querySelector("button")){ const b=document.createElement("button"); b.textContent="Send fejlrapport"; b.style.cssText="margin-top:8px;background:#e8113a;color:#fff;border:0;border-radius:8px;padding:6px 10px;font:inherit;font-weight:600";
+      b.onclick=ev=>{ ev.stopPropagation(); box.remove(); box=null; window.__openFeedback&&window.__openFeedback("bug"); }; box.appendChild(b); } }catch(e){} }
   addEventListener("error",e=>{ if(e&&e.message&&!/ResizeObserver|Script error/.test(e.message)) show(e.message+(e.lineno?" · linje "+e.lineno:"")); });
   addEventListener("unhandledrejection",e=>{ const r=e&&e.reason; if(r&&r.name!=="AbortError"&&!/NotAllowedError|Failed to fetch|NetworkError/.test(String(r))) show(r.message||r); });
   window.__safeRun=function(name,fn){ try{ return fn(); }catch(e){ show(name+": "+(e&&e.message||e)); } };
@@ -1035,6 +1073,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
+const VERSION = "0.9.0-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   API: "/api/agents"
@@ -2432,7 +2471,69 @@ function renderSettings(){
   const lk=legacyKeys();
   $("legacyTable").innerHTML = lk.length? `<tr><th>${t().key}</th><th class="num">${t().size}</th></tr>`+lk.map(([k,n])=>`<tr><td class="mono" style="font-size:13px;word-break:break-all">${esc(k)}</td><td class="num mono">${n<1024?n+" B":(n/1024).toFixed(1)+" KB"}</td></tr>`).join("") : `<tr><td class="empty">${t().noLegacy}</td></tr>`;
   $("legacyExp").style.display = lk.length?"":"none";
+  Beta.render();
 }
+/* ---------- Beta: version, feedback, indbakke ---------- */
+const Beta=(()=>{
+  const L=(da,en)=>lang==="en"?en:da, API="/api/feedback";
+  let kind="idea";
+  const isBetaKey=k=>/^BETA-[0-9A-F]{5}-[0-9A-F]{5}$/.test(k||"");
+  function render(){
+    if(!$("btTitle")) return;
+    const lic=store.get(K.lic,"");
+    $("btTitle").textContent=L("Beta","Beta");
+    $("btSub").textContent=L("Du bruger en testudgave. Fortæl os, hvad der virker, og hvad der driller – det former appen.","You're using a test version. Tell us what works and what doesn't – it shapes the app.");
+    const access=isBetaKey(lic)?L("Beta-kode (Pro gratis i beta)","Beta code (Pro free during beta)"):lic?L("Licens","License"):L("Ingen – gratis-delen","None – free tier");
+    $("btRows").innerHTML=[[L("Version","Version"),VERSION],[L("Adgang","Access"),access],[L("Tidszone","Time zone"),TZ()]].map(([a,b])=>`<div class="beta-row"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");
+    $("btFb").textContent=L("Send feedback","Send feedback");
+    $("btPriv").textContent=L("Privatliv & vilkår","Privacy & terms");
+    $("btInbox").textContent=L("Feedback-indbakke","Feedback inbox");
+    $("btInbox").hidden=!lic||isBetaKey(lic);
+  }
+  function open(k){
+    kind=k||"idea"; const sh=$("fbSheet");
+    $("fbTitle").textContent=L("Send feedback","Send feedback");
+    $("fbSub").textContent=L("Går direkte til udvikleren. Skriv gerne hvad du gjorde, og hvad du forventede.","Goes straight to the developer. Say what you did and what you expected.");
+    $("fbKinds").innerHTML=[["idea",L("💡 Idé","💡 Idea")],["bug",L("🐞 Fejl","🐞 Bug")],["other",L("💬 Andet","💬 Other")]].map(([v,l])=>`<button type="button" data-k="${v}" aria-pressed="${v===kind}">${l}</button>`).join("");
+    $("fbText").placeholder=kind==="bug"?L("Hvad skete der? Hvad trykkede du på lige før?","What happened? What did you tap just before?"):L("Skriv her…","Write here…");
+    $("fbContactL").textContent=L("Din mail (valgfri – hvis du vil have svar)","Your email (optional – if you want a reply)");
+    $("fbInclL").textContent=L("Vedhæft side, version og seneste fejl","Attach page, version and recent errors");
+    const errs=(window.__errs||[]).join("\n"); $("fbErr").textContent=errs; $("fbErr").hidden=!errs;
+    $("fbSend").textContent=L("Send","Send"); $("fbCancel").textContent=L("Annullér","Cancel");
+    sh.hidden=false; setTimeout(()=>$("fbText").focus(),60);
+  }
+  const close=()=>{ $("fbSheet").hidden=true; };
+  async function send(){
+    const text=$("fbText").value.trim(); if(text.length<3){ toast(L("Skriv lidt mere","Write a bit more")); return; }
+    const incl=$("fbIncl").checked, btn=$("fbSend"); btn.disabled=true;
+    const body={kind,text,contact:$("fbContact").value.trim(),version:VERSION};
+    if(incl){ body.page=current; body.errors=(window.__errs||[]).join("\n"); }
+    const headers={"content-type":"application/json"}; const lic=store.get(K.lic,""); if(lic) headers["x-license"]=lic;
+    try{ const r=await fetch(API,{method:"POST",headers,body:JSON.stringify(body)}); const j=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error||r.status);
+      $("fbText").value=""; close(); toast(L("Tak! Feedback sendt 💜","Thanks! Feedback sent 💜"));
+    }catch(e){ toast(String(e.message)==="rate_limited"?L("Du har sendt meget – prøv igen om lidt","You've sent a lot – try again later"):L("Kunne ikke sende. Kører appen på Netlify?","Couldn't send. Is the app running on Netlify?")); }
+    finally{ btn.disabled=false; }
+  }
+  async function inbox(){
+    const box=$("btInboxList"); box.innerHTML=`<div class="sub">${esc(L("Henter…","Loading…"))}</div>`;
+    try{ const r=await fetch(API,{headers:{"x-license":store.get(K.lic,"")}}); const j=await r.json().catch(()=>({}));
+      if(r.status===403){ box.innerHTML=`<div class="sub">${esc(L("Kun ejeren kan se indbakken.","Only the owner can see the inbox."))}</div>`; return; }
+      if(!r.ok) throw 0;
+      const ic={idea:"💡",bug:"🐞",other:"💬"};
+      box.innerHTML=j.items.length?j.items.map(it=>`<div class="fb-item${it.done?" done":""}"><div class="fb-meta">${ic[it.kind]||"💬"} ${esc(new Date(it.at).toLocaleString(lang==="en"?"en-GB":"da-DK",{timeZone:TZ()}))} · ${esc(it.version||"?")} · ${esc(it.page||"-")}${it.contact?" · "+esc(it.contact):""}</div><div>${esc(it.text)}</div>${it.errors?`<div class="fb-err" style="margin-top:6px">${esc(it.errors)}</div>`:""}<div class="actions" style="margin-top:6px"><button class="small" data-fbdone="${esc(it.key)}">${it.done?esc(L("Genåbn","Reopen")):esc(L("Markér behandlet","Mark done"))}</button></div></div>`).join(""):`<div class="sub">${esc(L("Ingen feedback endnu.","No feedback yet."))}</div>`;
+    }catch{ box.innerHTML=`<div class="sub">${esc(L("Kunne ikke hente. Kører appen på Netlify?","Couldn't load. Is the app running on Netlify?"))}</div>`; }
+  }
+  $("btFb").onclick=()=>open("idea"); $("btInbox").onclick=inbox;
+  $("btInboxList").onclick=async e=>{ const b=e.target.closest("[data-fbdone]"); if(!b) return; b.disabled=true;
+    try{ await fetch(API,{method:"POST",headers:{"content-type":"application/json","x-license":store.get(K.lic,"")},body:JSON.stringify({action:"done",key:b.dataset.fbdone})}); }catch{} inbox(); };
+  $("fbKinds").onclick=e=>{ const b=e.target.closest("[data-k]"); if(!b) return; kind=b.dataset.k; $("fbKinds").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b)); $("fbText").placeholder=kind==="bug"?L("Hvad skete der? Hvad trykkede du på lige før?","What happened? What did you tap just before?"):L("Skriv her…","Write here…"); };
+  $("fbSend").onclick=send; $("fbCancel").onclick=close;
+  $("fbSheet").onclick=e=>{ if(e.target.id==="fbSheet") close(); };
+  addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("fbSheet").hidden) close(); });
+  window.__openFeedback=open;
+  return {render,open};
+})();
 function download(name,obj){ const b=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
 $("licSave").onclick=()=>{ store.set(K.lic,$("licInput").value.trim()); toast(t().licSaved); renderSettings(); };
 $("expBtn").onclick=()=>download(`redhue-backup-${today()}.json`,{app:"REDHUE",v:3,exported:new Date().toISOString(),state:S,agentHistory:store.get(K.hist,[])});
@@ -2661,7 +2762,7 @@ $("langBtn").onclick=toggleLang; $("langBtnM").onclick=toggleLang;
 window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h && h!==current) go(h); });
 
 // Gumroad redirect: ?license=KEY
-const qLic=new URLSearchParams(location.search).get("license");
+const qLic=new URLSearchParams(location.search).get("license")||(()=>{ const b=(new URLSearchParams(location.search).get("beta")||"").trim().toUpperCase(); return /^BETA-[0-9A-F]{5}-[0-9A-F]{5}$/.test(b)?b:""; })();
 if(qLic){ store.set(K.lic,qLic); history.replaceState(null,"",location.pathname+"#agents"); current="agents"; }
 
 // Opstart i sikre trin: fejler ét trin (fx 4D eller stemmer), starter resten af appen alligevel

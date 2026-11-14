@@ -130,3 +130,19 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - Guiden og mor/far/mentor henviser ved krise til Livslinien, regionens lægevagt og 112.
 - **Ingen integration med sundhedsvæsenet:** REDHUE henter eller deler ingen sundhedsdata og giver ikke sundhedsråd. En rigtig integration (sundhed.dk, MitID, journaldata) kræver aftaler/godkendelse hos Sundhedsdatastyrelsen, en MitID-broker og kan udløse krav efter MDR (medicinsk udstyr).
 
+
+## Beta (v0.9.0-beta)
+
+**Til testere:** send dem linket `https://<dit-site>.netlify.app/?beta=BETA-XXXXX-XXXXX` – koden gemmes automatisk og giver Pro gratis til og med 28. februar 2027 (`BETA_UNTIL` i `netlify/lib/shared.mjs`). Kun SHA-256-hashes af koderne ligger i repoet; selve koderne har du fået separat. Ekstra koder uden ny udgivelse: læg hashes kommasepareret i env `REDHUE_BETA_HASHES` (hash = sha256 af `redhue-beta:` + koden).
+
+**Feedback:** «Send feedback» under Indstillinger → Beta, og «Send fejlrapport» i den røde fejlboks. Gemmes i Netlify Blobs (`redhue-feedback`) via `/api/feedback`. Ejeren (din `REDHUE_DEV_KEY` som licens) ser «Feedback-indbakke» samme sted. Ingen IP-adresser gemmes.
+
+**Privatliv:** `privatliv.html` er et udkast med gule pladsholdere (dataansvarlig, CVR, retsgrundlag, overførselsgrundlag, ansvarsbegrænsning, opbevaringstid for feedback). Skal udfyldes, før testere får linket. Fjern derefter `#draftNote`.
+
+### Tjekliste før første tester
+1. Netlify: forbind sitet til repo `west33mark-netizen/mark`, branch `redhue`.
+2. Netlify env vars: `ANTHROPIC_API_KEY`, `REDHUE_DEV_KEY`, `GUMROAD_PRODUCT_ID` (sidstnævnte kan vente, hvis kun beta-koder bruges).
+3. Udfyld `privatliv.html`.
+4. Åbn sitet på din egen telefon: installér som app, send én test-feedback, tjek at den står i indbakken.
+5. Send beta-links til testerne én for én (én kode pr. person), og notér hvem der fik hvilken.
+6. Hæv `VERSION` i `index.html` og `CACHE` i `sw.js` ved hver ny beta-udgivelse.
