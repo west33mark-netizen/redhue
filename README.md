@@ -87,3 +87,11 @@ Den nye app rører aldrig de gamle nøgler.
 - **"Hvad skal jeg nu?"** ud fra brugerens egne tal: niche, dagens opgaver, pipeline, logning, profitmål, installation, Pro.
 - Pro-brugere kan sende spørgsmål, guiden ikke kan svare på, videre til AI-coachen.
 
+## 💜 Samhørighed og varme ("oxytocin")
+Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme – uden pres-tællere eller falske notifikationer.
+- **Hyldest (Pro):** ❤️ 🙌 🔥 på andres beskeder i Fællesskab. Gemmes som én blob pr. reaktion (`rx/<besked>/<bruger>/<emoji>`), så samtidige reaktioner aldrig overskriver hinanden. Man kan ikke hylde sig selv. "Du er blevet hyldet" vises kun for ægte reaktioner.
+- **Del en sejr (Pro):** forslag ud fra egne tal (streak, profit, postede videoer, nået mål) eller egen tekst; vises som sejrs-kort.
+- **Milepæle (alle):** første indtægt, første postede video, 3/7/14/30 dage i træk, nået måneds- og profitmål, dag 30/60/90. Én fejring ad gangen, hver kun én gang. Eksisterende brugere får ikke en lavine af gamle milepæle.
+- **Venlighed:** ryger en streak på mindst 3 dage, mødes brugeren med en venlig besked og "Tag én opgave nu" – ikke skam.
+- **Dagens taknemmelighed (alle):** én linje om dagen under Mission, gemmes kun lokalt.
+

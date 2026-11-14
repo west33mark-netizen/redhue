@@ -336,8 +336,31 @@ table.list tr:hover td{background:rgba(255,255,255,.025)}
 .imp-report .fix{color:var(--muted);margin-top:6px}
 .imp-report dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
 .imp-report dd{color:var(--text);word-break:break-all}
+/* ---------- Oxytocin: hyldest, sejre, milepæle, taknemmelighed ---------- */
+.rx{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.rx button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:99px;padding:3px 9px;font:inherit;font-size:12.5px;cursor:pointer;line-height:1.5}
+.rx button.on{border-color:color-mix(in srgb,var(--ma) 60%,var(--line));background:color-mix(in srgb,var(--ma) 16%,transparent)}
+.rx button:active{transform:scale(.92)}
+.ch-msg.win{max-width:92%;border:1.5px solid transparent;background:linear-gradient(var(--panel2),var(--panel2)) padding-box,var(--crystal) border-box}
+.ch-msg.win .wt{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.ch-msg.win .wb{font-size:16px;font-weight:600}
+.win-pick{border-top:1px solid var(--line);padding:12px;display:grid;gap:8px;background:rgba(0,0,0,.18)}
+.win-pick[hidden]{display:none}
+.win-pick button.wopt{text-align:left;border-radius:12px;padding:10px 12px;font-size:14px}
+.moment-bg{position:fixed;inset:0;z-index:80;background:rgba(4,4,10,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.moment-bg[hidden]{display:none}
+.moment{width:min(380px,100%);text-align:center;border-radius:26px;padding:28px 22px 20px;border:1.5px solid transparent;background:linear-gradient(rgba(16,16,32,.97),rgba(16,16,32,.97)) padding-box,var(--crystal) border-box;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.moment .em{font-size:54px;line-height:1}
+.moment h3{font-size:21px;margin:12px 0 8px;text-transform:none;letter-spacing:0;color:var(--text)}
+.moment p{color:var(--muted);font-size:15px;line-height:1.5;margin:0 0 18px}
+.moment .actions{justify-content:center;margin:0}
+@media(prefers-reduced-motion:no-preference){.moment{animation:mom .45s cubic-bezier(.2,.9,.25,1.2)}@keyframes mom{from{opacity:0;transform:scale(.85) translateY(14px)}}}
+.grat-list{margin-top:12px;display:grid;gap:6px}
+.grat-list div{font-size:14px;color:var(--muted);display:flex;gap:10px}
+.grat-list b{font-weight:500;color:var(--text);flex:none;font-family:'JetBrains Mono',monospace;font-size:12px;padding-top:2px}
 /* ---------- REDHUE Guide (gratis hjælpe-bot) ---------- */
 .gd-fab{position:fixed;right:18px;bottom:24px;z-index:70;width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;font-size:24px;color:#08081a;background:var(--crystal);box-shadow:0 10px 30px -8px var(--vi),0 0 0 1px rgba(255,255,255,.15) inset}
+html.on-chat .gd-fab{display:none}
 .gd-fab .gd-dot{position:absolute;top:2px;right:2px;width:13px;height:13px;border-radius:50%;background:var(--red);border:2px solid var(--bg)}
 @media(prefers-reduced-motion:no-preference){.gd-fab.gd-new{animation:gdpulse 2.4s ease-in-out infinite}@keyframes gdpulse{50%{box-shadow:0 10px 30px -8px var(--vi),0 0 0 10px rgba(155,107,255,.14)}}}
 @media(max-width:860px){.gd-fab{bottom:calc(86px + env(safe-area-inset-bottom));right:14px;width:52px;height:52px}html.os-on .gd-fab{bottom:calc(112px + env(safe-area-inset-bottom))}}
@@ -490,6 +513,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </head>
 <body>
 <canvas id="fx4d" aria-hidden="true"></canvas>
+<div class="moment-bg" id="moment" hidden role="dialog" aria-modal="true"><div class="moment"><div class="em" id="momEm"></div><h3 id="momT"></h3><p id="momP"></p><div class="actions" id="momActs"></div></div></div>
 <button class="gd-fab" id="gdFab" aria-label="REDHUE Guide">✦</button>
 <div class="gd" id="gd" hidden role="dialog" aria-label="REDHUE Guide">
   <div class="gd-h"><span class="av">✦</span><div><b>REDHUE Guide</b><small data-t="gdSub"></small></div><button class="gd-x" id="gdX" aria-label="Luk">×</button></div>
@@ -579,6 +603,12 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <h3 data-t="ninetyDays"></h3>
           <div class="days" id="daysGrid"></div>
         </div>
+        <div class="card" style="margin-top:12px">
+          <h3 data-t="gratT"></h3>
+          <p class="sub" style="margin-bottom:10px" data-t="gratSub"></p>
+          <div class="pgoal-row"><div><input id="gratIn" maxlength="200" data-tp="gratPh"></div><button class="primary" id="gratSave" data-t="save"></button></div>
+          <div class="grat-list" id="gratList"></div>
+        </div>
       </section>
 
       <!-- PIPELINE -->
@@ -653,8 +683,9 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <form class="ch-in" id="chCoachForm"><textarea id="chCoachIn" rows="1" maxlength="2000" data-tp="chCoachPh"></textarea><button class="primary" type="submit" data-t="chSend"></button></form>
         </div>
         <div class="card ch-box" id="chRoomBox" hidden>
-          <div class="ch-head"><span id="chRoomInfo"></span><span class="mono" id="chRoomName"></span></div>
+          <div class="ch-head"><span id="chRoomInfo"></span><button class="small" id="winBtn" data-t="winBtn"></button></div>
           <div class="ch-list" id="chRoomList"></div>
+          <div class="win-pick" id="winPick" hidden></div>
           <form class="ch-in" id="chRoomForm"><textarea id="chRoomIn" rows="1" maxlength="500" data-tp="chRoomPh"></textarea><button class="primary" type="submit" data-t="chSend"></button></form>
         </div>
       </section>
@@ -881,7 +912,7 @@ S.mission = Object.assign(structuredClone(DEFAULT.mission), S.mission||{});
 // Profilbillede: nye brugere starter neutralt (forbogstav). Eksisterende installationer fra før
 // profilbilleder fandtes (dvs. ejerens egen) beholder den oprindelige buste.
 { const saved=store.get(K.state,null); if(saved && (!saved.profile || saved.profile.avatar===undefined)) S.profile=Object.assign({},S.profile,{avatar:"avatar.png"}); S.profile=Object.assign({name:"",avatar:""},S.profile); }
-const save = () => { store.set(K.state,S); updateBadge(); };
+const save = () => { store.set(K.state,S); updateBadge(); window.__moments&&window.__moments.scan(); };
 
 let lang = store.get(K.lang,"da");
 
@@ -944,6 +975,23 @@ const T = {
   profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
   pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  gratT:"🙏 Dagens taknemmelighed", gratSub:"Én linje om dagen. Hvad eller hvem er du taknemmelig for i dag? Det bliver på din telefon.", gratPh:"Fx: en seer skrev at min video hjalp ham…", gratSaved:"Gemt 🙏",
+  winBtn:"🎉 Del en sejr", winHead:"Vælg en sejr at dele, eller skriv din egen:", winOwn:"Skriv din egen sejr…", winShare:"Del", winTitle:n=>`🎉 ${n} delte en sejr`, cheered:n=>`💜 Du er blevet hyldet ${n} ${n===1?"gang":"gange"} siden sidst`,
+  rxT:{heart:"Varme",clap:"Hyldest",fire:"Stærkt"},
+  wins:{streak:n=>`🔥 ${n} dage i træk på min mission`, profit:x=>`💰 ${x} i profit denne måned`, posted:n=>`🎬 ${n} ${n===1?"video":"videoer"} postet`, goal:"🎯 Jeg har nået mit månedsmål!", day:n=>`🗓️ Dag ${n} af 90 – jeg er stadig i gang`, first:"✨ Jeg har startet min 90-dages mission"},
+  mom:{ ok:"Tak 💜", share:"Del i fællesskabet", one:"Tag én opgave nu",
+    firstIncome:["💸","Din første indtægt!","Det her er øjeblikket, hvor det bliver virkeligt. Uanset beløbet: du har vist, at det kan lade sig gøre."],
+    firstPosted:["🎬","Din første video er ude","Det sværeste skridt er taget. Mange når aldrig hertil. Vær stolt."],
+    streak3:["🔥","3 dage i træk","Du er ved at bygge en vane. Små skridt hver dag er dét, der flytter noget."],
+    streak7:["🌟","En hel uge!","7 dage i træk. Det kræver mere, end de fleste tror. Godt gået."],
+    streak14:["💎","14 dage i træk","To uger med konsistens. Det her er ved at blive en del af, hvem du er."],
+    streak30:["👑","30 dage i træk","En hel måned. Du gør det, du sagde, du ville gøre. Det er sjældent."],
+    goal:["🎯","Månedsmålet er nået!","Du satte et mål, og du nåede det. Tag et øjeblik og mærk det."],
+    profitGoal:["💰","Profitmålet er nået!","Ikke bare omsætning, men rigtig profit. Det er dét, der bygger frihed."],
+    day30:["🗓️","Dag 30 af 90","En tredjedel af missionen. Se hvor langt du er kommet siden dag 1."],
+    day60:["🚀","Dag 60 af 90","To tredjedele. Du er ikke den samme creator, som da du startede."],
+    day90:["🏆","Missionen er gennemført!","90 dage. Uanset tallene har du bevist over for dig selv, at du kan holde ved."],
+    kind:["💜","Det er helt ok","Du missede en dag, og det er menneskeligt. Det vigtige er ikke en perfekt streak, men at komme tilbage. Én lille opgave i dag er nok."] },
   gdSub:"Hjælper dig i gang og videre", gdPh:"Spørg om alt i appen…",
   d4T:"4D", d4Sub:"Dybde der følger, når du vipper telefonen, en tesserakt der roterer gennem tiden i baggrunden, og sektioner der glider ind fra dybden.", d4On:"4D er tændt", d4Off:"4D er slukket", d4Motion:"Tillad bevægelsessensor", d4Q:"4D",
   chat:"Chat", chatSub:"Spørg din AI-coach om dine tal, eller skriv med andre REDHUE-creators.", chCoach:"AI-coach", chRoom:"Fællesskab", chSend:"Send", chClear:"Ny samtale",
@@ -1012,6 +1060,23 @@ const T = {
   profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
   pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  gratT:"🙏 Today's gratitude", gratSub:"One line a day. What or who are you grateful for today? It stays on your phone.", gratPh:"E.g. a viewer said my video helped him…", gratSaved:"Saved 🙏",
+  winBtn:"🎉 Share a win", winHead:"Pick a win to share, or write your own:", winOwn:"Write your own win…", winShare:"Share", winTitle:n=>`🎉 ${n} shared a win`, cheered:n=>`💜 You've been cheered ${n} ${n===1?"time":"times"} since last time`,
+  rxT:{heart:"Warmth",clap:"Cheers",fire:"Strong"},
+  wins:{streak:n=>`🔥 ${n} days in a row on my mission`, profit:x=>`💰 ${x} profit this month`, posted:n=>`🎬 ${n} ${n===1?"video":"videos"} posted`, goal:"🎯 I reached my monthly goal!", day:n=>`🗓️ Day ${n} of 90 – still going`, first:"✨ I started my 90-day mission"},
+  mom:{ ok:"Thanks 💜", share:"Share with the community", one:"Do one task now",
+    firstIncome:["💸","Your first income!","This is the moment it gets real. Whatever the amount: you've shown it can be done."],
+    firstPosted:["🎬","Your first video is out","The hardest step is done. Many never get here. Be proud."],
+    streak3:["🔥","3 days in a row","You're building a habit. Small steps every day are what move things."],
+    streak7:["🌟","A whole week!","7 days in a row. That takes more than most people think. Well done."],
+    streak14:["💎","14 days in a row","Two weeks of consistency. This is becoming part of who you are."],
+    streak30:["👑","30 days in a row","A whole month. You're doing what you said you would. That's rare."],
+    goal:["🎯","Monthly goal reached!","You set a goal and you reached it. Take a moment and feel it."],
+    profitGoal:["💰","Profit goal reached!","Not just revenue, real profit. That's what builds freedom."],
+    day30:["🗓️","Day 30 of 90","A third of the mission. Look how far you've come since day 1."],
+    day60:["🚀","Day 60 of 90","Two thirds. You're not the same creator you were when you started."],
+    day90:["🏆","Mission complete!","90 days. Whatever the numbers, you've proven to yourself that you can stick with it."],
+    kind:["💜","It's completely okay","You missed a day, and that's human. What matters isn't a perfect streak but coming back. One small task today is enough."] },
   gdSub:"Helps you get started and keep going", gdPh:"Ask about anything in the app…",
   d4T:"4D", d4Sub:"Depth that follows when you tilt your phone, a tesseract rotating through time in the background, and sections that glide in from depth.", d4On:"4D is on", d4Off:"4D is off", d4Motion:"Allow motion sensor", d4Q:"4D",
   chat:"Chat", chatSub:"Ask your AI coach about your numbers, or talk with other REDHUE creators.", chCoach:"AI coach", chRoom:"Community", chSend:"Send", chClear:"New chat",
@@ -1042,7 +1107,7 @@ function go(id){
   const from = current; current = id;
   // Fra hjemmeskærmen ind i en app: nyt historik-trin, så Androids tilbage-knap fører hjem igen
   if(from==="home" && id!=="home") history.pushState(null,"","#"+id); else history.replaceState(null,"","#"+id);
-  $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); if(id!=="chat") roomStop(); document.documentElement.classList.toggle("os-on", id==="home");
+  $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); if(id!=="chat") roomStop(); document.documentElement.classList.toggle("os-on", id==="home"); document.documentElement.classList.toggle("on-chat", id==="chat");
   document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active", s.id==="s-"+id));
   renderNav(); renderSection(id); window.scrollTo(0,0); if(id==="home") $("os").scrollTop=0;
   if(from!==id) D4.enter(id);
@@ -1175,6 +1240,7 @@ function renderOverview(){
 }
 
 function renderMission(){
+  renderGratitude();
   $("mDay").textContent = missionDay();
   $("mStreak").textContent = streak()+" 🔥";
   $("mIncome").textContent = money(sumWallet(30,"in"));
@@ -1213,6 +1279,81 @@ $("kanban").addEventListener("click",e=>{
 
 function fillCats(){ const cats = $("wType").value==="in"? t().catsIn : t().catsOut; $("wCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join(""); }
 $("wType").onchange=fillCats;
+/* ---------- Oxytocin: samhørighed, anerkendelse og varme ----------
+   Reaktioner og delte sejre i fællesskabet, varme milepæle (også når en streak ryger)
+   og en daglig taknemmeligheds-linje. Ingen pres-tællere eller falske notifikationer. */
+// Reaktioner i fællesskabet
+$("chRoomList").addEventListener("click",async e=>{ const b=e.target.closest("[data-rx]"); if(!b||b.disabled) return; buzz(10);
+  const key=b.dataset.key, emoji=b.dataset.rx, m=chRoom.find(x=>x.key===key); if(!m) return;
+  // vis med det samme, ret til bagefter
+  const rx=m.rx=Object.assign({heart:0,clap:0,fire:0,mine:[]},m.rx); const had=rx.mine.includes(emoji);
+  rx[emoji]+=had?-1:1; rx.mine=had?rx.mine.filter(x=>x!==emoji):rx.mine.concat(emoji); renderRoom();
+  try{ const r=await fetch(CHAT_API,{method:"POST",headers:{"content-type":"application/json","x-license":store.get(K.lic,"")},body:JSON.stringify({action:"react",key,emoji})});
+    const j=await r.json().catch(()=>({})); if(r.ok&&j.rx){ m.rx=j.rx; renderRoom(); } else { rx[emoji]+=had?1:-1; rx.mine=had?rx.mine.concat(emoji):rx.mine.filter(x=>x!==emoji); renderRoom(); toast(j.error==="rate_limited"?t().chSlow:t().errors.default); }
+  }catch{ toast(t().errors.network); } });
+// "Du er blevet hyldet": kun ægte reaktioner fra andre på dine egne beskeder
+function noteCheers(){ const mine=chRoom.filter(m=>m.mine); if(!mine.length) return;
+  const total=mine.reduce((a,m)=>a+(m.rx?m.rx.heart+m.rx.clap+m.rx.fire:0),0), seen=store.get("redhue_cheers",null);
+  if(seen!==null&&total>seen) toast(t().cheered(total-seen)); store.set("redhue_cheers",total); }
+// Del en sejr: forslag ud fra dine egne tal
+function winSuggestions(){ const W=t().wins, out=[], P=profitNow(), posted=S.kanban.filter(c=>c.col==="posted").length;
+  if(S.mission.goal&&goalPct()>=100) out.push(W.goal);
+  if(streak()>=2) out.push(W.streak(streak()));
+  if(P.profit>0) out.push(W.profit(money(P.profit)));
+  if(posted) out.push(W.posted(posted));
+  if(missionDay()>1) out.push(W.day(Math.min(missionDay(),90))); else out.push(W.first);
+  return out.slice(0,4); }
+function renderWinPick(prefill){ const L=t();
+  $("winPick").innerHTML=`<div class="sub" style="margin:0">${esc(L.winHead)}</div>`+winSuggestions().map(w=>`<button type="button" class="wopt" data-win="${esc(w)}">${esc(w)}</button>`).join("")+
+    `<form class="pgoal-row" id="winOwnForm"><div><input id="winOwn" maxlength="200" placeholder="${esc(L.winOwn)}" value="${esc(prefill||"")}"></div><button class="primary" type="submit">${esc(L.winShare)}</button></form>`;
+  $("winOwnForm").onsubmit=async e=>{ e.preventDefault(); const v=$("winOwn").value.trim(); if(v&&await roomSend(v,"win")){ $("winPick").hidden=true; addXP(3); } }; }
+$("winBtn").onclick=()=>{ const pk=$("winPick"); pk.hidden=!pk.hidden; if(!pk.hidden) renderWinPick(); };
+$("winPick").addEventListener("click",async e=>{ const b=e.target.closest("[data-win]"); if(!b) return; if(await roomSend(b.dataset.win,"win")){ $("winPick").hidden=true; addXP(3); } });
+function openShareWin(text){ go("chat"); chTab="room"; renderChat(); if(!hasLic()) return; $("winPick").hidden=false; renderWinPick(text); setTimeout(()=>$("winOwn").focus(),150); }
+
+// Varme milepæle
+const Moments=(()=>{ const KEY="redhue_moments"; let queue=[], showing=false, timer=null;
+  function checks(){ const P=profitNow(), mk=today().slice(0,7), s=streak(), d=missionDay();
+    return { firstIncome:S.wallet.some(w=>w.type==="in"), firstPosted:S.kanban.some(c=>c.col==="posted"),
+      streak3:s>=3, streak7:s>=7, streak14:s>=14, streak30:s>=30,
+      ["goal-"+mk]:!!S.mission.goal&&sumMonth(mk,"in")>=S.mission.goal, ["profitGoal-"+mk]:!!S.profitGoal&&P.profit>=S.profitGoal,
+      day30:d>=30, day60:d>=60, day90:d>=90 }; }
+  function sumMonth(mk,type){ return S.wallet.filter(w=>w.type===type&&String(w.date).slice(0,7)===mk).reduce((a,w)=>a+ +w.amount,0); }
+  function brokeStreak(){ // i går under 2 opgaver, og dagene før havde en streak på mindst 3
+    const y=addDays(today(),-1); if(dayDone(y)) return false; let n=0, d=addDays(y,-1); while(dayDone(d)&&n<40){ n++; d=addDays(d,-1); } return n>=3; }
+  function scan(){ const seen=store.get(KEY,null), c=checks();
+    if(seen===null){ const init={}; Object.keys(c).forEach(k=>{ if(c[k]) init[k]=1; }); init["kind-"+today()]=1; store.set(KEY,init); return; } // eksisterende brugere: ingen lavine af gamle milepæle
+    const order=["day90","streak30","goal","profitGoal","day60","streak14","firstIncome","firstPosted","streak7","day30","streak3"];
+    const fresh=Object.keys(c).filter(k=>c[k]&&!seen[k]).sort((a,b)=>order.indexOf(a.split("-")[0])-order.indexOf(b.split("-")[0]));
+    if(brokeStreak()&&!seen["kind-"+today()]&&!(S.mission.checks[today()]||[]).some(Boolean)) fresh.push("kind-"+today());
+    if(!fresh.length) return;
+    fresh.forEach(k=>seen[k]=1); store.set(KEY,seen);
+    queue.push(fresh[0]); // højst én fejring ad gangen; resten markeres stille
+    if(!showing) next(); }
+  function next(){ const id=queue.shift(); if(!id){ showing=false; return; } showing=true;
+    const base=id.split("-")[0], M=t().mom, [em,title,txt]=M[base];
+    $("momEm").textContent=em; $("momT").textContent=title; $("momP").textContent=txt;
+    const acts=[];
+    if(base==="kind") acts.push(`<button class="primary" data-mom="one">${esc(M.one)}</button>`);
+    else if(hasLic()) acts.push(`<button data-mom="share" data-txt="${esc(em+" "+title)}">${esc(M.share)}</button>`);
+    acts.push(`<button class="${base==="kind"?"":"primary"}" data-mom="ok">${esc(M.ok)}</button>`);
+    $("momActs").innerHTML=acts.join(""); $("moment").hidden=false; buzz(base==="kind"?8:[12,60,18]); setTimeout(()=>$("momActs").querySelector(".primary")?.focus(),50); }
+  function close(){ $("moment").hidden=true; setTimeout(next,300); }
+  $("moment").addEventListener("click",e=>{ const b=e.target.closest("[data-mom]"); if(e.target===$("moment")) return close(); if(!b) return;
+    const a=b.dataset.mom; close(); if(a==="share") openShareWin(b.dataset.txt); else if(a==="one") go("mission"); });
+  addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("moment").hidden) close(); });
+  return { scan:()=>{ clearTimeout(timer); timer=setTimeout(scan,700); } };
+})();
+window.__moments=Moments; Moments.scan();
+
+// Dagens taknemmelighed (kun lokalt)
+function renderGratitude(){ const g=S.gratitude||{}; $("gratIn").value=g[today()]||"";
+  const days=Object.keys(g).filter(d=>g[d]).sort().reverse().slice(0,5);
+  $("gratList").innerHTML=days.map(d=>`<div><b>${fmtDate(d)}</b><span>${esc(g[d])}</span></div>`).join(""); }
+$("gratSave").onclick=()=>{ const v=$("gratIn").value.trim().slice(0,200); S.gratitude=Object.assign({},S.gratitude||{}); const first=!S.gratitude[today()]&&v;
+  if(v) S.gratitude[today()]=v; else delete S.gratitude[today()]; save(); if(first) addXP(2); toast(t().gratSaved); renderGratitude(); };
+$("gratIn").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("gratSave").click(); } });
+
 /* ---------- REDHUE Guide: gratis hjælpe-bot for alle brugere ----------
    Kører lokalt i appen (ingen server, ingen AI-forbrug), kender alle funktioner og
    brugerens egne tal, og foreslår næste skridt. Pro-brugere kan sendes videre til AI-coachen. */
@@ -1274,6 +1415,8 @@ const Guide = (()=>{
     {k:["produkt","product","betalingslink","payment link","shop","sælg","sell"], a:()=>T("Under <b>Produkter</b> samler du dine digitale produkter og betalingslinks. Registrerer du et salg, lander det automatisk i Wallet.","Under <b>Products</b> you collect your digital products and payment links. Logging a sale puts it in Wallet automatically."), b:()=>[["go:products",T("Åbn Produkter","Open Products")]]},
     {k:["niche","emne","topic"], a:()=>S.mission.niche?T(`Din niche er <b>${esc(S.mission.niche)}</b>. Vil du skifte, så gør det under Mission.`,`Your niche is <b>${esc(S.mission.niche)}</b>. To change it, go to Mission.`):T("Du har ikke valgt en niche endnu. Den hjælper agenterne og coachen med at ramme rigtigt.","You haven't picked a niche yet. It helps the agents and coach get it right."), b:()=>[["restart",T("Vælg niche","Pick a niche")]]},
     {k:["kontrolpanel","control panel","stryg","swipe","skuffe","drawer","alle apps"], a:()=>T("På hjemmeskærmen: <b>stryg ned</b> fra toppen for kontrolpanelet med dagens opgaver, og <b>stryg op</b> for alle apps. Androids tilbage-knap fører dig hjem.","On the home screen: <b>swipe down</b> from the top for the control panel with today's tasks, and <b>swipe up</b> for all apps. Android's back button takes you home."), b:()=>[["go:home",T("Til hjemmeskærmen","Go to home")]]},
+    {k:["taknemmelig","grateful","gratitude","tak for","glad for"], a:()=>T("Under <b>Mission</b> finder du <b>Dagens taknemmelighed</b>: én linje om dagen om, hvad du er taknemmelig for. Det tager 20 sekunder og bliver på din telefon.","Under <b>Mission</b> you'll find <b>Today's gratitude</b>: one line a day about what you're grateful for. It takes 20 seconds and stays on your phone."), b:()=>[["go:mission",T("Skriv dagens linje","Write today's line")]]},
+    {k:["sejr","win","hyld","cheer","reaktion","reaction","fejr","celebrate"], a:()=>T("I <b>Chat → Fællesskab</b> kan du trykke <b>🎉 Del en sejr</b>. Appen foreslår sejre ud fra dine tal, og andre kan hylde dig med ❤️ 🙌 🔥. Når du rammer en milepæl, fejrer appen den også med dig.","In <b>Chat → Community</b> tap <b>🎉 Share a win</b>. The app suggests wins from your numbers, and others can cheer you with ❤️ 🙌 🔥. When you hit a milestone, the app celebrates it with you too."), b:()=>[["go:chat",T("Åbn fællesskabet","Open community")]]},
     {k:["slet alt","nulstil","reset","delete all","start forfra"], a:()=>T("Du kan nulstille under Indstillinger. Tag en backup først, for det kan ikke fortrydes.","You can reset under Settings. Make a backup first, because it can't be undone."), b:()=>[["backup",T("Tag backup først","Back up first")]]}
   ];
   function topics(){ return [["next",T("Hvad skal jeg nu?","What should I do next?")],["wallet_in",T("+ Indtægt","+ Income")],["go:profit","Profit"],["go:mission","Mission"],["install",T("Installér app","Install app")],["pro",hasLic()?"Pro ✓":"Pro"]]; }
@@ -1320,7 +1463,7 @@ const Guide = (()=>{
     const s=st(); if(s.step) return onboardAnswer(q);
     const n=q.toLowerCase().normalize("NFC");
     if(/^(hej|hi|hello|hallo|yo|godmorgen|goddag)/.test(n)) return say(T(`Hej ${esc(S.profile.name||"")}! 👋 Hvad kan jeg hjælpe med?`,`Hi ${esc(S.profile.name||"")}! 👋 What can I help with?`),topics());
-    if(/(tak|thanks|thank you)/.test(n)) return say(T("Selv tak! Jeg er her, når du har brug for mig. ✦","You're welcome! I'm here whenever you need me. ✦"));
+    if(/^(tak|mange tak|tusind tak|tak skal du have|thanks|thank you|ty)\b/.test(n)&&n.length<30) return say(T("Selv tak! Jeg er her, når du har brug for mig. ✦","You're welcome! I'm here whenever you need me. ✦"));
     if(/(hvad skal jeg|næste|what should i|next step|hvor starter|where do i start|kom i gang|get started)/.test(n)) return say(...nextStep());
     let best=null, score=0;
     for(const e of KB){ const sc=e.k.reduce((a,k)=>a+(n.includes(k)?k.length:0),0); if(sc>score){ score=sc; best=e; } }
@@ -1479,9 +1622,12 @@ async function coachAsk(q){
 function chName(){ return (S.profile.name||"").trim()||"Creator"; }
 function renderRoom(){
   const L=t(), el=$("chRoomList"), near=el.scrollHeight-el.scrollTop-el.clientHeight<90;
-  $("chRoomInfo").textContent=L.chRoomInfo(chRoom.length); $("chRoomName").textContent=L.chNameHint(chName());
+  $("chRoomInfo").textContent=L.chRoomInfo(chRoom.length);
   const loc=lang==="da"?"da-DK":"en-GB";
-  el.innerHTML=chRoom.length? chRoom.map(m=>`<div class="ch-msg ${m.mine?"me":""}"><div class="who"><span><b>${esc(m.name)}</b>${m.owner?` <span class="own">· ${L.chOwner}</span>`:""} · ${new Date(m.ts).toLocaleString(loc,{timeZone:TZ(),day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</span>${m.mine?`<button class="x" data-del="${esc(m.key)}" title="${esc(t().del)}">✕</button>`:""}</div>${esc(m.body)}</div>`).join("")
+  const RX=[["heart","❤️"],["clap","🙌"],["fire","🔥"]];
+  el.innerHTML=chRoom.length? chRoom.map(m=>{ const rx=m.rx||{heart:0,clap:0,fire:0,mine:[]}, win=m.kind==="win";
+    const bar=`<div class="rx">${RX.map(([k,e])=>`<button type="button" class="${(rx.mine||[]).includes(k)?"on":""}" data-rx="${k}" data-key="${esc(m.key)}" title="${esc(L.rxT[k])}" ${m.mine?"disabled":""}>${e}${rx[k]?" "+rx[k]:""}</button>`).join("")}</div>`;
+    return `<div class="ch-msg ${m.mine?"me":""} ${win?"win":""}"><div class="who"><span><b>${esc(m.name)}</b>${m.owner?` <span class="own">· ${L.chOwner}</span>`:""} · ${new Date(m.ts).toLocaleString(loc,{timeZone:TZ(),day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</span>${m.mine?`<button class="x" data-del="${esc(m.key)}" title="${esc(t().del)}">✕</button>`:""}</div>${win?`<div class="wt">${esc(L.winTitle(m.name))}</div><div class="wb">${esc(m.body)}</div>`:esc(m.body)}${bar}</div>`; }).join("")
     : `<div class="empty">${L.chEmpty}</div>`;
   if(near||!el.dataset.init){ el.scrollTop=el.scrollHeight; el.dataset.init="1"; }
 }
@@ -1494,8 +1640,9 @@ async function roomFetch(){
     const r=await fetch(CHAT_API+(since?"?since="+encodeURIComponent(since):""),{headers:{"x-license":store.get(K.lic,"")}});
     const j=await r.json().catch(()=>({}));
     if(!r.ok){ if(r.status===402){ roomStop(); toast(t().errors.pro_required); } return; }
-    if(full){ const fresh=j.messages||[]; const changed=fresh.map(m=>m.key).join()!==chRoom.slice(-fresh.length).map(m=>m.key).join()||fresh.length!==Math.min(chRoom.length,60);
-      if(changed){ chRoom=fresh; if(current==="chat"&&chTab==="room") renderRoom(); } return; }
+    if(full){ const fresh=j.messages||[]; const sig=a=>JSON.stringify(a.map(m=>[m.key,m.rx]));
+      if(sig(fresh)!==sig(chRoom.slice(-fresh.length))||fresh.length!==Math.min(chRoom.length,60)){ chRoom=fresh; if(current==="chat"&&chTab==="room") renderRoom(); }
+      noteCheers(); return; }
     const seen=new Set(chRoom.map(m=>m.key)); let added=false;
     (j.messages||[]).forEach(m=>{ if(!seen.has(m.key)){ chRoom.push(m); added=true; } });
     if(added){ chRoom=chRoom.slice(-200); if(current==="chat"&&chTab==="room") renderRoom(); }
@@ -1518,13 +1665,14 @@ $("chClear").onclick=()=>{ store.set(K_COACH,[]); renderCoach(); };
 ["chCoachIn","chRoomIn"].forEach(id=>{ const ta=$(id);
   ta.addEventListener("input",()=>{ ta.style.height="44px"; ta.style.height=Math.min(140,ta.scrollHeight)+"px"; });
   ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!matchMedia("(max-width:860px)").matches){ e.preventDefault(); ta.form.requestSubmit(); } }); });
-$("chRoomForm").onsubmit=async e=>{ e.preventDefault(); const body=$("chRoomIn").value.trim(); if(!body) return;
-  $("chRoomIn").value=""; $("chRoomIn").style.height="44px";
-  try{ const r=await fetch(CHAT_API,{method:"POST",headers:{"content-type":"application/json","x-license":store.get(K.lic,"")},body:JSON.stringify({action:"send",name:chName(),body})});
+$("chRoomForm").onsubmit=e=>{ e.preventDefault(); const body=$("chRoomIn").value.trim(); if(!body) return;
+  $("chRoomIn").value=""; $("chRoomIn").style.height="44px"; roomSend(body,"msg",()=>{ $("chRoomIn").value=body; }); };
+async function roomSend(body,kind,onFail){
+  try{ const r=await fetch(CHAT_API,{method:"POST",headers:{"content-type":"application/json","x-license":store.get(K.lic,"")},body:JSON.stringify({action:"send",name:chName(),body,kind})});
     const j=await r.json().catch(()=>({}));
-    if(!r.ok){ $("chRoomIn").value=body; toast(j.error==="rate_limited"?t().chSlow:(t().errors[j.error]||t().errors.default)); return; }
-    if(!chRoom.some(m=>m.key===j.message.key)) chRoom.push(j.message); renderRoom(); $("chRoomList").scrollTop=1e9;
-  }catch{ $("chRoomIn").value=body; toast(t().errors.network); } };
+    if(!r.ok){ onFail&&onFail(); toast(j.error==="rate_limited"?t().chSlow:(t().errors[j.error]||t().errors.default)); return false; }
+    if(!chRoom.some(m=>m.key===j.message.key)) chRoom.push(j.message); renderRoom(); $("chRoomList").scrollTop=1e9; return true;
+  }catch{ onFail&&onFail(); toast(t().errors.network); return false; } }
 $("chRoomList").addEventListener("click",async e=>{ const b=e.target.closest("[data-del]"); if(!b||!confirm(t().chDel)) return;
   const key=b.dataset.del; try{ const r=await fetch(CHAT_API,{method:"POST",headers:{"content-type":"application/json","x-license":store.get(K.lic,"")},body:JSON.stringify({action:"delete",key})});
     if(r.ok){ chRoom=chRoom.filter(m=>m.key!==key); renderRoom(); } else toast(t().errors.default); }catch{ toast(t().errors.network); } });
@@ -1747,7 +1895,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
