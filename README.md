@@ -123,3 +123,10 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - **Begrænsning:** web-apps kan kun bruge GPS, mens appen er åben; ellers vises seneste kendte position med tidspunkt.
 - **Server:** Netlify Blobs (`redhue-safe`). Enheder identificeres med en tilfældig nøgle, som kun gemmes som hash; licenser og nøgler gemmes aldrig. Delinger udløber og slettes.
 - **Til salg (GDPR):** positionsdata er persondata – nævn dem i din privatlivspolitik (formål, opbevaring, sletning).
+
+## 🏥 Sundhed i Danmark (under Tryghed)
+- Genveje med ét tryk: **112** (livsfare), **lægevagten/akuttelefonen** for den valgte region (akut sygdom + akut psykisk krise døgnet rundt), **Giftlinjen 82 12 12 12**, **Livslinien 70 201 201**, samt sundhed.dk.
+- Regionsnumre (tjekket nov. 2026, Sundhedsstyrelsen): Hovedstaden 1813 · Sjælland 1818 · Syddanmark 70 11 07 07 · Midtjylland 70 11 31 31 · Nordjylland 70 15 03 00. Tjek dem en gang om året.
+- Guiden og mor/far/mentor henviser ved krise til Livslinien, regionens lægevagt og 112.
+- **Ingen integration med sundhedsvæsenet:** REDHUE henter eller deler ingen sundhedsdata og giver ikke sundhedsråd. En rigtig integration (sundhed.dk, MitID, journaldata) kræver aftaler/godkendelse hos Sundhedsdatastyrelsen, en MitID-broker og kan udløse krav efter MDR (medicinsk udstyr).
+
