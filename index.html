@@ -336,12 +336,22 @@ table.list tr:hover td{background:rgba(255,255,255,.025)}
 .imp-report .fix{color:var(--muted);margin-top:6px}
 .imp-report dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
 .imp-report dd{color:var(--text);word-break:break-all}
+/* ---------- Virtuel mor/far/mentor ---------- */
+.pa-set{display:none;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.18);flex-wrap:wrap;align-items:flex-end}
+.pa-set.on{display:flex}
+.pa-set>div{flex:1;min-width:120px}
+.ch-msg.note{max-width:92%;border:2px solid transparent;background:linear-gradient(#17152b,#17152b) padding-box,linear-gradient(110deg,#ffb36b,var(--ma)) border-box}
+.ch-msg.note .nt{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.ch-msg.note .sig{margin-top:6px;font-size:13px;color:var(--muted)}
+.pa-lock{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:13.5px;color:var(--muted);flex-wrap:wrap}
+.os-w.note{border-color:transparent;background:linear-gradient(rgba(20,16,30,.75),rgba(20,16,30,.75)) padding-box,linear-gradient(110deg,#ffb36b,var(--ma)) border-box;border:1px solid transparent}
+.os-w.note .txt{font-size:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* ---------- Oxytocin: hyldest, sejre, milepæle, taknemmelighed ---------- */
 .rx{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
 .rx button{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:99px;padding:3px 9px;font:inherit;font-size:12.5px;cursor:pointer;line-height:1.5}
 .rx button.on{border-color:color-mix(in srgb,var(--ma) 60%,var(--line));background:color-mix(in srgb,var(--ma) 16%,transparent)}
 .rx button:active{transform:scale(.92)}
-.ch-msg.win{max-width:92%;border:1.5px solid transparent;background:linear-gradient(var(--panel2),var(--panel2)) padding-box,var(--crystal) border-box}
+.ch-msg.win{max-width:92%;border:1.5px solid transparent;background:linear-gradient(#17152b,#17152b) padding-box,var(--crystal) border-box}
 .ch-msg.win .wt{font-size:11.5px;color:var(--muted);margin-bottom:4px}
 .ch-msg.win .wb{font-size:16px;font-weight:600}
 .win-pick{border-top:1px solid var(--line);padding:12px;display:grid;gap:8px;background:rgba(0,0,0,.18)}
@@ -448,7 +458,7 @@ html.d4 .os.d4-in .os-in{animation:d4home .7s cubic-bezier(.16,.84,.24,1) both}
 /* ---------- REDHUE OS: hjemmeskærm ---------- */
 #navSide [data-go="home"]{display:none}
 .os{position:fixed;inset:0;z-index:50;overflow-y:auto;overscroll-behavior:contain;-webkit-tap-highlight-color:transparent}
-.os[hidden],.buyLink[hidden],.ch-box[hidden],#avDel[hidden]{display:none!important}
+.os[hidden],.buyLink[hidden],.ch-box[hidden],#avDel[hidden],#paForm[hidden],#paLock[hidden]{display:none!important}
 html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-w.wide .big{font-size:19px}
 .os-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 18px calc(14px + env(safe-area-inset-bottom))}
@@ -666,7 +676,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
       <section class="section" id="s-chat">
         <h2 class="sec" data-t="chat"></h2>
         <p class="sub" data-t="chatSub"></p>
-        <div class="ch-tabs" role="tablist"><button class="ch-tab on" data-ct="coach" data-t="chCoach"></button><button class="ch-tab" data-ct="room" data-t="chRoom"></button></div>
+        <div class="ch-tabs" role="tablist"><button class="ch-tab on" data-ct="coach" data-t="chCoach"></button><button class="ch-tab" data-ct="room" data-t="chRoom"></button><button class="ch-tab" data-ct="parent" id="paTab"></button></div>
         <div id="chLocked" class="card lock" style="display:none">
           <div class="big">💬</div>
           <p style="margin-bottom:12px" data-t="chLockedText"></p>
@@ -681,6 +691,17 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <div class="ch-list" id="chCoachList"></div>
           <div class="ch-sugg" id="chSugg"></div>
           <form class="ch-in" id="chCoachForm"><textarea id="chCoachIn" rows="1" maxlength="2000" data-tp="chCoachPh"></textarea><button class="primary" type="submit" data-t="chSend"></button></form>
+        </div>
+        <div class="card ch-box" id="chParentBox" hidden>
+          <div class="ch-head"><span id="paHead"></span><button class="small" id="paCfg" aria-expanded="false">⚙︎</button></div>
+          <div class="pa-set" id="paSet">
+            <div><label data-t="paRole"></label><select id="paRole"><option value="mom"></option><option value="dad"></option><option value="mentor"></option></select></div>
+            <div><label data-t="paName"></label><input id="paName" maxlength="24"></div>
+            <button class="primary" id="paSave" data-t="save"></button>
+          </div>
+          <div class="ch-list" id="paList"></div>
+          <form class="ch-in" id="paForm"><textarea id="paIn" rows="1" maxlength="2000"></textarea><button class="primary" type="submit" data-t="chSend"></button></form>
+          <div class="pa-lock" id="paLock"><span id="paLockTxt"></span><button class="small primary" id="paUnlock" data-t="unlock"></button></div>
         </div>
         <div class="card ch-box" id="chRoomBox" hidden>
           <div class="ch-head"><span id="chRoomInfo"></span><button class="small" id="winBtn" data-t="winBtn"></button></div>
@@ -975,6 +996,7 @@ const T = {
   profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
   pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  paRoles:{mom:["Mor","👩"],dad:["Far","👨"],mentor:["Mentor","🧑"]}, paRole:"Hvem skal støtte dig?", paName:"Navn", paNote:"💌 Dagens besked", paPh:n=>`Skriv til ${n}…`, paLockTxt:n=>`At chatte med ${n} er en del af Pro. Dagens besked er gratis.`, paSaved:"Gemt 💛", paHello:n=>`Hej, det er ${n}. Fortæl mig, hvordan det går – både med kanalen og med dig.`,
   gratT:"🙏 Dagens taknemmelighed", gratSub:"Én linje om dagen. Hvad eller hvem er du taknemmelig for i dag? Det bliver på din telefon.", gratPh:"Fx: en seer skrev at min video hjalp ham…", gratSaved:"Gemt 🙏",
   winBtn:"🎉 Del en sejr", winHead:"Vælg en sejr at dele, eller skriv din egen:", winOwn:"Skriv din egen sejr…", winShare:"Del", winTitle:n=>`🎉 ${n} delte en sejr`, cheered:n=>`💜 Du er blevet hyldet ${n} ${n===1?"gang":"gange"} siden sidst`,
   rxT:{heart:"Varme",clap:"Hyldest",fire:"Stærkt"},
@@ -1060,6 +1082,7 @@ const T = {
   profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
   pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  paRoles:{mom:["Mom","👩"],dad:["Dad","👨"],mentor:["Mentor","🧑"]}, paRole:"Who should support you?", paName:"Name", paNote:"💌 Today's note", paPh:n=>`Write to ${n}…`, paLockTxt:n=>`Chatting with ${n} is part of Pro. Today's note is free.`, paSaved:"Saved 💛", paHello:n=>`Hi, it's ${n}. Tell me how things are going – with the channel and with you.`,
   gratT:"🙏 Today's gratitude", gratSub:"One line a day. What or who are you grateful for today? It stays on your phone.", gratPh:"E.g. a viewer said my video helped him…", gratSaved:"Saved 🙏",
   winBtn:"🎉 Share a win", winHead:"Pick a win to share, or write your own:", winOwn:"Write your own win…", winShare:"Share", winTitle:n=>`🎉 ${n} shared a win`, cheered:n=>`💜 You've been cheered ${n} ${n===1?"time":"times"} since last time`,
   rxT:{heart:"Warmth",clap:"Cheers",fire:"Strong"},
@@ -1279,6 +1302,78 @@ $("kanban").addEventListener("click",e=>{
 
 function fillCats(){ const cats = $("wType").value==="in"? t().catsIn : t().catsOut; $("wCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join(""); }
 $("wType").onchange=fillCats;
+/* ---------- Virtuel mor/far/mentor ----------
+   Gratis: en daglig besked ud fra tid og tal (lokalt). Pro: chat via /api/coach med persona.
+   Varm, men ærlig; siger ærligt at den er en AI; opmuntrer til rigtige mennesker; sikkerhedsnet. */
+const Parent=(()=>{
+  const KEY="redhue_parent", HIST="redhue_parent_chat";
+  const cfg=()=>Object.assign({role:"mom",name:""},store.get(KEY,{}));
+  const label=()=>{ const c=cfg(), R=t().paRoles[c.role]||t().paRoles.mentor; return { name:(c.name||R[0]).trim(), em:R[1] }; };
+  let busy=false;
+  function seed(s){ let x=0; for(const ch of s) x=(x*31+ch.charCodeAt(0))>>>0; return x; }
+  function pick(arr,key){ return arr[seed(today()+key)%arr.length]; }
+  function note(){
+    const da=lang!=="en", nm=(S.profile.name||"").trim(), C=nm?", "+nm:"", h=nowHour(), D=Math.min(missionDay(),90);
+    const done=(S.mission.checks[today()]||[]).filter(Boolean).length, incToday=S.wallet.some(w=>w.type==="in"&&String(w.date).slice(0,10)===today());
+    const y=addDays(today(),-1); let n=0, d=addDays(y,-1); while(dayDone(d)&&n<40){ n++; d=addDays(d,-1); } const broke=!dayDone(y)&&n>=3;
+    const dow=new Date(today()+"T12:00:00Z").getUTCDay(), weekend=dow===0||dow===6;
+    const L=da?{
+      night:[`Det er sent${C}. Luk computeren nu – resten kan vente til i morgen. Søvn gør dig skarpere.`,`Klokken er mange. Du har gjort nok for i dag. Sov godt${C}.`],
+      comfort:[`Det er helt ok, at det ikke gik i går${C}. Jeg er her stadig, og det er du også. Én lille opgave i dag, så er du tilbage.`],
+      proud:[`Alle fire opgaver i dag! Jeg er så stolt af dig${C}. Hold fri med god samvittighed i aften.`],
+      income:[`Du tjente penge i dag! Nyd det – og husk at lægge lidt til side til skat. 😉`],
+      goal:[`Du har nået dit mål for måneden. Det har du knoklet for${C}. Fejr det med nogen, du holder af.`],
+      weekend:[`Det er weekend${C}. Husk at holde fri også – kreativitet har brug for pauser.`,`Weekend: gå en tur, ring til en ven. Kanalen kører fint, selvom du hviler.`],
+      morning:[`Godmorgen${C}. Spis noget morgenmad, før du går i gang. I dag er dag ${D} – én god video er nok.`,`Godmorgen${C} 💛 Jeg tror på dig. Tag det første lille skridt, så kommer resten.`,`Godmorgen. Du behøver ikke være perfekt i dag, bare være i gang.`],
+      day:[`Hvordan går det${C}? Husk at drikke vand og rejse dig fra skærmen en gang imellem.`,`Du gør det godt. Små skridt hver dag er dem, der tæller.`,`Har du spist frokost? Det kreative kører bedre på en mæt mave.`],
+      evening:[`Godaften${C}. Uanset hvordan dagen gik, er jeg stolt af, at du blev ved.`,`Husk at slukke skærmen i god tid i aften. Søvn er også en del af planen.`,`Ring evt. til en ven i aften. Det er godt at dele det, du er i gang med.`]
+    }:{
+      night:[`It's late${C}. Close the laptop now – the rest can wait until tomorrow. Sleep makes you sharper.`,`It's getting late. You've done enough for today. Sleep well${C}.`],
+      comfort:[`It's completely okay that yesterday didn't work out${C}. I'm still here, and so are you. One small task today and you're back.`],
+      proud:[`All four tasks today! I'm so proud of you${C}. Take the evening off with a clear conscience.`],
+      income:[`You made money today! Enjoy it – and remember to put a little aside for taxes. 😉`],
+      goal:[`You reached your goal for the month. You worked hard for that${C}. Celebrate with someone you care about.`],
+      weekend:[`It's the weekend${C}. Remember to rest too – creativity needs breaks.`,`Weekend: go for a walk, call a friend. The channel is fine while you rest.`],
+      morning:[`Good morning${C}. Eat some breakfast before you start. It's day ${D} – one good video is enough.`,`Good morning${C} 💛 I believe in you. Take the first small step and the rest will follow.`,`Good morning. You don't have to be perfect today, just be on your way.`],
+      day:[`How's it going${C}? Remember to drink water and get up from the screen now and then.`,`You're doing well. Small steps every day are the ones that count.`,`Have you had lunch? Creative work runs better on a full stomach.`],
+      evening:[`Good evening${C}. However the day went, I'm proud you kept going.`,`Remember to turn off the screen in good time tonight. Sleep is part of the plan too.`,`Maybe call a friend tonight. It's good to share what you're working on.`]
+    };
+    if(h>=23||h<5) return pick(L.night,"n");
+    if(broke&&!done) return L.comfort[0];
+    if(done>=4) return L.proud[0];
+    if(S.mission.goal&&goalPct()>=100) return L.goal[0];
+    if(incToday) return L.income[0];
+    if(weekend&&h>=10) return pick(L.weekend,"w");
+    return pick(h<11?L.morning:h<17?L.day:L.evening, h<11?"m":h<17?"d":"e");
+  }
+  function render(){
+    const L=t(), lb=label(), pro=hasLic(), hist=store.get(HIST,[]);
+    $("paTab").textContent=`${lb.em} ${lb.name}`; $("paHead").textContent=`${lb.em} ${lb.name}`;
+    const c=cfg(); $("paRole").innerHTML=Object.entries(L.paRoles).map(([k,[n,e]])=>`<option value="${k}" ${c.role===k?"selected":""}>${e} ${n}</option>`).join("");
+    if(document.activeElement!==$("paName")) $("paName").value=c.name||""; $("paName").placeholder=(L.paRoles[c.role]||L.paRoles.mentor)[0];
+    $("paList").innerHTML=`<div class="ch-msg ai note"><div class="nt">${L.paNote}</div>${esc(note())}<div class="sig">– ${esc(lb.name)} ${lb.em}</div></div>`
+      +(pro&&!hist.length?`<div class="ch-msg ai">${esc(L.paHello(lb.name))}</div>`:"")
+      +hist.map(m=>`<div class="ch-msg ${m.role==="user"?"me":"ai"}">${m.role==="user"?esc(m.content).replace(/\n/g,"<br>"):md(m.content)}</div>`).join("")
+      +(busy?`<div class="ch-msg ai"><span class="ch-dots"><i></i><i></i><i></i></span></div>`:"");
+    $("paIn").placeholder=L.paPh(lb.name); $("paForm").hidden=!pro; $("paLock").hidden=pro; $("paLockTxt").textContent=L.paLockTxt(lb.name);
+    $("paList").scrollTop=$("paList").scrollHeight;
+  }
+  async function ask(q){ q=String(q||"").trim(); if(!q||busy) return;
+    const hist=store.get(HIST,[]); hist.push({role:"user",content:q.slice(0,2000)}); store.set(HIST,hist.slice(-30)); $("paIn").value=""; busy=true; render();
+    let text=null, err=null;
+    try{ const r=await fetch(COACH_API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({license:store.get(K.lic,""),lang,persona:cfg(),messages:store.get(HIST,[]).slice(-20),context:coachContext()})});
+      const j=await r.json().catch(()=>({})); if(r.ok&&j.text) text=j.text; else err=j.error||"default"; }catch{ err="network"; }
+    busy=false; const h2=store.get(HIST,[]);
+    if(text){ h2.push({role:"assistant",content:text}); store.set(HIST,h2.slice(-30)); } else { h2.pop(); store.set(HIST,h2); $("paIn").value=q; toast(t().errors[err]||t().errors.default); }
+    if(current==="chat") render(); }
+  $("paForm").onsubmit=e=>{ e.preventDefault(); ask($("paIn").value); };
+  $("paIn").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!matchMedia("(max-width:860px)").matches){ e.preventDefault(); $("paForm").requestSubmit(); } });
+  $("paCfg").onclick=()=>{ const s=$("paSet").classList.toggle("on"); $("paCfg").setAttribute("aria-expanded",s); };
+  $("paSave").onclick=()=>{ store.set(KEY,{role:$("paRole").value,name:$("paName").value.trim().slice(0,24)}); $("paSet").classList.remove("on"); toast(t().paSaved); render(); if(current==="home") renderHome(); };
+  $("paUnlock").onclick=()=>{ chTab="coach"; renderChat(); setTimeout(()=>$("chLicIn")?.focus(),100); };
+  return { render, note, label, ask };
+})();
+
 /* ---------- Oxytocin: samhørighed, anerkendelse og varme ----------
    Reaktioner og delte sejre i fællesskabet, varme milepæle (også når en streak ryger)
    og en daglig taknemmeligheds-linje. Ingen pres-tællere eller falske notifikationer. */
@@ -1383,6 +1478,7 @@ const Guide = (()=>{
     lang:()=>{ toggleLang(); say(T("Nu taler jeg dansk. 🇩🇰","Now I speak English. 🇬🇧"),[["next",T("Hvad skal jeg nu?","What should I do next?")]]); },
     next:()=>say(...nextStep()),
     help:()=>say(T("Det kan jeg hjælpe med:","Here's what I can help with:"),topics()),
+    parent:()=>close(()=>{ chTab="parent"; go("chat"); }),
     restart:()=>{ const s=st(); s.onboarded=false; s.step=null; save(s); onboard(); }
   };
   const goAct=(id)=>()=>close(()=>go(id));
@@ -1415,6 +1511,7 @@ const Guide = (()=>{
     {k:["produkt","product","betalingslink","payment link","shop","sælg","sell"], a:()=>T("Under <b>Produkter</b> samler du dine digitale produkter og betalingslinks. Registrerer du et salg, lander det automatisk i Wallet.","Under <b>Products</b> you collect your digital products and payment links. Logging a sale puts it in Wallet automatically."), b:()=>[["go:products",T("Åbn Produkter","Open Products")]]},
     {k:["niche","emne","topic"], a:()=>S.mission.niche?T(`Din niche er <b>${esc(S.mission.niche)}</b>. Vil du skifte, så gør det under Mission.`,`Your niche is <b>${esc(S.mission.niche)}</b>. To change it, go to Mission.`):T("Du har ikke valgt en niche endnu. Den hjælper agenterne og coachen med at ramme rigtigt.","You haven't picked a niche yet. It helps the agents and coach get it right."), b:()=>[["restart",T("Vælg niche","Pick a niche")]]},
     {k:["kontrolpanel","control panel","stryg","swipe","skuffe","drawer","alle apps"], a:()=>T("På hjemmeskærmen: <b>stryg ned</b> fra toppen for kontrolpanelet med dagens opgaver, og <b>stryg op</b> for alle apps. Androids tilbage-knap fører dig hjem.","On the home screen: <b>swipe down</b> from the top for the control panel with today's tasks, and <b>swipe up</b> for all apps. Android's back button takes you home."), b:()=>[["go:home",T("Til hjemmeskærmen","Go to home")]]},
+    {k:["mor","far","mentor","forælder","parent","mom","dad","støtte","support","opmuntring","encourag"], a:()=>{ const lb=Parent.label(); return T(`Under <b>Chat → ${lb.em} ${esc(lb.name)}</b> får du en daglig besked, der passer til din dag, gratis. Med Pro kan du også skrive med ${esc(lb.name)}: varm og støttende, men ærlig. Du vælger selv Mor, Far eller Mentor og navnet.`,`Under <b>Chat → ${lb.em} ${esc(lb.name)}</b> you get a daily note that fits your day, free. With Pro you can also talk with ${esc(lb.name)}: warm and supportive, but honest. You choose Mom, Dad or Mentor and the name.`); }, b:()=>[["parent",T("Åbn","Open")]]},
     {k:["taknemmelig","grateful","gratitude","tak for","glad for"], a:()=>T("Under <b>Mission</b> finder du <b>Dagens taknemmelighed</b>: én linje om dagen om, hvad du er taknemmelig for. Det tager 20 sekunder og bliver på din telefon.","Under <b>Mission</b> you'll find <b>Today's gratitude</b>: one line a day about what you're grateful for. It takes 20 seconds and stays on your phone."), b:()=>[["go:mission",T("Skriv dagens linje","Write today's line")]]},
     {k:["sejr","win","hyld","cheer","reaktion","reaction","fejr","celebrate"], a:()=>T("I <b>Chat → Fællesskab</b> kan du trykke <b>🎉 Del en sejr</b>. Appen foreslår sejre ud fra dine tal, og andre kan hylde dig med ❤️ 🙌 🔥. Når du rammer en milepæl, fejrer appen den også med dig.","In <b>Chat → Community</b> tap <b>🎉 Share a win</b>. The app suggests wins from your numbers, and others can cheer you with ❤️ 🙌 🔥. When you hit a milestone, the app celebrates it with you too."), b:()=>[["go:chat",T("Åbn fællesskabet","Open community")]]},
     {k:["slet alt","nulstil","reset","delete all","start forfra"], a:()=>T("Du kan nulstille under Indstillinger. Tag en backup først, for det kan ikke fortrydes.","You can reset under Settings. Make a backup first, because it can't be undone."), b:()=>[["backup",T("Tag backup først","Back up first")]]}
@@ -1460,9 +1557,12 @@ const Guide = (()=>{
 
   // Svar på fritekst
   function answer(q){
-    const s=st(); if(s.step) return onboardAnswer(q);
     const n=q.toLowerCase().normalize("NFC");
-    if(/^(hej|hi|hello|hallo|yo|godmorgen|goddag)/.test(n)) return say(T(`Hej ${esc(S.profile.name||"")}! 👋 Hvad kan jeg hjælpe med?`,`Hi ${esc(S.profile.name||"")}! 👋 What can I help with?`),topics());
+    // Sikkerhedsnet: ved tegn på krise stopper app-snakken
+    if(/(selvmord|tage mit (eget )?liv|vil ikke leve|ikke leve mere|skade mig selv|gøre skade på mig selv|slå mig selv ihjel|suicid|kill myself|end my life|don'?t want to live|self[- ]?harm|hurt myself)/.test(n))
+      return say(T("Det gør mig ondt, at du har det sådan. Du behøver ikke stå alene med det. Ring til <b>Livslinien på 70 201 201</b>, eller chat med dem via livslinien.dk. Er du i akut fare, så ring <b>112</b> nu. Fortæl gerne også en, du stoler på, hvordan du har det.","I'm really sorry you're feeling this way. You don't have to carry it alone. Please reach out to a crisis line now – <b>findahelpline.com</b> lists one for your country – or call your local emergency number if you're in immediate danger. It can also help to tell someone you trust how you're feeling."));
+    const s=st(); if(s.step) return onboardAnswer(q);
+    if(/^(hej|hi|hello|hallo|yo|godmorgen|goddag)\b/.test(n)) return say(T(`Hej ${esc(S.profile.name||"")}! 👋 Hvad kan jeg hjælpe med?`,`Hi ${esc(S.profile.name||"")}! 👋 What can I help with?`),topics());
     if(/^(tak|mange tak|tusind tak|tak skal du have|thanks|thank you|ty)\b/.test(n)&&n.length<30) return say(T("Selv tak! Jeg er her, når du har brug for mig. ✦","You're welcome! I'm here whenever you need me. ✦"));
     if(/(hvad skal jeg|næste|what should i|next step|hvor starter|where do i start|kom i gang|get started)/.test(n)) return say(...nextStep());
     let best=null, score=0;
@@ -1651,10 +1751,12 @@ async function roomFetch(){
 function roomStart(){ roomStop(); chPolls=0; roomFetch(); chRoomTimer=setInterval(roomFetch,5000); }
 function roomStop(){ clearInterval(chRoomTimer); chRoomTimer=null; }
 function renderChat(){
-  const locked=!hasLic();
-  $("chLocked").style.display=locked?"":"none";
+  const locked=!hasLic(), parent=chTab==="parent";
+  $("chLocked").style.display=locked&&!parent?"":"none";
   document.querySelectorAll(".ch-tab").forEach(b=>b.classList.toggle("on",b.dataset.ct===chTab));
-  $("chCoachBox").hidden=locked||chTab!=="coach"; $("chRoomBox").hidden=locked||chTab!=="room";
+  $("chCoachBox").hidden=locked||chTab!=="coach"; $("chRoomBox").hidden=locked||chTab!=="room"; $("chParentBox").hidden=!parent;
+  Parent.render();
+  if(parent){ roomStop(); return; }
   if(locked){ roomStop(); return; }
   if(chTab==="coach"){ roomStop(); renderCoach(); } else { renderRoom(); if(!chRoomTimer) roomStart(); }
 }
@@ -2002,6 +2104,8 @@ function renderHome(){
     <button class="os-w" data-os="overview"><div class="lbl">${L.osLevel} ${level()}</div><div><div class="big">${robot()} ${S.xp} XP</div><div class="os-xp"><i style="width:${xpIn}%"></i></div></div></button>
     <button class="os-w wide" data-os="pipeline" style="flex-direction:column;align-items:stretch;gap:2px"><div class="lbl">${L.pipeline}</div>
       <div class="os-pipe">${cnt.map((n,i)=>`<span>${n}<small>${L.osPipeS[i]||""}</small></span>`).join("")}</div></button>`;
+  const lb=Parent.label();
+  $("osWidgets").insertAdjacentHTML("beforeend",`<button class="os-w wide note" data-os="parent" style="flex-direction:column;align-items:stretch;gap:4px"><div class="lbl">💌 ${esc(lb.name)} ${lb.em}</div><div class="txt">${esc(Parent.note())}</div></button>`);
   $("osApps").innerHTML=OS_APPS.map(osAppHTML).join("");
   $("osDock").innerHTML=OS_DOCK.map(osAppHTML).join("");
   renderOsSheets();
@@ -2025,6 +2129,7 @@ $("os").addEventListener("click",e=>{
   const id=b.dataset.os;
   if(id==="q-in"){ go("wallet"); setTimeout(()=>{ $("wType").value="in"; fillCats(); $("wAmt").focus(); },80); return; }
   if(id==="q-idea"){ go("pipeline"); setTimeout(()=>$("kTitle").focus(),80); return; }
+  if(id==="parent"){ chTab="parent"; go("chat"); return; }
   go(id);
 });
 /* --- OS 2: ark, gestus, haptik, badge, deling --- */

@@ -95,3 +95,9 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - **Venlighed:** ryger en streak på mindst 3 dage, mødes brugeren med en venlig besked og "Tag én opgave nu" – ikke skam.
 - **Dagens taknemmelighed (alle):** én linje om dagen under Mission, gemmes kun lokalt.
 
+## 👩👨 Virtuel mor/far/mentor
+- Vælg **Mor 👩**, **Far 👨** eller **Mentor 🧑** og et navn (Chat → fanen med figuren, ⚙︎).
+- **Gratis for alle:** en daglig besked ud fra tid og tal (morgen/dag/aften/nat, weekend, alle opgaver klaret, indtægt i dag, nået mål, trøst efter en mistet streak). Lokal, samme besked hele dagen. Vises også som widget på hjemmeskærmen.
+- **Pro:** chat med figuren via `/api/coach` (`persona`). Varm og støttende, men ærlig; siger ærligt at den er en AI; opmuntrer til kontakt med rigtige mennesker; ingen skyld eller pres.
+- **Sikkerhedsnet:** både figuren og den gratis guide henviser til Livslinien (70 201 201) og 112 ved tegn på krise. På engelsk: findahelpline.com.
+
