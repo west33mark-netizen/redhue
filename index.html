@@ -1017,6 +1017,21 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 <div class="xp-pop" id="xpPop"></div>
 
 <script>
+/* ---------- Robust opstart ----------
+   Nogle visninger (fx Claude-appens forhåndsvisning, indlejrede rammer) forbyder at ændre adressen
+   (history.pushState/replaceState). Det må aldrig stoppe appen: fejler et adresse-skift, fortsætter vi uden. */
+["pushState","replaceState"].forEach(m=>{ try{ const orig=history[m].bind(history); history[m]=function(){ try{ return orig.apply(null,arguments); }catch(e){ return undefined; } }; }catch(e){} });
+// Lille, lukbar fejlboks: viser uventede fejl i stedet for en tom skærm (hjælper med fejlfinding på telefonen)
+(function(){ let box=null, shown=0;
+  function show(msg){ if(shown>=3) return; shown++; try{
+    if(!box){ box=document.createElement("div"); box.id="errBox"; box.setAttribute("role","alert");
+      box.style.cssText="position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:9999;background:#2a0b14;color:#ffd6de;border:1px solid #e8113a;border-radius:12px;padding:10px 12px;font:12px/1.4 system-ui,sans-serif;max-height:30vh;overflow:auto";
+      box.onclick=()=>{ box.remove(); box=null; }; (document.body||document.documentElement).appendChild(box); }
+    const d=document.createElement("div"); d.textContent="⚠️ "+String(msg).slice(0,300)+" (tryk for at lukke)"; box.appendChild(d); }catch(e){} }
+  addEventListener("error",e=>{ if(e&&e.message&&!/ResizeObserver|Script error/.test(e.message)) show(e.message+(e.lineno?" · linje "+e.lineno:"")); });
+  addEventListener("unhandledrejection",e=>{ const r=e&&e.reason; if(r&&r.name!=="AbortError"&&!/NotAllowedError|Failed to fetch|NetworkError/.test(String(r))) show(r.message||r); });
+  window.__safeRun=function(name,fn){ try{ return fn(); }catch(e){ show(name+": "+(e&&e.message||e)); } };
+})();
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
@@ -2649,11 +2664,12 @@ window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1); if(h 
 const qLic=new URLSearchParams(location.search).get("license");
 if(qLic){ store.set(K.lic,qLic); history.replaceState(null,"",location.pathname+"#agents"); current="agents"; }
 
-renderAll();
-D4.apply();
-Talk.refresh();
-if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices();
-if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+// Opstart i sikre trin: fejler ét trin (fx 4D eller stemmer), starter resten af appen alligevel
+__safeRun("render",()=>renderAll());
+__safeRun("4D",()=>D4.apply());
+__safeRun("tale",()=>Talk.refresh());
+__safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
+__safeRun("offline",()=>{ if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 </script>
 </body>
 </html>
