@@ -80,3 +80,10 @@ Den nye app rører aldrig de gamle nøgler.
 - **Dimensionsskift:** sektioner glider ind fra dybden.
 - Tænd/sluk under **Indstillinger → 4D** eller i kontrolpanelet. Slukket som standard ved "mindre bevægelse", pauser når appen ikke er åben, ca. 30 billeder/sek. for batteriet.
 
+## ✦ REDHUE Guide (gratis for alle)
+- Svæveknap ✦ nederst til højre på alle skærme. Kører **lokalt i appen**: ingen server, ingen AI-forbrug, virker offline.
+- **Velkomst for nye brugere:** navn → niche → månedsmål med ét tryk, og så første skridt + installationsvejledning (Android/iPhone/computer).
+- **Svarer på spørgsmål** om alle funktioner (dansk/engelsk) med knapper, der åbner det rigtige sted.
+- **"Hvad skal jeg nu?"** ud fra brugerens egne tal: niche, dagens opgaver, pipeline, logning, profitmål, installation, Pro.
+- Pro-brugere kan sende spørgsmål, guiden ikke kan svare på, videre til AI-coachen.
+

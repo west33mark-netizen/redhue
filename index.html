@@ -331,6 +331,27 @@ table.list tr:hover td{background:rgba(255,255,255,.025)}
 .imp-report .fix{color:var(--muted);margin-top:6px}
 .imp-report dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
 .imp-report dd{color:var(--text);word-break:break-all}
+/* ---------- REDHUE Guide (gratis hjælpe-bot) ---------- */
+.gd-fab{position:fixed;right:18px;bottom:24px;z-index:70;width:56px;height:56px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;font-size:24px;color:#08081a;background:var(--crystal);box-shadow:0 10px 30px -8px var(--vi),0 0 0 1px rgba(255,255,255,.15) inset}
+.gd-fab .gd-dot{position:absolute;top:2px;right:2px;width:13px;height:13px;border-radius:50%;background:var(--red);border:2px solid var(--bg)}
+@media(prefers-reduced-motion:no-preference){.gd-fab.gd-new{animation:gdpulse 2.4s ease-in-out infinite}@keyframes gdpulse{50%{box-shadow:0 10px 30px -8px var(--vi),0 0 0 10px rgba(155,107,255,.14)}}}
+@media(max-width:860px){.gd-fab{bottom:calc(86px + env(safe-area-inset-bottom));right:14px;width:52px;height:52px}html.os-on .gd-fab{bottom:calc(112px + env(safe-area-inset-bottom))}}
+.gd{position:fixed;z-index:72;right:18px;bottom:92px;width:min(400px,calc(100vw - 24px));height:min(600px,calc(100vh - 120px));display:flex;flex-direction:column;border-radius:24px;overflow:hidden;
+  background:rgba(12,12,26,.94);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.6);transform-origin:100% 100%;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.gd[hidden]{display:flex!important;opacity:0;transform:scale(.9) translateY(10px);pointer-events:none;visibility:hidden}
+@media(max-width:860px){.gd{left:8px;right:8px;width:auto;bottom:8px;top:calc(8px + env(safe-area-inset-top));height:auto;border-radius:22px}}
+.gd-h{display:flex;align-items:center;gap:10px;padding:14px 14px 12px 16px;border-bottom:1px solid var(--line)}
+.gd-h .av{width:34px;height:34px;border-radius:50%;background:var(--crystal);display:grid;place-items:center;font-size:17px;color:#08081a;flex:none}
+.gd-h b{display:block;font-size:15px}.gd-h small{color:var(--muted);font-size:12px}
+.gd-h .gd-x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1}
+.gd-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
+.gd-m{max-width:88%;padding:10px 13px;border-radius:16px 16px 16px 5px;background:var(--panel2);border:1px solid var(--line);font-size:14.5px;line-height:1.5;overflow-wrap:anywhere;align-self:flex-start}
+.gd-m.me{align-self:flex-end;border-radius:16px 16px 5px 16px;background:color-mix(in srgb,var(--vi) 22%,var(--panel2));border-color:color-mix(in srgb,var(--vi) 45%,var(--line))}
+.gd-m p{margin:0}.gd-m p+p{margin-top:6px}
+.gd-acts{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:100%}
+.gd-acts button{font-size:13px;padding:8px 12px;border-radius:99px}
+.gd-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.gd-in input{flex:1;min-width:0}
 /* ---------- 4D: tesserakt-baggrund, dybde ved vip, dimensionsskift ---------- */
 #fx4d{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:0;transition:opacity .6s}
 html.d4 #fx4d{opacity:1}
@@ -464,6 +485,12 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </head>
 <body>
 <canvas id="fx4d" aria-hidden="true"></canvas>
+<button class="gd-fab" id="gdFab" aria-label="REDHUE Guide">✦</button>
+<div class="gd" id="gd" hidden role="dialog" aria-label="REDHUE Guide">
+  <div class="gd-h"><span class="av">✦</span><div><b>REDHUE Guide</b><small data-t="gdSub"></small></div><button class="gd-x" id="gdX" aria-label="Luk">×</button></div>
+  <div class="gd-list" id="gdList" aria-live="polite"></div>
+  <form class="gd-in" id="gdForm" autocomplete="off"><input id="gdIn" maxlength="300" data-tp="gdPh"><button class="primary" type="submit" data-t="chSend"></button></form>
+</div>
 <div class="app">
   <aside id="side">
     <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span></h1></div>
@@ -907,6 +934,7 @@ const T = {
   profit:"Profit", profitSub:"Hvad du reelt tjener: indtægter minus udgifter, i din tidszone.", pThis:"Profit denne måned", pThisShort:"Profit · måned", pLast:"Sidste måned", pMargin:"Margin", pForecast:"Prognose for måneden",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. sidste`, pMonths:"Profit pr. måned", pGoal:"Profitmål pr. måned", pGoalSet:"Nyt profitmål", pSources:"Hvor tjener du mest · 90 dage", pCosts:"Hvor går pengene hen · 90 dage",
   pMonth:"Måned", pIn:"Ind", pOut:"Ud", pNone:"Ingen poster endnu – tilføj indtægter og udgifter i Wallet.", pNoGoal:"Sæt et profitmål for at følge med.", pGap:(x,days)=>`Du mangler ${x} – det er ca. ${x} på ${days} dage.`, pGapD:(x,days,perDay)=>`Du mangler ${x}. Med ${days} dage tilbage er det ${perDay} om dagen.`, pHit:"🎉 Profitmålet er nået denne måned!",
+  gdSub:"Hjælper dig i gang og videre", gdPh:"Spørg om alt i appen…",
   d4T:"4D", d4Sub:"Dybde der følger, når du vipper telefonen, en tesserakt der roterer gennem tiden i baggrunden, og sektioner der glider ind fra dybden.", d4On:"4D er tændt", d4Off:"4D er slukket", d4Motion:"Tillad bevægelsessensor", d4Q:"4D",
   chat:"Chat", chatSub:"Spørg din AI-coach om dine tal, eller skriv med andre REDHUE-creators.", chCoach:"AI-coach", chRoom:"Fællesskab", chSend:"Send", chClear:"Ny samtale",
   chCoachHead:"Coachen kan se dine tal: mission, profit og pipeline.", chCoachPh:"Spørg om din plan, dine tal eller din næste video…", chRoomPh:"Skriv til fællesskabet…",
@@ -974,6 +1002,7 @@ const T = {
   profit:"Profit", profitSub:"What you really earn: income minus expenses, in your time zone.", pThis:"Profit this month", pThisShort:"Profit · month", pLast:"Last month", pMargin:"Margin", pForecast:"Forecast for the month",
   pMarginShort:m=>`${m}% margin`, pVs:(d)=>d===null?"–":`${d>=0?"▲":"▼"} ${Math.abs(d)}% vs. last`, pMonths:"Profit per month", pGoal:"Monthly profit goal", pGoalSet:"New profit goal", pSources:"Where you earn most · 90 days", pCosts:"Where the money goes · 90 days",
   pMonth:"Month", pIn:"In", pOut:"Out", pNone:"No entries yet – add income and expenses in Wallet.", pNoGoal:"Set a profit goal to track it.", pGap:(x,days)=>`You need ${x} more.`, pGapD:(x,days,perDay)=>`You need ${x} more. With ${days} days left that's ${perDay} a day.`, pHit:"🎉 Profit goal reached this month!",
+  gdSub:"Helps you get started and keep going", gdPh:"Ask about anything in the app…",
   d4T:"4D", d4Sub:"Depth that follows when you tilt your phone, a tesseract rotating through time in the background, and sections that glide in from depth.", d4On:"4D is on", d4Off:"4D is off", d4Motion:"Allow motion sensor", d4Q:"4D",
   chat:"Chat", chatSub:"Ask your AI coach about your numbers, or talk with other REDHUE creators.", chCoach:"AI coach", chRoom:"Community", chSend:"Send", chClear:"New chat",
   chCoachHead:"The coach can see your numbers: mission, profit and pipeline.", chCoachPh:"Ask about your plan, your numbers or your next video…", chRoomPh:"Write to the community…",
@@ -1005,7 +1034,7 @@ function go(id){
   if(from==="home" && id!=="home") history.pushState(null,"","#"+id); else history.replaceState(null,"","#"+id);
   $("os").hidden = id!=="home"; if(id!=="home") hideSheets(); if(id!=="chat") roomStop(); document.documentElement.classList.toggle("os-on", id==="home");
   document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active", s.id==="s-"+id));
-  renderNav(); renderSection(id); window.scrollTo(0,0);
+  renderNav(); renderSection(id); window.scrollTo(0,0); if(id==="home") $("os").scrollTop=0;
   if(from!==id) D4.enter(id);
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-go]"); if(b){ e.preventDefault(); go(b.dataset.go); } });
@@ -1173,6 +1202,156 @@ $("kanban").addEventListener("click",e=>{
 
 function fillCats(){ const cats = $("wType").value==="in"? t().catsIn : t().catsOut; $("wCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join(""); }
 $("wType").onchange=fillCats;
+/* ---------- REDHUE Guide: gratis hjælpe-bot for alle brugere ----------
+   Kører lokalt i appen (ingen server, ingen AI-forbrug), kender alle funktioner og
+   brugerens egne tal, og foreslår næste skridt. Pro-brugere kan sendes videre til AI-coachen. */
+const Guide = (()=>{
+  const KEY="redhue_guide";
+  const st=()=>Object.assign({onboarded:false,step:null,log:[]},store.get(KEY,{}));
+  const save=(s)=>store.set(KEY,s);
+  let installEvt=null;
+  addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); installEvt=e; });
+  const da=()=>lang!=="en";
+  const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches||navigator.standalone===true;
+  const os=()=>/android/i.test(navigator.userAgent)?"android":/iphone|ipad|ipod/i.test(navigator.userAgent)?"ios":"desktop";
+  const T=(d,e)=>da()?d:e;
+
+  // Handlinger bag knapperne
+  const ACT={
+    wallet_in:()=>close(()=>{ go("wallet"); setTimeout(()=>{ $("wType").value="in"; fillCats(); $("wAmt").focus(); },120); }),
+    wallet_out:()=>close(()=>{ go("wallet"); setTimeout(()=>{ $("wType").value="out"; fillCats(); $("wAmt").focus(); },120); }),
+    idea:()=>close(()=>{ go("pipeline"); setTimeout(()=>$("kTitle").focus(),120); }),
+    profitgoal:()=>close(()=>{ go("profit"); setTimeout(()=>$("pGoalIn").focus(),120); }),
+    checks:()=>close(()=>{ go("mission"); }),
+    coach:(q)=>close(()=>{ go("chat"); chTab="coach"; renderChat(); if(q) setTimeout(()=>{ $("chCoachIn").value=q; $("chCoachIn").focus(); },150); }),
+    pro:()=>close(()=>{ go("settings"); setTimeout(()=>$("licInput").focus(),150); }),
+    backup:()=>close(()=>{ go("settings"); setTimeout(()=>$("expBtn").scrollIntoView({block:"center"}),150); }),
+    install:()=>{ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; }); } else say(installText()); },
+    d4:()=>{ D4.set(!D4.on()); say(T(D4.on()?"4D er tændt. Vip telefonen og se dybden. 🧊":"4D er slukket. Du kan altid tænde det igen her eller i kontrolpanelet.", D4.on()?"4D is on. Tilt your phone to see the depth. 🧊":"4D is off. You can turn it back on here or in the control panel.")); },
+    lang:()=>{ toggleLang(); say(T("Nu taler jeg dansk. 🇩🇰","Now I speak English. 🇬🇧"),[["next",T("Hvad skal jeg nu?","What should I do next?")]]); },
+    next:()=>say(...nextStep()),
+    help:()=>say(T("Det kan jeg hjælpe med:","Here's what I can help with:"),topics()),
+    restart:()=>{ const s=st(); s.onboarded=false; s.step=null; save(s); onboard(); }
+  };
+  const goAct=(id)=>()=>close(()=>go(id));
+
+  function installText(){
+    if(isStandalone()) return T("REDHUE er allerede installeret på denne enhed. 👍","REDHUE is already installed on this device. 👍");
+    if(os()==="ios") return T("På iPhone: åbn REDHUE i Safari, tryk på Del-knappen (firkant med pil) og vælg <b>Føj til hjemmeskærm</b>.","On iPhone: open REDHUE in Safari, tap Share (square with arrow) and choose <b>Add to Home Screen</b>.");
+    if(os()==="android") return T("På Android: åbn REDHUE i Chrome, tryk på menuen ⋮ og vælg <b>Installér app</b>. Så får du hjemmeskærmen i fuld skærm, og REDHUE kommer med i del-menuen.","On Android: open REDHUE in Chrome, tap the ⋮ menu and choose <b>Install app</b>. You get the full-screen home screen, and REDHUE appears in the share menu.");
+    return T("På computeren: klik på installér-ikonet i adresselinjen i Chrome eller Edge. På telefonen: åbn siden i Chrome (Android) eller Safari (iPhone) og vælg Installér / Føj til hjemmeskærm.","On a computer: click the install icon in the address bar in Chrome or Edge. On a phone: open the page in Chrome (Android) or Safari (iPhone) and choose Install / Add to Home Screen.");
+  }
+
+  // Viden om appen: nøgleord → svar + knapper
+  const KB=[
+    {k:["indtægt","indtaegt","tjent","salg","income","earn","sale","penge ind","log penge","registrer"], a:()=>T("Tilføj en indtægt i <b>Wallet</b>: vælg Indtægt, skriv beløbet og en kategori, fx Affiliate eller Sponsor. Den tæller med i din profit og dit månedsmål med det samme.","Add income in <b>Wallet</b>: choose Income, enter the amount and a category, e.g. Affiliate or Sponsor. It counts toward your profit and monthly goal right away."), b:()=>[["wallet_in",T("+ Tilføj indtægt","+ Add income")]]},
+    {k:["udgift","expense","cost","købt","betalt","abonnement","subscription","spent"], a:()=>T("Udgifter logger du også i <b>Wallet</b>: vælg Udgift. Så kan Profit vise, hvad du reelt tjener, og hvor pengene går hen.","Log expenses in <b>Wallet</b> too: choose Expense. Then Profit can show what you really earn and where the money goes."), b:()=>[["wallet_out",T("+ Tilføj udgift","+ Add expense")]]},
+    {k:["profit","overskud","margin","prognose","forecast","tjener jeg"], a:()=>{ const P=profitNow(); return T(`<b>Profit</b> er indtægter minus udgifter. Denne måned står du på <b>${money(P.profit)}</b>${P.in?` med ${P.margin}% margin`:""}. Sæt et profitmål, så regner appen ud, hvad du mangler pr. dag.`,`<b>Profit</b> is income minus expenses. This month you're at <b>${money(P.profit)}</b>${P.in?` with a ${P.margin}% margin`:""}. Set a profit goal and the app works out what you need per day.`); }, b:()=>[["go:profit",T("Åbn Profit","Open Profit")],["profitgoal",T("Sæt profitmål","Set profit goal")]]},
+    {k:["mission","90","dag ","day","opgave","task","tjekliste","checklist","streak","xp","level"], a:()=>T(`Din <b>mission</b> er 90 dage. Du er på dag <b>${Math.min(missionDay(),90)}</b>. Hver dag har 4 små opgaver: klarer du mindst 2, holder din streak (nu <b>${streak()}</b> 🔥). Opgaver giver XP, og din robot vokser med dit level.`,`Your <b>mission</b> is 90 days. You're on day <b>${Math.min(missionDay(),90)}</b>. Each day has 4 small tasks: do at least 2 to keep your streak (now <b>${streak()}</b> 🔥). Tasks give XP and your robot grows with your level.`), b:()=>[["checks",T("Dagens opgaver","Today's tasks")]]},
+    {k:["pipeline","idé","ide","idea","video","manus","script","kanban","post"], a:()=>T("I <b>Pipeline</b> flytter du videoer fra Idé → Manuskript → Produktion → Postet. Tip: del et TikTok- eller YouTube-link til REDHUE fra telefonens del-menu, så bliver det automatisk en idé.","In <b>Pipeline</b> you move videos from Idea → Script → Production → Posted. Tip: share a TikTok or YouTube link to REDHUE from your phone's share menu and it becomes an idea automatically."), b:()=>[["idea",T("+ Ny idé","+ New idea")],["go:pipeline",T("Åbn Pipeline","Open Pipeline")]]},
+    {k:["agent","ai","hook","caption","manuskript","planlæg","planner","analys","analyst"], a:()=>T("<b>Agenterne</b> skriver for dig: Script-agent, Hook & Caption, Planlægger og Analytiker. De er en del af Pro.","The <b>agents</b> write for you: Script, Hook & Caption, Planner and Analyst. They're part of Pro."), b:()=>[["go:agents",T("Åbn Agenter","Open Agents")]].concat(hasLic()?[]:[["pro",T("Lås Pro op","Unlock Pro")]])},
+    {k:["coach","rådgiv","advice","hjælp mig med strategi","strategi","strategy","vækst","growth"], a:()=>T("<b>AI-coachen</b> kan se dine tal og giver konkrete næste skridt. Den findes under Chat (Pro).","The <b>AI coach</b> can see your numbers and gives concrete next steps. It's under Chat (Pro)."), b:()=>[[hasLic()?"coach":"pro",hasLic()?T("Spørg coachen","Ask the coach"):T("Lås Pro op","Unlock Pro")]]},
+    {k:["chat","fællesskab","community","andre creators","skriv med","forum"], a:()=>T("I <b>Chat → Fællesskab</b> skriver du med andre REDHUE-creators. Du vises med dit navn, aldrig med din licensnøgle, og du kan slette dine egne beskeder.","In <b>Chat → Community</b> you talk with other REDHUE creators. You're shown by your name, never your license key, and you can delete your own messages."), b:()=>[["go:chat",T("Åbn Chat","Open Chat")]]},
+    {k:["pro","licens","license","nøgle","key","købe","buy","gumroad","pris","price","betal","opgrader","upgrade"], a:()=>hasLic()?T("Du har allerede en licens. Agenter, AI-coach og fællesskab er låst op. 🎉","You already have a license. Agents, AI coach and community are unlocked. 🎉"):T("Med <b>Pro</b> får du AI-agenter, AI-coachen og fællesskabs-chatten. Når du har købt, får du en licensnøgle på mail, som du indsætter under Indstillinger.","With <b>Pro</b> you get the AI agents, the AI coach and the community chat. After buying you get a license key by email, which you paste under Settings."), b:()=>[["pro",T("Indsæt licens","Enter license")]]},
+    {k:["installer","install","hjemmeskærm","home screen","app på telefon","download","android","iphone","apk"], a:installText, b:()=>[["install",T("Installér nu","Install now")]]},
+    {k:["backup","gem data","eksport","export","import","ny telefon","new phone","skift telefon","mister","lose"], a:()=>T("Dine data ligger på din enhed. Skifter du telefon: tag en <b>backup</b> under Indstillinger og hent filen ind på den nye. Gør det gerne en gang imellem.","Your data lives on your device. Switching phones: make a <b>backup</b> under Settings and import the file on the new one. Do it now and then."), b:()=>[["backup",T("Gå til backup","Go to backup")]]},
+    {k:["privat","privacy","data","sikker","safe","hvem kan se","gdpr"], a:()=>T("Dine tal gemmes kun på din enhed. Kun når du bruger AI (agenter eller coach), sendes det, du skriver, til serveren og videre til Anthropic. Chatbeskeder gemmes på serveren, så andre kan læse dem. Jeg, guiden, kører helt lokalt.","Your numbers are stored only on your device. Only when you use AI (agents or coach) is what you write sent to the server and on to Anthropic. Chat messages are stored on the server so others can read them. I, the guide, run entirely locally."), b:()=>[]},
+    {k:["4d","3d","dybde","depth","animation","bevægelse","motion","tesserakt","tesseract"], a:()=>T(`<b>4D</b> giver dybde, når du vipper telefonen, og en tesserakt i baggrunden. Det er <b>${D4.on()?"tændt":"slukket"}</b> nu.`,`<b>4D</b> adds depth when you tilt your phone and a tesseract in the background. It's <b>${D4.on()?"on":"off"}</b> now.`), b:()=>[["d4",D4.on()?T("Sluk 4D","Turn off 4D"):T("Tænd 4D","Turn on 4D")]]},
+    {k:["tidszone","timezone","klokken","forkert tid","wrong time","ur "], a:()=>T(`Appen følger tidszonen <b>${TZ()}</b>, også hvis telefonen står forkert. Du kan ændre den under Indstillinger.`,`The app follows the time zone <b>${TZ()}</b>, even if your phone is set wrong. Change it under Settings.`), b:()=>[["go:settings",T("Indstillinger","Settings")]]},
+    {k:["sprog","language","engelsk","english","dansk","danish"], a:()=>T("Jeg kan skifte hele appen mellem dansk og engelsk.","I can switch the whole app between Danish and English."), b:()=>[["lang",T("Skift til engelsk","Switch to Danish")]]},
+    {k:["portefølje","portfolio","krypto","crypto","bitcoin","aktie","fond","etf","invest"], a:()=>T("I <b>Portefølje</b> følger du krypto og fonde med live-priser. Det er et overblik, ikke investeringsrådgivning.","In <b>Portfolio</b> you track crypto and funds with live prices. It's an overview, not investment advice."), b:()=>[["go:portfolio",T("Åbn Portefølje","Open Portfolio")]]},
+    {k:["produkt","product","betalingslink","payment link","shop","sælg","sell"], a:()=>T("Under <b>Produkter</b> samler du dine digitale produkter og betalingslinks. Registrerer du et salg, lander det automatisk i Wallet.","Under <b>Products</b> you collect your digital products and payment links. Logging a sale puts it in Wallet automatically."), b:()=>[["go:products",T("Åbn Produkter","Open Products")]]},
+    {k:["niche","emne","topic"], a:()=>S.mission.niche?T(`Din niche er <b>${esc(S.mission.niche)}</b>. Vil du skifte, så gør det under Mission.`,`Your niche is <b>${esc(S.mission.niche)}</b>. To change it, go to Mission.`):T("Du har ikke valgt en niche endnu. Den hjælper agenterne og coachen med at ramme rigtigt.","You haven't picked a niche yet. It helps the agents and coach get it right."), b:()=>[["restart",T("Vælg niche","Pick a niche")]]},
+    {k:["kontrolpanel","control panel","stryg","swipe","skuffe","drawer","alle apps"], a:()=>T("På hjemmeskærmen: <b>stryg ned</b> fra toppen for kontrolpanelet med dagens opgaver, og <b>stryg op</b> for alle apps. Androids tilbage-knap fører dig hjem.","On the home screen: <b>swipe down</b> from the top for the control panel with today's tasks, and <b>swipe up</b> for all apps. Android's back button takes you home."), b:()=>[["go:home",T("Til hjemmeskærmen","Go to home")]]},
+    {k:["slet alt","nulstil","reset","delete all","start forfra"], a:()=>T("Du kan nulstille under Indstillinger. Tag en backup først, for det kan ikke fortrydes.","You can reset under Settings. Make a backup first, because it can't be undone."), b:()=>[["backup",T("Tag backup først","Back up first")]]}
+  ];
+  function topics(){ return [["next",T("Hvad skal jeg nu?","What should I do next?")],["wallet_in",T("+ Indtægt","+ Income")],["go:profit","Profit"],["go:mission","Mission"],["install",T("Installér app","Install app")],["pro",hasLic()?"Pro ✓":"Pro"]]; }
+
+  // Næste bedste skridt ud fra brugerens egne tal
+  function nextStep(){
+    const done=(S.mission.checks[today()]||[]).filter(Boolean).length, P=profitNow();
+    if(!S.mission.niche) return [T("Første skridt: vælg din niche, så kan resten af appen ramme dig bedre.","First step: pick your niche so the rest of the app fits you better."),[["restart",T("Vælg niche","Pick a niche")]]];
+    if(done<2) return [T(`Du har klaret ${done} af dagens 4 opgaver. Klarer du ${2-done} mere, holder din streak på ${streak()} 🔥.`,`You've done ${done} of today's 4 tasks. Do ${2-done} more to keep your ${streak()} 🔥 streak.`),[["checks",T("Til dagens opgaver","To today's tasks")]]];
+    if(!S.kanban.some(c=>c.col!=="posted")) return [T("Din pipeline er tom. Læg 3 idéer ind, så ved du altid, hvad næste video er.","Your pipeline is empty. Add 3 ideas so you always know your next video."),[["idea",T("+ Ny idé","+ New idea")]]];
+    if(!S.wallet.some(w=>String(w.date).slice(0,7)===today().slice(0,7))) return [T("Du har ikke logget nogen tal denne måned. Log selv små beløb, så kan du se din udvikling.","You haven't logged anything this month. Log even small amounts to see your progress."),[["wallet_in",T("+ Indtægt","+ Income")],["wallet_out",T("+ Udgift","+ Expense")]]];
+    if(!S.profitGoal) return [T(`Du står på ${money(P.profit)} i profit denne måned. Sæt et profitmål, så viser appen, hvad du mangler pr. dag.`,`You're at ${money(P.profit)} profit this month. Set a profit goal and the app shows what you need per day.`),[["profitgoal",T("Sæt profitmål","Set profit goal")]]];
+    if(!isStandalone()) return [T("Installér REDHUE på telefonen, så får du hjemmeskærmen i fuld skærm og kan dele links direkte til din pipeline.","Install REDHUE on your phone to get the full-screen home screen and share links straight into your pipeline."),[["install",T("Installér nu","Install now")]]];
+    if(!hasLic()) return [T("Du er godt i gang! 🎉 Vil du skrive hurtigere, kan Pro give dig AI-agenter, en coach der kender dine tal, og fællesskabet.","You're well on your way! 🎉 Want to write faster? Pro gives you AI agents, a coach that knows your numbers, and the community."),[["pro",T("Om Pro","About Pro")]]];
+    return [T(`Alt ser godt ud: ${done}/4 opgaver i dag, ${streak()} 🔥 i streak og ${money(P.profit)} i profit. Spørg coachen, hvad der giver mest lige nu.`,`Everything looks good: ${done}/4 tasks today, a ${streak()} 🔥 streak and ${money(P.profit)} profit. Ask the coach what will move the needle now.`),[["coach",T("Spørg coachen","Ask the coach")]]];
+  }
+
+  // Velkomst for nye brugere
+  const NICHES=()=>da()?["Fakta & viden","Historie","Motivation","Penge & økonomi","Tech & AI","Natur & dyr"]:["Facts & knowledge","History","Motivation","Money & finance","Tech & AI","Nature & animals"];
+  const GOALS=[1000,3000,5000,10000];
+  function onboard(){
+    const s=st(); s.step="name"; save(s);
+    say(T("Hej, jeg er <b>REDHUE Guide</b> ✦ Jeg hjælper dig i gang på 30 sekunder. Hvad skal jeg kalde dig?","Hi, I'm <b>REDHUE Guide</b> ✦ I'll get you set up in 30 seconds. What should I call you?"),
+      S.profile.name?[["name:"+S.profile.name,S.profile.name]]:[],true);
+    setTimeout(()=>$("gdIn").focus(),250);
+  }
+  function onboardAnswer(txt){
+    const s=st();
+    if(s.step==="name"){ const n=txt.trim().slice(0,40); if(!n) return;
+      S.profile=Object.assign({},S.profile,{name:n}); save_(); s.step="niche"; save(s);
+      say(T(`Rart at møde dig, ${esc(n)}! Hvilken niche laver du videoer om?`,`Nice to meet you, ${esc(n)}! What niche are your videos about?`), NICHES().map(x=>["niche:"+x,x]).concat([["niche:?",T("Ved ikke endnu","Not sure yet")]]),true); return; }
+    if(s.step==="niche"){ const n=txt==="?"?"":txt.trim().slice(0,60); S.mission.niche=n; save_(); s.step="goal"; save(s);
+      say((n?T(`${esc(n)} er et godt valg. `,`${esc(n)} is a good pick. `):T("Helt fint, du kan vælge senere under Mission. ","No problem, you can pick later under Mission. "))+T("Hvor meget vil du gerne tjene om måneden?","How much would you like to earn per month?"),
+        GOALS.map(g=>["goal:"+g,money(g)]),true); return; }
+    if(s.step==="goal"){ const g=Math.max(0,parseInt(String(txt).replace(/\D/g,""))||0); if(g) S.mission.goal=g; save_(); s.step=null; s.onboarded=true; save(s); addXP(10);
+      say(T(`Klar! 🎯 Din 90-dages mission er sat op${g?` med et mål på <b>${money(g)}</b> om måneden`:""}. Her er dit første skridt:`,`Done! 🎯 Your 90-day mission is set${g?` with a goal of <b>${money(g)}</b> a month`:""}. Here's your first step:`));
+      setTimeout(()=>{ say(...nextStep()); if(!isStandalone()&&os()!=="desktop") say(T("Tip: installér REDHUE på telefonen, så føles den som din egen app.","Tip: install REDHUE on your phone so it feels like your own app."),[["install",T("Installér nu","Install now")]]); },400);
+      renderSection(current); }
+  }
+  function save_(){ store.set(K.state,S); }
+
+  // Svar på fritekst
+  function answer(q){
+    const s=st(); if(s.step) return onboardAnswer(q);
+    const n=q.toLowerCase().normalize("NFC");
+    if(/^(hej|hi|hello|hallo|yo|godmorgen|goddag)/.test(n)) return say(T(`Hej ${esc(S.profile.name||"")}! 👋 Hvad kan jeg hjælpe med?`,`Hi ${esc(S.profile.name||"")}! 👋 What can I help with?`),topics());
+    if(/(tak|thanks|thank you)/.test(n)) return say(T("Selv tak! Jeg er her, når du har brug for mig. ✦","You're welcome! I'm here whenever you need me. ✦"));
+    if(/(hvad skal jeg|næste|what should i|next step|hvor starter|where do i start|kom i gang|get started)/.test(n)) return say(...nextStep());
+    let best=null, score=0;
+    for(const e of KB){ const sc=e.k.reduce((a,k)=>a+(n.includes(k)?k.length:0),0); if(sc>score){ score=sc; best=e; } }
+    if(best) return say(best.a(), best.b());
+    const acts=[["help",T("Vis hvad du kan","Show what you can do")]];
+    if(hasLic()) acts.unshift(["coach:"+q,T("Spørg AI-coachen","Ask the AI coach")]);
+    say(T("Det er jeg ikke sikker på. Prøv at spørge om fx profit, mission, pipeline, Pro eller installation.","I'm not sure about that. Try asking about profit, mission, pipeline, Pro or installing.")+(hasLic()?T(" Eller lad AI-coachen svare:"," Or let the AI coach answer:"):""),acts);
+  }
+
+  // Visning
+  function say(html,btns=[],keep){ const s=st(); s.log.push({b:1,h:html,a:btns}); s.log=s.log.slice(-40); save(s); render(); }
+  function me(txt){ const s=st(); s.log.push({b:0,h:esc(txt)}); s.log=s.log.slice(-40); save(s); render(); }
+  function render(){
+    const s=st(), el=$("gdList");
+    el.innerHTML=s.log.map((m,i)=>`<div class="gd-m ${m.b?"":"me"}"><p>${m.h}</p></div>`+(m.b&&m.a&&m.a.length&&i===s.log.length-1?`<div class="gd-acts">${m.a.map(([id,l])=>`<button type="button" class="small" data-gd="${esc(id)}">${esc(l)}</button>`).join("")}</div>`:"")).join("");
+    el.scrollTop=el.scrollHeight;
+  }
+  function open(){ $("gd").hidden=false; $("gdFab").classList.remove("gd-new"); $("gdFab").querySelector(".gd-dot")?.remove();
+    const s=st(); if(!s.log.length){ s.onboarded||S.mission.niche&&S.profile.name ? (s.onboarded=true,save(s),say(T(`Hej ${esc(S.profile.name||"")}! 👋 Jeg er REDHUE Guide. Hvad kan jeg hjælpe med?`,`Hi ${esc(S.profile.name||"")}! 👋 I'm REDHUE Guide. What can I help with?`),topics())) : onboard(); }
+    else render();
+    if(!matchMedia("(pointer:coarse)").matches) setTimeout(()=>$("gdIn").focus(),200);
+    if(!(history.state&&history.state.guide)) history.pushState({guide:1},"",location.hash);
+  }
+  // Luk guiden; næste skærm åbnes først, når historikken er rullet tilbage (ellers trækker "tilbage" appen væk igen)
+  let afterClose=null;
+  function close(cb){ if($("gd").hidden){ cb&&cb(); return; } $("gd").hidden=true;
+    if(history.state&&history.state.guide){ afterClose=cb||null; history.back(); setTimeout(()=>{ if(afterClose){ const f=afterClose; afterClose=null; f(); } },400); } else cb&&cb(); }
+  addEventListener("popstate",()=>{ if(!$("gd").hidden) $("gd").hidden=true; if(afterClose){ const f=afterClose; afterClose=null; setTimeout(f,0); } });
+  $("gdFab").onclick=()=>$("gd").hidden?open():close();
+  $("gdX").onclick=()=>close();
+  $("gdForm").onsubmit=e=>{ e.preventDefault(); const q=$("gdIn").value.trim(); if(!q) return; $("gdIn").value=""; me(q); setTimeout(()=>answer(q),250); };
+  $("gdList").addEventListener("click",e=>{ const b=e.target.closest("[data-gd]"); if(!b) return; const id=b.dataset.gd; buzz();
+    if(/^(name|niche|goal):/.test(id)){ const v=id.split(":").slice(1).join(":"); me(b.textContent); setTimeout(()=>onboardAnswer(v),200); return; }
+    if(id.startsWith("go:")) return goAct(id.slice(3))();
+    if(id.startsWith("coach:")) return ACT.coach(id.slice(6));
+    me(b.textContent); setTimeout(()=>ACT[id]&&ACT[id](),200); });
+  addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+  // Første besøg: let puls og en prik, så nye brugere finder guiden
+  if(!st().onboarded && !st().log.length){ $("gdFab").classList.add("gd-new"); const d=document.createElement("span"); d.className="gd-dot"; $("gdFab").appendChild(d); }
+  return { open, close, answer, nextStep };
+})();
+
 /* ---------- 4D-motor ---------- */
 const D4 = (()=>{
   const KEY="redhue_4d", reduce=matchMedia("(prefers-reduced-motion:reduce)");
@@ -1557,7 +1736,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
