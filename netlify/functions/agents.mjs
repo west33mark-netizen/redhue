@@ -5,6 +5,7 @@
 //   GUMROAD_PRODUCT_ID    – required (your Gumroad product ID for REDHUE Pro)
 //   ANTHROPIC_MODEL       – optional, default "claude-sonnet-5"
 //   REDHUE_DEV_KEY        – optional, a private key that bypasses Gumroad (for your own testing)
+// Se også coach.mjs (AI-coach) og chat.mjs (fællesskabs-chat), som deler netlify/lib/shared.mjs.
 
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 const LICENSE_TTL_MS = 6 * 60 * 60 * 1000; // re-verify license every 6 hours

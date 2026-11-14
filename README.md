@@ -68,3 +68,9 @@ Den nye app rører aldrig de gamle nøgler.
 - **Badge** på app-ikonet med antal opgaver tilbage i dag, og let **vibration** ved tryk (kan slås fra).
 - Androids tilbage-knap lukker panelet eller fører tilbage til hjemmeskærmen.
 
+## 💬 Chat (Pro)
+- **AI-coach** (`/api/coach`, `netlify/functions/coach.mjs`): chat med en coach, der får dine nøgletal med (mission, profit, pipeline). Bruger `ANTHROPIC_API_KEY`.
+- **Fællesskab** (`/api/chat`, `netlify/functions/chat.mjs`): chat mellem Pro-brugere. Beskeder gemmes i **Netlify Blobs** (store `redhue-chat`) – ingen ekstra konto. Brugere identificeres anonymt ud fra licensen; du (ejer-nøglen) kan slette alle beskeder.
+- Begge kræver en gyldig licens (Gumroad eller `REDHUE_DEV_KEY`). Netlify installerer `@netlify/blobs` fra `package.json` automatisk ved build.
+- Se/ryd beskeder i Netlify under **Data & Storage → Blobs → redhue-chat**.
+

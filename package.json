@@ -1,0 +1,9 @@
+{
+  "name": "redhue",
+  "private": true,
+  "type": "module",
+  "description": "REDHUE OS – PWA + Netlify Functions",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.9"
+  }
+}
