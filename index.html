@@ -1398,7 +1398,7 @@ function renderHome(){
         <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
         <circle cx="40" cy="40" r="34" fill="none" stroke="url(#osg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-dayPct)}"/></svg>
         <div class="n">${Math.min(md,90)}</div></div>
-      <div style="min-width:0"><div class="lbl">${L.osMission} · ${esc(S.mission.niche||"")}</div><div class="big" style="margin-top:4px">${L.osOfGoal(pct)}</div><div class="sm" style="margin-top:4px">${L.osToday(doneToday)} · ${streak()} 🔥</div></div>
+      <div style="min-width:0"><div class="lbl">${L.osMission}${S.mission.niche?" · "+esc(S.mission.niche):""}</div><div class="big" style="margin-top:4px">${L.osOfGoal(pct)}</div><div class="sm" style="margin-top:4px">${L.osToday(doneToday)} · ${streak()} 🔥</div></div>
     </button>
     ${(()=>{ const P=profitNow(); return `<button class="os-w" data-os="profit"><div class="lbl">${L.pThisShort}</div><div><div class="big ${P.profit<0?"neg":"pos"}">${money(P.profit)}</div><div class="sm">${P.in?L.pMarginShort(P.margin):L.kBal+" "+money(balance())}</div></div></button>`; })()}
     <button class="os-w" data-os="overview"><div class="lbl">${L.osLevel} ${level()}</div><div><div class="big">${robot()} ${S.xp} XP</div><div class="os-xp"><i style="width:${xpIn}%"></i></div></div></button>
