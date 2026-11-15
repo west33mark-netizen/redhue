@@ -186,9 +186,18 @@ Alle endpoints ligger i `netlify/functions/` og deler `netlify/lib/shared.mjs`: 
 | `/api/safe` | Deling, SOS, find enheder | – (find enheder: Pro) |
 | `/api/feedback` | Beta-feedback og ejer-indbakke | – (indbakke: ejer) |
 | `/api/youtube` | Kanalens offentlige tal og seneste videoer | – (`YOUTUBE_API_KEY` giver abonnenter og @navne) |
+| `/api/weather` | Vejr fra DMI: prognose, usikkerhed og målt nu | – (DMI's frie data, ingen nøgle) |
 
 Nye endpoints: `export default endpoint("navn", async (req, ctx) => json(200, {...}), { limit: [60, 60_000] })` og tilføj navnet i `ROUTES`.
 Alle nøgler sættes i GitHub Secrets og synkroniseres til Netlify ved hver udgivelse.
 
 ### YouTube
 Overblik → **YouTube**: indsæt kanal-link, @navn eller kanal-id (UC…). Uden nøgle bruges kanalens offentlige feed (kræver UC-id, ingen abonnenter). Med `YOUTUBE_API_KEY` vises abonnenter, og @navne virker. «Match med pipeline» sætter visninger på kort, hvis titel passer til en video, og flytter dem til Postet. Kun offentlige tal – intet login eller upload.
+
+### Vejr fra DMI
+Overblik → **Vejr** og vejret på hjemmeskærmen. Data fra DMI's frie data (`opendataapi.dmi.dk`, ingen nøgle siden 2. dec. 2025):
+- **Prognose:** HARMONIE DINI (`harmonie_dini_sf`) for nærmeste punkt, op til 48 timer frem. Temperatur omregnes fra Kelvin, akkumuleret nedbør til mm pr. time, skydække til %.
+- **Usikkerhed:** ensemble-percentiler 10/50/90 % (`harmonie_dini_eps_percentiles`) vises som et bånd om temperaturen.
+- **Målt nu:** nærmeste DMI-station (metObs, seneste time) med afstand.
+- **Gennemsigtighed:** «Hvor kommer tallene fra?» viser kilde, model, parameternavne, enheder, punkt og tidspunkter. Parameternavne slås op i DMI's metadata, så det tåler navneændringer.
+- Position afrundes til ca. 5 km og gemmes kun på telefonen. Svar caches 15 min.

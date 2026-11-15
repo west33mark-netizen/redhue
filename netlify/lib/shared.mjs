@@ -113,7 +113,7 @@ export function limited(name, key, max, windowMs) {
 // ctx: { ip, license, url }. Uventede fejl bliver til 500 { error:"server_error" } i stedet for et nedbrud.
 export const ROUTES = {
   agents: "AI-agenter (Pro)", coach: "AI-coach og mor/far (Pro)", chat: "Fællesskab (Pro)",
-  safe: "Tryghed: deling, SOS, find enheder", feedback: "Beta-feedback", youtube: "YouTube-kanal (offentlige tal)", health: "Status"
+  safe: "Tryghed: deling, SOS, find enheder", feedback: "Beta-feedback", youtube: "YouTube-kanal (offentlige tal)", weather: "Vejr fra DMI (prognose, usikkerhed, målt nu)", health: "Status"
 };
 export function endpoint(name, fn, opts = {}) {
   return async (req) => {

@@ -646,6 +646,20 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .yt-v{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px;color:var(--text);text-decoration:none}.yt-v span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.yt-v span:last-child{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
 .yt-sh{font-size:10.5px;padding:1px 6px;border-radius:6px;background:rgba(255,0,51,.15);color:#ff5c7a;margin-right:6px}
 .kc-yt{display:inline-block;margin-top:6px;font-size:12px;color:#ff5c7a;text-decoration:none}
+.os-wx{margin-top:8px;background:rgba(255,255,255,.08);border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:13px;color:var(--text);min-height:0}
+.os-wx[hidden]{display:none!important}
+.wx-card h3{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.wx-now{display:flex;align-items:center;gap:14px;margin:4px 0 10px}
+.wx-now .ic{font-size:44px;line-height:1}.wx-now .tp{font:700 42px/1 var(--display,system-ui);font-variant-numeric:tabular-nums}
+.wx-now .ds{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:var(--muted);min-width:0}
+.wx-arrow{display:inline-block;transition:transform .3s}
+.wx-obs{font-size:13px;color:var(--muted);border-left:3px solid var(--ok,#3ddc97);padding:4px 10px;margin-bottom:10px}
+.wx-strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin:0 0 10px;scrollbar-width:thin}
+.wx-h{flex:none;width:56px;text-align:center;border:1px solid var(--line);border-radius:12px;padding:7px 4px;font-size:12px;display:flex;flex-direction:column;gap:3px}
+.wx-h b{font-size:15px;font-variant-numeric:tabular-nums}.wx-h .r{color:#4cc3ff;font-size:11px;min-height:13px}.wx-h .tm{color:var(--muted)}
+.wx-chart{width:100%;height:auto;display:block}
+.wx-src{margin-top:10px;font-size:13px}.wx-src summary{cursor:pointer;color:var(--muted)}.wx-src dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}.wx-src dt{color:var(--muted)}.wx-src dd{margin:0;overflow-wrap:anywhere}
+.wx-places{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -708,6 +722,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             <div id="todayChecks"></div>
           </div>
         </div>
+        <div class="card wx-card" id="wxCard" style="margin-top:12px"></div>
         <div class="card yt-card" id="ytCard" style="margin-top:12px"></div>
         <div class="grid g3" style="margin-top:12px">
           <div class="card">
@@ -1116,7 +1131,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
   <div class="os-in">
     <div class="os-status"><span style="white-space:nowrap"><span class="live"></span><span id="osLbl">REDHUE OS 2</span></span><span class="r"><span class="loc-pill" id="osLoc" hidden>📍</span><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
     <button class="os-sos" id="osSos" aria-label="SOS">🆘 SOS</button>
-    <div class="os-clock"><div class="time" id="osClock"></div><div class="date" id="osDate"></div><div class="greet" id="osGreet"></div><button class="talk" data-talk id="talkH">🗣️ <span data-t="talkBtnHome"></span></button></div>
+    <div class="os-clock"><div class="time" id="osClock"></div><div class="date" id="osDate"></div><div class="greet" id="osGreet"></div><button class="os-wx" id="osWx" hidden></button><button class="talk" data-talk id="talkH">🗣️ <span data-t="talkBtnHome"></span></button></div>
     <div class="os-wg" id="osWidgets"></div>
     <div class="os-apps" id="osApps"></div>
     <div class="os-dock" id="osDock"></div>
@@ -1163,7 +1178,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.8-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.9-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1578,6 +1593,7 @@ document.addEventListener("click", e=>{
 /* ---------- Section renderers ---------- */
 function renderOverview(){
   try{ YT.render(); YT.load(false); }catch(e){}
+  try{ WX.render(); WX.load(false); }catch(e){}
   renderAvatars();
   const h=nowHour();
   $("greet").textContent = [h<10?t().hi:h<18?t().hiDay:t().hiEve, S.profile.name].filter(Boolean).join(", ");
@@ -1722,7 +1738,8 @@ const Voice=(()=>{
   // Dagens hilsen fra mor/far/mentor – én gang om dagen ved første tryk
   function daily(){ if(!wants("all")) return; const k="redhue_voice_day"; if(store.get(k,"")===today()) return;
     try{ const lb=Parent.label(); const n=Parent.note(); if(!n) return; store.set(k,today());
-      autoSay((lang==="en"?"Good to see you. ":"Godt at se dig. ")+n+" – "+lb.name, Parent.cfg?Parent.cfg().role:"mom","all"); }catch(e){} }
+      let wx=""; try{ const w=WX.st(); if(w.last&&Date.now()-w.at<3*3600e3) wx=" "+WX.speakTxt(w.last,w.place.name); }catch(e){}
+      autoSay((lang==="en"?"Good to see you. ":"Godt at se dig. ")+n+" – "+lb.name+wx, Parent.cfg?Parent.cfg().role:"mom","all"); }catch(e){} }
   const pname=()=>{ try{ return Parent.label().name; }catch(e){ return lang==="en"?"mom":"mor"; } };
   function renderSettings(){
     const L=t(), c=cfg(), v=forLang();
@@ -2625,7 +2642,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app","redhue_youtube"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app","redhue_youtube","redhue_weather"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -2942,6 +2959,93 @@ $("resetBtn").onclick=()=>{ if(!confirm(t().confirmReset)) return; S=structuredC
    Forbinder din kanal: navn, abonnenter, visninger og seneste videoer (offentlige tal via /api/youtube).
    Uden YouTube-nøgle på serveren virker det med kanal-id (UC…) via kanalens offentlige feed.
    «Match med pipeline» sætter visninger på dine postede kort, når titlerne passer. */
+/* ---------- Vejr fra DMI ----------
+   Prognose (HARMONIE DINI), usikkerhed (ensemble 10–90 %) og måling fra nærmeste DMI-station via /api/weather.
+   Gennemsigtigt: «Hvor kommer tallene fra?» viser kilde, model, parametre, enheder og tidspunkter. */
+const WX=(()=>{
+  const KEY="redhue_weather"; const L=(da,en)=>lang==="en"?en:da;
+  const PLACES=[["København",55.676,12.568],["Aarhus",56.157,10.211],["Odense",55.404,10.402],["Aalborg",57.048,9.919],["Esbjerg",55.476,8.459],["Randers",56.461,10.036],["Kolding",55.491,9.472],["Horsens",55.861,9.851],["Vejle",55.709,9.536],["Roskilde",55.642,12.080],["Herning",56.136,8.976],["Silkeborg",56.170,9.548],["Næstved",55.230,11.761],["Holbæk",55.717,11.713],["Sønderborg",54.909,9.792],["Svendborg",55.060,10.607],["Viborg",56.451,9.402],["Hillerød",55.927,12.300],["Rønne",55.100,14.706],["Hjørring",57.464,9.982]];
+  const st=()=>Object.assign({place:{name:"København",lat:55.676,lon:12.568},last:null,at:0,err:""},store.get(KEY,{}));
+  let busy=false, picking=false;
+  const DIRS=["N","NØ","Ø","SØ","S","SV","V","NV"];
+  const dirTxt=d=>d==null?"":DIRS[Math.round(((d%360)+360)%360/45)%8];
+  const hourOf=t=>+new Intl.DateTimeFormat("da-DK",{timeZone:TZ(),hour:"2-digit",hourCycle:"h23"}).format(new Date(t));
+  function icon(h){ if(!h) return "·"; const night=(()=>{ const x=hourOf(h.t); return x<7||x>=17; })();
+    if(h.rain!=null&&h.rain>=0.5) return h.temp!=null&&h.temp<=0?"🌨️":"🌧️"; if(h.rain!=null&&h.rain>=0.1) return "🌦️";
+    if(h.cloud==null) return night?"🌙":"🌤️"; if(h.cloud>=75) return "☁️"; if(h.cloud>=35) return night?"☁️":"⛅"; return night?"🌙":"☀️"; }
+  function desc(h){ if(!h) return ""; const p=[];
+    if(h.rain>=0.5) p.push(L("regn","rain")); else if(h.rain>=0.1) p.push(L("lidt regn","light rain")); else if(h.cloud>=75) p.push(L("overskyet","overcast")); else if(h.cloud>=35) p.push(L("let skyet","partly cloudy")); else if(h.cloud!=null) p.push(L("klart","clear"));
+    if(h.wind!=null) p.push(h.wind>=17?L("kuling","gale"):h.wind>=10.8?L("hård vind","strong wind"):h.wind>=5.5?L("frisk vind","fresh wind"):L("svag vind","light wind"));
+    return p.join(", "); }
+  const fmt=x=>x==null?"–":String(x).replace(".",",");
+  const time=t=>new Date(t).toLocaleTimeString(lang==="en"?"en-GB":"da-DK",{hour:"2-digit",minute:"2-digit",timeZone:TZ()});
+  const when=t=>new Date(t).toLocaleString(lang==="en"?"en-GB":"da-DK",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:TZ()});
+  async function load(force){
+    const s=st(); if(busy) return;
+    if(!force&&s.last&&Date.now()-s.at<15*60*1000) return render();
+    if(!Net.online()) return render();
+    busy=true; render();
+    try{ const r=await Net.tfetch(apiUrl(`/api/weather?lat=${s.place.lat}&lon=${s.place.lon}`),{},20000); const j=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error||r.status); const n=st(); n.last=j; n.at=Date.now(); n.err=""; store.set(KEY,n);
+    }catch(e){ const n=st(); n.err=String(e.message||e); store.set(KEY,n); }
+    busy=false; render(); }
+  const errTxt=e=>({outside_denmark:L("Stedet ligger uden for Danmark – DMI-prognosen dækker kun Danmark og nærområdet.","That place is outside Denmark – the DMI forecast only covers Denmark and nearby."),dmi_unreachable:L("DMI svarer ikke lige nu – prøv igen om lidt.","DMI isn't responding – try again shortly."),timeout:L("Det tog for lang tid – tjek nettet.","Timed out – check your connection."),network:L("Ingen forbindelse. Åbn appen på redhue.netlify.app.","No connection. Open the app at redhue.netlify.app.")}[e]||L("Kunne ikke hente vejret.","Couldn't load the weather."));
+  function chart(band,hours){
+    const B=band.length>=3?band:null; const pts=B?B.map(b=>({t:b.t,lo:b.t10,mid:b.t50,hi:b.t90})):hours.slice(0,48).map(h=>({t:h.t,lo:null,mid:h.temp,hi:null}));
+    const v=pts.flatMap(p=>[p.lo,p.mid,p.hi]).filter(x=>x!=null); if(v.length<2) return "";
+    const W=340,H=130,pl=30,pr=8,pt=10,pb=22; let mn=Math.floor(Math.min(...v)-1), mx=Math.ceil(Math.max(...v)+1); if(mx-mn<4){ mx+=2; mn-=2; }
+    const t0=Date.parse(pts[0].t), t1=Date.parse(pts.at(-1).t)||t0+1; const X=t=>pl+(Date.parse(t)-t0)/(t1-t0||1)*(W-pl-pr), Y=c=>pt+(mx-c)/(mx-mn)*(H-pt-pb);
+    const line=k=>pts.filter(p=>p[k]!=null).map((p,i)=>(i?"L":"M")+X(p.t).toFixed(1)+","+Y(p[k]).toFixed(1)).join("");
+    const area=B?pts.map((p,i)=>(i?"L":"M")+X(p.t).toFixed(1)+","+Y(p.hi).toFixed(1)).join("")+[...pts].reverse().map(p=>"L"+X(p.t).toFixed(1)+","+Y(p.lo).toFixed(1)).join("")+"Z":"";
+    const step=(mx-mn)>12?4:2; const ticks=[]; for(let c=Math.ceil(mn/step)*step;c<=mx;c+=step) ticks.push(c);
+    const xt=pts.filter(p=>hourOf(p.t)===0||hourOf(p.t)===12);
+    return `<svg class="wx-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(L("Temperatur de næste timer","Temperature next hours"))}">
+      ${ticks.map(c=>`<line x1="${pl}" x2="${W-pr}" y1="${Y(c)}" y2="${Y(c)}" stroke="var(--line)"/><text x="${pl-5}" y="${Y(c)+3.5}" text-anchor="end" font-size="10" fill="var(--muted)">${c}°</text>`).join("")}
+      ${xt.map(p=>`<line x1="${X(p.t)}" x2="${X(p.t)}" y1="${pt}" y2="${H-pb}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="${X(p.t)}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)">${hourOf(p.t)===0?esc(new Date(p.t).toLocaleDateString(lang==="en"?"en-GB":"da-DK",{weekday:"short",timeZone:TZ()})):"12"}</text>`).join("")}
+      ${B?`<path d="${area}" fill="var(--vi)" opacity=".22"/>`:""}<path d="${line("mid")}" fill="none" stroke="var(--vi)" stroke-width="2.2" stroke-linejoin="round"/>
+      <circle cx="${X(pts[0].t)}" cy="${Y(pts[0].mid)}" r="3.5" fill="var(--vi)"/></svg>
+      <p class="sub" style="margin:4px 0 0;font-size:12px">${B?esc(L("Linjen er det mest sandsynlige. Det lilla bånd viser, hvor temperaturen lander i 8 ud af 10 af DMI's beregninger (10–90 %). Jo bredere bånd, jo mere usikker prognose.","The line is the most likely value. The purple band shows where the temperature lands in 8 of 10 of DMI's runs (10–90 %). A wider band means a less certain forecast.")):esc(L("Temperatur fra DMI's prognose. Usikkerhedsbånd var ikke tilgængeligt.","Temperature from DMI's forecast. Uncertainty band wasn't available."))}</p>`; }
+  function speakTxt(d,name){ const h=d.hours[0]; if(!h) return ""; const rest=d.hours.slice(0,12); const rainH=rest.filter(x=>x.rain>=0.2).length; const tmax=Math.max(...rest.map(x=>x.temp).filter(x=>x!=null)), tmin=Math.min(...rest.map(x=>x.temp).filter(x=>x!=null));
+    return L(`Vejret i ${name}: ${fmt(h.temp)} grader og ${desc(h)}. De næste 12 timer mellem ${fmt(tmin)} og ${fmt(tmax)} grader${rainH?`, med regn i omkring ${rainH} timer`:", og tørt"}. Kilde: DMI.`,`Weather in ${name}: ${fmt(h.temp)} degrees, ${desc(h)}. Next 12 hours between ${fmt(tmin)} and ${fmt(tmax)} degrees${rainH?`, with rain for about ${rainH} hours`:", and dry"}. Source: DMI.`); }
+  function render(){
+    const el=$("wxCard"), s=st(), d=s.last; renderOS();
+    if(!el) return;
+    const head=`<h3><span>🌤️ ${esc(L("Vejr","Weather"))} · ${esc(s.place.name)}</span><span><button class="small ghost" data-wx="say" ${d?"":"disabled"} aria-label="${esc(L("Læs vejret op","Read weather aloud"))}">🔊</button><button class="small ghost" data-wx="pick">${esc(L("Skift sted","Change place"))}</button><button class="small ghost" data-wx="refresh" ${busy?"disabled":""}>${busy?"…":"↻"}</button></span></h3>`;
+    const picker=picking?`<div class="wx-places"><button class="small primary" data-wx="geo">📍 ${esc(L("Brug min position","Use my location"))}</button>${PLACES.map(([n])=>`<button class="small" data-wx-place="${esc(n)}">${esc(n)}</button>`).join("")}</div><p class="sub" style="font-size:12px;margin:0 0 8px">${esc(L("Din position afrundes til ca. 5 km og gemmes kun på telefonen.","Your location is rounded to about 5 km and only stored on your phone."))}</p>`:"";
+    if(!d){ el.innerHTML=head+picker+`<p class="sub">${esc(s.err?errTxt(s.err):busy?L("Henter vejret fra DMI…","Loading weather from DMI…"):Net.online()?L("Tryk ↻ for at hente vejret.","Tap ↻ to load the weather."):L("Offline – hentes, når du er online.","Offline – loads when you're online."))}</p>`; return; }
+    const h=d.hours[0]||{}, o=d.obs, src=d.source||{}, fc=src.forecast||{};
+    el.innerHTML=head+picker+`<div class="wx-now"><span class="ic">${icon(h)}</span><span class="tp">${fmt(h.temp)}°</span><span class="ds"><b style="color:var(--text)">${esc(desc(h))}</b><span>${esc(L("Vind","Wind"))} ${fmt(h.wind)} m/s${h.dir!=null?` <span class="wx-arrow" style="transform:rotate(${h.dir+180}deg)">↑</span> ${esc(L("fra","from"))} ${dirTxt(h.dir)}`:""}${h.gust!=null?` · ${esc(L("stød","gusts"))} ${fmt(h.gust)}`:""}</span><span>${esc(L("Nedbør","Rain"))} ${fmt(h.rain)} mm · ${esc(L("skyer","clouds"))} ${h.cloud==null?"–":h.cloud+" %"}${h.rh!=null?` · ${esc(L("fugt","humidity"))} ${h.rh} %`:""}</span></span></div>
+      ${o?`<div class="wx-obs">${esc(L("Målt","Measured"))} ${esc(time(o.at))} ${esc(L("ved DMI-station","at DMI station"))} ${esc(o.station)} (${fmt(o.distanceKm)} km): <b style="color:var(--text)">${fmt(o.temp)} °C</b>${o.wind!=null?`, ${esc(L("vind","wind"))} ${fmt(o.wind)} m/s`:""}${o.rain1h!=null?`, ${fmt(o.rain1h)} mm ${esc(L("sidste time","last hour"))}`:""}</div>`:""}
+      <div class="wx-strip">${d.hours.slice(0,24).map(x=>`<div class="wx-h"><span class="tm">${String(hourOf(x.t)).padStart(2,"0")}</span><span>${icon(x)}</span><b>${x.temp==null?"–":Math.round(x.temp)}°</b><span class="r">${x.rain>=0.1?fmt(x.rain):""}</span></div>`).join("")}</div>
+      ${chart(d.band||[],d.hours)}
+      ${s.err?`<p class="sub" style="font-size:12px;color:var(--am)">${esc(errTxt(s.err))} ${esc(L("Viser sidst hentede tal.","Showing last loaded numbers."))}</p>`:""}
+      <details class="wx-src"><summary>${esc(L("Hvor kommer tallene fra?","Where do the numbers come from?"))}</summary><dl>
+        <dt>${esc(L("Kilde","Source"))}</dt><dd>${esc(src.by||"DMI")} – <a href="https://www.dmi.dk/friedata" target="_blank" rel="noopener" style="color:#c9b6ff">${esc(L("DMI's frie data","DMI open data"))}</a></dd>
+        <dt>${esc(L("Prognose","Forecast"))}</dt><dd>${esc(fc.model||"HARMONIE DINI")} (${esc(fc.collection||"")}), ${esc(L("første tidsskridt","first step"))} ${fc.firstStep?esc(when(fc.firstStep)):"–"}</dd>
+        <dt>${esc(L("Punkt","Point"))}</dt><dd>${fmt(d.place.lat)}° N, ${fmt(d.place.lon)}° Ø · ${esc(src.gridCell||"")}</dd>
+        <dt>${esc(L("Parametre","Parameters"))}</dt><dd>${Object.entries(fc.params||{}).map(([k,v])=>`${esc(v)} (${esc((fc.units||{})[k]||"")})`).join(", ")}</dd>
+        <dt>${esc(L("Usikkerhed","Uncertainty"))}</dt><dd>${src.ensemble?esc(L("Ensemble-percentiler 10/50/90 % (","Ensemble percentiles 10/50/90 % (")+src.ensemble.collection+")"):esc(L("ikke tilgængelig","not available"))}</dd>
+        <dt>${esc(L("Målt","Measured"))}</dt><dd>${o?esc(L(`DMI metObs, station ${o.station}, ${fmt(o.distanceKm)} km væk`,`DMI metObs, station ${o.station}, ${fmt(o.distanceKm)} km away`)):esc(L("ingen station i nærheden","no station nearby"))}</dd>
+        <dt>${esc(L("Hentet","Fetched"))}</dt><dd>${esc(when(src.fetched||s.at))}${d.cached?esc(L(" (fra cache)"," (cached)")):""}</dd>
+        ${(d.notes||[]).length?`<dt>${esc(L("Bemærk","Note"))}</dt><dd>${d.notes.map(esc).join("<br>")}</dd>`:""}
+      </dl><p class="sub" style="font-size:12px;margin:0">${esc(L("Ved farligt vejr: følg DMI's varsler på dmi.dk.","In dangerous weather: follow DMI's warnings at dmi.dk."))}</p></details>`;
+  }
+  function renderOS(){ const b=$("osWx"); if(!b) return; const d=st().last, h=d&&d.hours&&d.hours[0]; b.hidden=!h; if(h) b.textContent=`${icon(h)} ${fmt(h.temp)}° · ${st().place.name}`; }
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-wx],[data-wx-place],#osWx"); if(!b) return;
+    if(b.id==="osWx"){ go("overview"); return; }
+    if(b.dataset.wxPlace){ const p=PLACES.find(x=>x[0]===b.dataset.wxPlace); const n=st(); n.place={name:p[0],lat:p[1],lon:p[2]}; n.last=null; n.at=0; store.set(KEY,n); picking=false; load(true); return; }
+    const k=b.dataset.wx;
+    if(k==="refresh") load(true);
+    if(k==="pick"){ picking=!picking; render(); }
+    if(k==="say"){ const s=st(); if(s.last) try{ Voice.speak(speakTxt(s.last,s.place.name),"guide"); }catch(e){} }
+    if(k==="geo"){ if(!navigator.geolocation) return toast(L("Position er ikke tilgængelig her","Location isn't available here"));
+      navigator.geolocation.getCurrentPosition(p=>{ const n=st(); const la=Math.round(p.coords.latitude*20)/20, lo=Math.round(p.coords.longitude*20)/20;
+        const near=PLACES.map(x=>({x,d:Math.hypot(x[1]-la,(x[2]-lo)*.56)})).sort((a,b)=>a.d-b.d)[0];
+        n.place={name:near.d<.12?near.x[0]:L("Min position","My location"),lat:la,lon:lo}; n.last=null; n.at=0; store.set(KEY,n); picking=false; load(true); },
+        ()=>toast(L("Kunne ikke få din position – vælg en by i stedet","Couldn't get your location – pick a town instead")),{enableHighAccuracy:false,timeout:10000,maximumAge:600000}); }
+  });
+  return {render,load,renderOS,speakTxt,st,PLACES};
+})();
 function fmtNum(n){ n=+n||0; try{ return new Intl.NumberFormat(lang==="en"?"en-GB":"da-DK",{notation:n>=100000?"compact":"standard",maximumFractionDigits:1}).format(n); }catch(e){ return String(n); } }
 const YT=(()=>{
   const KEY="redhue_youtube"; const L=(da,en)=>lang==="en"?en:da;
@@ -3292,6 +3396,7 @@ function osClock(){
 function renderHome(){
   const L=t(), md=missionDay(), pct=goalPct(), h=nowHour();
   osClock();
+  try{ WX.renderOS(); WX.load(false); }catch(e){}
   $("osGreet").textContent=[h<10?L.hi:h<18?L.hiDay:L.hiEve, S.profile.name].filter(Boolean).join(", ");
   $("osDayTag").textContent=L.osDay(Math.min(md,90));
   const doneToday=(S.mission.checks[today()]||[]).filter(Boolean).length;
