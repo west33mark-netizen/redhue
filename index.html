@@ -587,6 +587,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .net-pill.off::before{background:transparent;border:1.5px solid currentColor;width:5px;height:5px}
 .beta-tag[data-ch="alpha"]{color:#ff7a8f}
 .beta-tag[data-ch="gamma"]{color:var(--ok,#3ddc97)}
+.beta-tag[data-ch="delta"]{color:#4cc3ff}
 .as-status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .as-status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok,#3ddc97);flex:none}
 .as-status.busy::before{background:var(--am,#ffc247)}
@@ -1197,7 +1198,7 @@ const CFG = {
 const ON_SITE = (()=>{ try{ const o=location.origin; return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) || /\.netlify\.app$/.test(location.hostname) || o===CFG.SITE; }catch(e){ return false; } })();
 const IS_PREVIEW = !ON_SITE;
 // Kanal ud fra adressen: alpha--redhue / beta--redhue / redhue.netlify.app (gamma)
-const CHANNEL = (()=>{ try{ const h=location.hostname; if(/^alpha--/.test(h)||/^(localhost|127\.0\.0\.1)$/.test(h)) return "alpha"; if(/^beta--/.test(h)) return "beta"; if(h==="redhue.netlify.app") return "gamma"; }catch(e){} return "beta"; })();
+const CHANNEL = (()=>{ try{ const h=location.hostname; if(/^alpha--/.test(h)||/^(localhost|127\.0\.0\.1)$/.test(h)) return "alpha"; if(/^beta--/.test(h)) return "beta"; if(/^delta--/.test(h)) return "delta"; if(h==="redhue.netlify.app") return "gamma"; }catch(e){} return "beta"; })();
 const apiUrl = p => (ON_SITE ? "" : CFG.SITE) + p;
 const APP_URL = ON_SITE ? location.origin + location.pathname : CFG.SITE + "/";
 CFG.API = apiUrl(CFG.API);

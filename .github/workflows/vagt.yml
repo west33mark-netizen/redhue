@@ -1,5 +1,5 @@
 # Vagt: hver halve time tjekkes det, om Netlify-nøglen virker.
-# Så snart den gør, udgives gamma, beta og alpha automatisk – og bagefter kun når der er noget nyt.
+# Så snart den gør, udgives gamma, beta, alpha og delta automatisk – og bagefter kun når der er noget nyt.
 # Fejler aldrig selv (så du ikke får fejl-mails hver halve time); status står i loggen.
 # Ligger på main, fordi GitHub kun kører tidsplaner fra hovedbranchen.
 name: Vagt – udgiv når nøglen virker
@@ -26,7 +26,7 @@ jobs:
           code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T" "https://api.netlify.com/api/v1/sites/$SITE")
           [ "$code" = "200" ] || { echo "Venter: Netlify svarer $code på nøglen."; exit 0; }
           deploys=$(curl -s -H "Authorization: Bearer $T" "https://api.netlify.com/api/v1/sites/$SITE/deploys?per_page=30")
-          for b in gamma beta alpha; do
+          for b in gamma beta alpha delta; do
             sha=$(gh api "repos/$REPO/commits/$b" --jq .sha 2>/dev/null || true); [ -n "$sha" ] || continue
             if printf %s "$deploys" | grep -q "$b $sha"; then echo "$b: allerede udgivet (${sha::7})"; continue; fi
             if gh run list --repo "$REPO" --workflow netlify.yml --branch "$b" --limit 1 --json status --jq '.[0].status' 2>/dev/null | grep -qE "queued|in_progress"; then echo "$b: udgives allerede"; continue; fi

@@ -171,9 +171,10 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 | **alpha** | `alpha` | https://alpha--redhue.netlify.app | udvikling – alt det nyeste lander her først |
 | **beta** | `beta` (og `redhue`) | https://beta--redhue.netlify.app | testere med beta-koder |
 | **gamma** | `gamma` | https://redhue.netlify.app | den færdige app |
+| **delta** | `delta` | https://delta--redhue.netlify.app | stabil reserve – den sidst godkendte gamma |
 
 - Push til en branch udgiver automatisk til dens adresse. Appen viser selv sin kanal (ALPHA/BETA/GAMMA) ved logoet og i Indstillinger → Beta, og feedback mærkes med kanalen.
-- **Flyt videre:** GitHub → Actions → «Promovér» → vælg *alpha → beta* eller *beta → gamma* → Run workflow. Kun hurtig-flytning (fast-forward), så en kanal aldrig mister noget.
+- **Flyt videre:** GitHub → Actions → «Promovér» → vælg et trin eller *alt: alpha → beta → gamma → delta* → Run workflow. Kun hurtig-flytning (fast-forward), så en kanal aldrig mister noget.
 - Alle kanaler deler nøgler og feedback-indbakke.
 
 ## Backend (samlet)
