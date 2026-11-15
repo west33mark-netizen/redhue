@@ -1,5 +1,5 @@
 // REDHUE service worker. Hæv CACHE ved hver udgivelse (sammen med VERSION i index.html).
-const CACHE = "redhue-beta-3";
+const CACHE = "redhue-beta-4";
 const FONTS = "redhue-fonts"; // beholdes på tværs af versioner
 const ASSETS = ["/", "/index.html", "/manifest.json", "/privatliv.html", "/salg.html", "/avatar.png", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/maskable-512.png"];
 

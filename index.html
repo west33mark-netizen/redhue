@@ -519,6 +519,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .os-in{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top)) 18px calc(14px + env(safe-area-inset-bottom))}
 .os-status{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;height:22px}
 .os-status .r{display:flex;gap:12px;align-items:center}
+.os-status .live.off{background:var(--am,#ffc247);box-shadow:0 0 8px var(--am,#ffc247)}
 .os-status .live{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);display:inline-block;margin-right:6px}
 .os-clock{text-align:center;padding:30px 0 22px}
 .os-clock .time{font-family:'JetBrains Mono',monospace;font-size:clamp(64px,22vw,96px);font-weight:600;line-height:1;letter-spacing:-.04em;background:var(--crystal);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -582,6 +583,8 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .pv-bar a{color:#c9b6ff;font-weight:600}
 .net-pill{display:inline-flex;white-space:nowrap;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,194,71,.13);border:1px solid rgba(255,194,71,.45);color:var(--am,#ffc247)}
 .net-pill[hidden]{display:none!important}
+.net-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.net-pill.off::before{background:transparent;border:1.5px solid currentColor;width:5px;height:5px}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -610,14 +613,14 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </div>
 <div class="app">
   <aside id="side">
-    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>📴 Offline</span></div>
+    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>Offline</span></div>
     <nav id="navSide"></nav>
     <div class="side-foot"><button class="talk" data-talk id="talkD">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtn">EN</button></div>
   </aside>
 
   <div>
     <div class="topbar">
-      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>📴 Offline</span></div>
+      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>Offline</span></div>
       <div class="tb-r"><button class="talk" data-talk id="talkM">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtnM">EN</button></div>
     </div>
     <main id="main">
@@ -1034,7 +1037,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </div>
 <div class="os" id="os" hidden>
   <div class="os-in">
-    <div class="os-status"><span><span class="live"></span>REDHUE OS 2</span><span class="r"><span class="loc-pill" id="osLoc" hidden>📍</span><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
+    <div class="os-status"><span style="white-space:nowrap"><span class="live"></span><span id="osLbl">REDHUE OS 2</span></span><span class="r"><span class="loc-pill" id="osLoc" hidden>📍</span><span id="osDayTag"></span><span id="osBatt"></span><span id="osTime"></span></span></div>
     <button class="os-sos" id="osSos" aria-label="SOS">🆘 SOS</button>
     <div class="os-clock"><div class="time" id="osClock"></div><div class="date" id="osDate"></div><div class="greet" id="osGreet"></div><button class="talk" data-talk id="talkH">🗣️ <span data-t="talkBtnHome"></span></button></div>
     <div class="os-wg" id="osWidgets"></div>
@@ -1083,7 +1086,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.2-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.3-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -2509,7 +2512,7 @@ const Net=(()=>{
     try{ return await fetch(url,{...opts,signal:c.signal}); } catch(e){ throw new Error(e.name==="AbortError"?"timeout":"network"); } finally{ clearTimeout(t); } }
   function enqueue(item){ const q=queue(); q.push({...item,at:Date.now(),id:uid()}); store.set(KQ,q.slice(-50)); paint(); }
   function paint(){ const n=queue().length;
-    document.querySelectorAll("[data-net]").forEach(el=>{ el.hidden=online()&&!n; el.textContent=online()?(n?"⏳ "+n+L(" venter"," waiting"):""):"📴 Offline"+(n?" · "+n:""); el.title=online()?L("Sendes nu","Sending now"):L("Alt gemmes på telefonen","Everything is saved on your phone"); });
+    document.querySelectorAll("[data-net]").forEach(el=>{ el.hidden=online()&&!n; el.textContent=online()?(n?n+L(" venter"," waiting"):""):"Offline"+(n?" · "+n:""); el.classList.toggle("off",!online()); el.title=online()?L("Sendes nu","Sending now"):L("Alt gemmes på telefonen","Everything is saved on your phone"); }); document.querySelectorAll(".os-status .live").forEach(d=>d.classList.toggle("off",!online())); const ol=$("osLbl"); if(ol) ol.textContent=online()?"REDHUE OS 2":"OFFLINE"+(n?" · "+n:"");
     const b=$("btQueue"); if(b) b.textContent=n?L(n+" i kø – sendes når du er online",n+" queued – sent when you're online"):L("Intet i kø","Nothing queued"); }
   async function flush(){
     if(busy||!online()) return; const q=queue(); if(!q.length) return; busy=true; let sent=0;
