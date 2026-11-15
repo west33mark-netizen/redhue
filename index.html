@@ -1086,7 +1086,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.3-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.4-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1101,7 +1101,13 @@ CFG.API = apiUrl(CFG.API);
 const K = { state:"redhue_v3_state", lang:"redhue_lang", lic:"redhue_pro_license", hist:"redhue_agent_history" };
 
 const store = {
-  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch{ return d; } },
+  // Ødelagte eller forkerte data (fx null hvor der skal være en liste) må aldrig vælte appen
+  get(k,d){ try{ const v=localStorage.getItem(k); if(!v) return d; const x=JSON.parse(v);
+    if(x===null||x===undefined) return d;
+    if(Array.isArray(d)) return Array.isArray(x)?x:d;
+    if(d&&typeof d==="object") return (x&&typeof x==="object"&&!Array.isArray(x))?x:d;
+    if(d!==undefined&&d!==null&&typeof x!==typeof d) return d;
+    return x; }catch{ return d; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} }
 };
 const uid = () => Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
@@ -2377,7 +2383,16 @@ const SCHEMA={
 };
 const AG_DEF={length:30,count:2,platforms:"TikTok, Reels, Shorts",perWeek:7,hours:5};
 let agCur="script", agLast={agent:null,text:""}; const agState={};
-const hasLic = () => !!store.get(K.lic,"");
+// Pro-adgang. En funktionserklæring (ikke const), så den kan kaldes fra alle moduler,
+// også dem der kører før denne linje – ellers giver det "Cannot access 'hasLic' before initialization".
+// Serveren tjekker altid nøglen for alvor; her skjuler vi kun Pro-knapper for dem uden nøgle.
+function betaUntil(){ return "2027-02-28"; } // samme dato som BETA_UNTIL i netlify/lib/shared.mjs
+function hasLic(){
+  let k=""; try{ k=String(JSON.parse(localStorage.getItem("redhue_pro_license")||'""')||"").trim(); }catch(e){ try{ k=String(store.get(K.lic,"")||"").trim(); }catch(_){ k=""; } }
+  if(!k) return false;
+  if(/^BETA-/i.test(k)) return /^BETA-[0-9A-F]{5}-[0-9A-F]{5}$/.test(k) && Date.now() <= Date.parse(betaUntil()+"T23:59:59Z");
+  return true;
+}
 
 function agFieldVal(k){
   const d=(S.agentDrafts[agCur]||{})[k];
@@ -2591,7 +2606,7 @@ const Beta=(()=>{
     const lic=store.get(K.lic,"");
     $("btTitle").textContent=L("Beta","Beta");
     $("btSub").textContent=L("Du bruger en testudgave. Fortæl os, hvad der virker, og hvad der driller – det former appen.","You're using a test version. Tell us what works and what doesn't – it shapes the app.");
-    const access=isBetaKey(lic)?L("Beta-kode (Pro gratis i beta)","Beta code (Pro free during beta)"):lic?L("Licens","License"):L("Ingen – gratis-delen","None – free tier");
+    const access=isBetaKey(lic)?(hasLic()?L("Beta-kode (Pro gratis til "+betaUntil()+")","Beta code (Pro free until "+betaUntil()+")"):L("Beta-koden er udløbet","Beta code has expired")):lic?L("Licens","License"):L("Ingen – gratis-delen","None – free tier");
     $("btRows").innerHTML=[[L("Version","Version"),VERSION],[L("Adgang","Access"),access],[L("Tidszone","Time zone"),TZ()]].map(([a,b])=>`<div class="beta-row"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");
     $("btFb").textContent=L("Send feedback","Send feedback");
     $("btPriv").textContent=L("Privatliv & vilkår","Privacy & terms");
