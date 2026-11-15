@@ -1,5 +1,12 @@
 # Lægger REDHUE live på Netlify (redhue.netlify.app), hver gang der pushes til branchen "redhue".
-# Kræver én hemmelighed i GitHub: NETLIFY_AUTH_TOKEN (Netlify → User settings → Applications → Personal access tokens).
+#
+# Alle nøgler bor ét sted: GitHub → repoet → Settings → Secrets and variables → Actions.
+#   NETLIFY_AUTH_TOKEN  (påkrævet)  Netlify → User settings → Applications → Personal access tokens. Starter med nfp_
+#   ANTHROPIC_API_KEY   (valgfri)   console.anthropic.com → API Keys. Starter med sk-ant-     → AI-agenter, coach, mor/far
+#   REDHUE_DEV_KEY      (valgfri)   din ejer-nøgle (REDHUE-…)                                 → ejer-adgang + feedback-indbakke
+#   GUMROAD_PRODUCT_ID  (valgfri)   fra dit Gumroad-produkt                                   → betalte licenser
+#   REDHUE_BETA_HASHES  (valgfri)   ekstra beta-koder som hashes, kommasepareret
+# Ved hver deploy synkroniseres de valgfri nøgler til Netlifys miljøvariabler. Nøglerne vises aldrig i loggen.
 name: Deploy til Netlify
 on:
   push:
@@ -13,29 +20,59 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NETLIFY_SITE_ID: 3d54a324-e30b-443a-b89f-ba58d7fcc01f
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      RAW_NETLIFY: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      REDHUE_DEV_KEY: ${{ secrets.REDHUE_DEV_KEY }}
+      GUMROAD_PRODUCT_ID: ${{ secrets.GUMROAD_PRODUCT_ID }}
+      REDHUE_BETA_HASHES: ${{ secrets.REDHUE_BETA_HASHES }}
     steps:
       - uses: actions/checkout@v4
-      - name: Mangler nøgle?
-        if: env.NETLIFY_AUTH_TOKEN == ''
+
+      - name: Tjek nøgler (viser aldrig selve nøglerne)
+        id: keys
         run: |
-          echo "::warning::NETLIFY_AUTH_TOKEN er ikke sat i repoets Secrets – springer deploy over."
-      - name: Tjek nøglens form (viser aldrig selve nøglen)
-        if: env.NETLIFY_AUTH_TOKEN != ''
+          T="$(printf %s "$RAW_NETLIFY" | tr -d '[:space:]')"
+          echo "::add-mask::$T"
+          if [ -z "$T" ]; then echo "::error title=Netlify-nøgle mangler::Tilføj NETLIFY_AUTH_TOKEN under Settings → Secrets and variables → Actions."; exit 1; fi
+          case "$T" in nfp_*) ;; *) echo "::error title=Forkert Netlify-nøgle::Den gemte værdi er ${#T} tegn og starter ikke med nfp_. Det er nok nøglens id fra listen, ikke selve nøglen. Lav en ny under Personal access tokens og kopiér den lange tekst, der vises lige efter Generate token."; exit 1;; esac
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T" "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID")
+          if [ "$code" != "200" ]; then echo "::error title=Netlify afviser nøglen::Svar $code. Nøglen er udløbet, slettet eller tilhører en konto uden adgang til projektet redhue."; exit 1; fi
+          echo "NETLIFY_AUTH_TOKEN=$T" >> "$GITHUB_ENV"
+          echo "Netlify-nøgle: OK"
+          chk(){ n="$1"; v="$2"; pre="$3"; if [ -z "$v" ]; then echo "$n: ikke sat (springes over)"; elif [ -n "$pre" ] && [ "${v#"$pre"}" = "$v" ]; then echo "::warning title=$n ser forkert ud::Den starter ikke med $pre – synkroniseres ikke."; echo "SKIP_$n=1" >> "$GITHUB_ENV"; else echo "$n: OK"; fi; }
+          chk ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY" "sk-ant-"
+          chk REDHUE_DEV_KEY "$REDHUE_DEV_KEY" "REDHUE-"
+          chk GUMROAD_PRODUCT_ID "$GUMROAD_PRODUCT_ID" ""
+          chk REDHUE_BETA_HASHES "$REDHUE_BETA_HASHES" ""
+
+      - name: Tjek at beta-datoen er ens i app og server
         run: |
-          T="$NETLIFY_AUTH_TOKEN"; T_TRIM="$(printf %s "$T" | tr -d '[:space:]')"
-          echo "Længde: ${#T} (uden mellemrum: ${#T_TRIM})"
-          case "$T_TRIM" in nfp_*) echo "Starter med nfp_: ja";; *) echo "::warning::Nøglen starter ikke med nfp_ – det er nok ikke en Netlify personal access token";; esac
-          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T_TRIM" https://api.netlify.com/api/v1/user); echo "Netlify /user svarer: $code"
-          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T_TRIM" https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID); echo "Netlify site svarer: $code"
+          a=$(grep -o 'function betaUntil(){ return "[0-9-]*"' index.html | grep -o '[0-9]\{4\}-[0-9-]*')
+          b=$(grep -o 'BETA_UNTIL = "[0-9-]*"' netlify/lib/shared.mjs | grep -o '[0-9]\{4\}-[0-9-]*')
+          echo "App: $a  Server: $b"
+          [ -n "$a" ] && [ "$a" = "$b" ] || { echo "::error::Beta-datoen i index.html ($a) og netlify/lib/shared.mjs ($b) er forskellige."; exit 1; }
+
       - uses: actions/setup-node@v4
-        if: env.NETLIFY_AUTH_TOKEN != ''
         with:
           node-version: 22
           cache: npm
-      - name: Installer
-        if: env.NETLIFY_AUTH_TOKEN != ''
-        run: npm ci
+      - run: npm ci
+
+      - name: Synkronisér nøgler til Netlify
+        run: |
+          for n in ANTHROPIC_API_KEY REDHUE_DEV_KEY GUMROAD_PRODUCT_ID REDHUE_BETA_HASHES; do
+            v="${!n}"; skip="SKIP_$n"
+            if [ -z "$v" ] || [ -n "${!skip}" ]; then continue; fi
+            npx -y netlify-cli@latest env:set "$n" "$v" --secret --force > /dev/null 2>&1 \
+              || npx -y netlify-cli@latest env:set "$n" "$v" --force > /dev/null \
+              && echo "$n: synkroniseret" || echo "::warning::$n kunne ikke synkroniseres"
+          done
+
       - name: Deploy (produktion)
-        if: env.NETLIFY_AUTH_TOKEN != ''
-        run: export NETLIFY_AUTH_TOKEN="$(printf %s "$NETLIFY_AUTH_TOKEN" | tr -d '[:space:]')"; npx -y netlify-cli@latest deploy --build --prod --message "GitHub ${{ github.sha }}"
+        run: npx -y netlify-cli@latest deploy --build --prod --message "GitHub ${{ github.sha }}"
+
+      - name: Tjek at siden svarer
+        run: |
+          sleep 5
+          for p in / /sw.js /privatliv.html; do echo "$p: $(curl -s -o /dev/null -w '%{http_code}' https://redhue.netlify.app$p)"; done
+          echo "API feedback (forventer 403 uden ejer-nøgle): $(curl -s -o /dev/null -w '%{http_code}' https://redhue.netlify.app/api/feedback)"
