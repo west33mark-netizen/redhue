@@ -660,6 +660,14 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .wx-chart{width:100%;height:auto;display:block}
 .wx-src{margin-top:10px;font-size:13px}.wx-src summary{cursor:pointer;color:var(--muted)}.wx-src dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0}.wx-src dt{color:var(--muted)}.wx-src dd{margin:0;overflow-wrap:anywhere}
 .wx-places{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.gf-brand{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.gf-brand summary{cursor:pointer;font-weight:600;font-size:14px}.gf-brand summary small{color:var(--muted);font-weight:400;margin-left:6px}
+.gf-cols{display:flex;gap:10px;margin:10px 0}.gf-cols label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}.gf-cols input{width:52px;height:34px;padding:2px;border-radius:8px}
+.gf-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gf-grid{display:grid;grid-template-columns:1fr;gap:12px}.gf-grid.tall{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.gf-card{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}.gf-card canvas{display:block;width:100%;height:auto}
+.gf-card figcaption{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;font-size:13px}.gf-card figcaption b{flex:1;min-width:0}
+.gf-sw{display:flex;gap:3px}.gf-sw i{width:14px;height:14px;border-radius:4px;border:1px solid var(--line)}
+.gf-act{display:flex;gap:4px}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -951,6 +959,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <div class="card">
             <h3 id="agFormTitle"></h3>
             <form id="agForm"></form>
+            <div id="gfBrand"></div>
             <div class="actions"><button class="primary" id="agRun" data-t="run"></button></div>
             <label class="chain" id="chainWrap"><input type="checkbox" id="chainBox"> <span data-t="chain"></span></label>
             <h3 style="margin-top:18px" data-t="history"></h3>
@@ -1178,7 +1187,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "1.0.0-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "1.0.1-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1263,9 +1272,9 @@ const T = {
   run:"Kør agent", running:"Arbejder…", chain:"Send automatisk manuskriptet videre til Hook-agenten", history:"Historik", output:"Output",
   copy:"Kopiér", toHooks:"→ Hooks", toPipe:"→ Pipeline", copied:"Kopieret", addedPipe:n=>`${n} kort lagt i Pipeline`,
   emptyOut:"Vælg en agent, udfyld felterne og tryk Kør.", noHist:"Ingen kørsler endnu.",
-  f:{ niche:"Niche", topic:"Emne", length:"Længde (sek)", tone:"Tone", count:"Varianter", script:"Manuskript (valgfrit)", platforms:"Platforme", perWeek:"Videoer/uge", hours:"Timer/uge", day:"Missionsdag", goal:"Indkomstmål", stats:"Dine tal (indsæt frit)" },
-  ph:{ niche:"fx facts om rummet", topic:"fx hvorfor Venus drejer baglæns", tone:"nysgerrig og energisk", goal:"fx 5.000 kr/md", stats:"Video 1: 12.400 views, 6% delinger, 41% watch time…\nFølgere: 830 (+120)\nIndtjening: 0 kr" },
-  ag:{ script:["Script-agent","Faceless manuskripter med hook, voiceover, visuals og CTA."], hooks:["Hook & Caption","10 hooks + captions og hashtags til hver platform."], planner:["Planlægger","Ugeplan og batch-produktion mod 90-dages målet."], analyst:["Analytiker","Læser dine tal og giver 3 konkrete eksperimenter."] },
+  f:{ niche:"Niche", topic:"Emne", length:"Længde (sek)", tone:"Tone", count:"Varianter", script:"Manuskript (valgfrit)", platforms:"Platforme", perWeek:"Videoer/uge", hours:"Timer/uge", day:"Missionsdag", goal:"Indkomstmål", stats:"Dine tal (indsæt frit)", platform:"Platform", style:"Stil" },
+  ph:{ niche:"fx facts om rummet", topic:"fx hvorfor Venus drejer baglæns", tone:"nysgerrig og energisk", goal:"fx 5.000 kr/md", stats:"Video 1: 12.400 views, 6% delinger, 41% watch time…\nFølgere: 830 (+120)\nIndtjening: 0 kr", platform:"fx YouTube Shorts + thumbnail", style:"fx mørk, neon, minimalistisk" },
+  ag:{ script:["Script-agent","Faceless manuskripter med hook, voiceover, visuals og CTA."], hooks:["Hook & Caption","10 hooks + captions og hashtags til hver platform."], planner:["Planlægger","Ugeplan og batch-produktion mod 90-dages målet."], analyst:["Analytiker","Læser dine tal og giver 3 konkrete eksperimenter."], grafik:["Grafik-agent","Thumbnails, farver, tekst på skærm og billed-prompts – lærer dit brand."] },
   errors:{ pro_required:"Pro-licens mangler eller er ugyldig.", rate_limited:"For mange kørsler, prøv igen om lidt.", missing_fields:"Udfyld de påkrævede felter.", network:"Ingen forbindelse til serveren. Tjek nettet, eller åbn appen på redhue.netlify.app.", default:"Noget gik galt. Prøv igen." },
   runs:"kørsler", lastRun:"Seneste", proOn:"● PRO AKTIV", proOff:"○ INGEN LICENS", licKey:"Gumroad licensnøgle", licPh:"Indsæt din licensnøgle", licSaved:"Licens gemt",
   settingsSub:"Licens, backup og dine gamle data.", backup:"Backup", backupSub:"Gem alt som én fil, eller hent en backup ind igen.", export:"Eksportér backup", import:"Importér backup",
@@ -1379,9 +1388,9 @@ const T = {
   run:"Run agent", running:"Working…", chain:"Automatically pass the script on to the Hook agent", history:"History", output:"Output",
   copy:"Copy", toHooks:"→ Hooks", toPipe:"→ Pipeline", copied:"Copied", addedPipe:n=>`${n} card(s) added to Pipeline`,
   emptyOut:"Pick an agent, fill in the fields and hit Run.", noHist:"No runs yet.",
-  f:{ niche:"Niche", topic:"Topic", length:"Length (sec)", tone:"Tone", count:"Variants", script:"Script (optional)", platforms:"Platforms", perWeek:"Videos/week", hours:"Hours/week", day:"Mission day", goal:"Income goal", stats:"Your numbers (paste freely)" },
-  ph:{ niche:"e.g. space facts", topic:"e.g. why Venus spins backwards", tone:"curious and energetic", goal:"e.g. $750/month", stats:"Video 1: 12,400 views, 6% shares, 41% watch time…\nFollowers: 830 (+120)\nEarnings: $0" },
-  ag:{ script:["Script Agent","Faceless scripts with hook, voiceover, visuals and CTA."], hooks:["Hook & Caption","10 hooks + captions and hashtags per platform."], planner:["Planner","Weekly plan and batch production toward the 90-day goal."], analyst:["Analyst","Reads your numbers and gives 3 concrete experiments."] },
+  f:{ niche:"Niche", topic:"Topic", length:"Length (sec)", tone:"Tone", count:"Variants", script:"Script (optional)", platforms:"Platforms", perWeek:"Videos/week", hours:"Hours/week", day:"Mission day", goal:"Income goal", stats:"Your numbers (paste freely)", platform:"Platform", style:"Style" },
+  ph:{ niche:"e.g. space facts", topic:"e.g. why Venus spins backwards", tone:"curious and energetic", goal:"e.g. $750/month", stats:"Video 1: 12,400 views, 6% shares, 41% watch time…\nFollowers: 830 (+120)\nEarnings: $0", platform:"e.g. YouTube Shorts + thumbnail", style:"e.g. dark, neon, minimal" },
+  ag:{ script:["Script Agent","Faceless scripts with hook, voiceover, visuals and CTA."], hooks:["Hook & Caption","10 hooks + captions and hashtags per platform."], planner:["Planner","Weekly plan and batch production toward the 90-day goal."], analyst:["Analyst","Reads your numbers and gives 3 concrete experiments."], grafik:["Graphics Agent","Thumbnails, colours, on-screen text and image prompts – learns your brand."] },
   errors:{ pro_required:"Pro license missing or invalid.", rate_limited:"Too many runs, try again shortly.", missing_fields:"Fill in the required fields.", network:"Can't reach the server. Check your connection or open the app at redhue.netlify.app.", default:"Something went wrong. Try again." },
   runs:"runs", lastRun:"Latest", proOn:"● PRO ACTIVE", proOff:"○ NO LICENSE", licKey:"Gumroad license key", licPh:"Paste your license key", licSaved:"License saved",
   settingsSub:"License, backup and your old data.", backup:"Backup", backupSub:"Save everything as one file, or load a backup back in.", export:"Export backup", import:"Import backup",
@@ -2126,7 +2135,7 @@ const Guide = (()=>{
     {k:["profit","overskud","margin","prognose","forecast","tjener jeg"], a:()=>{ const P=profitNow(); return T(`<b>Profit</b> er indtægter minus udgifter. Denne måned står du på <b>${money(P.profit)}</b>${P.in?` med ${P.margin}% margin`:""}. Sæt et profitmål, så regner appen ud, hvad du mangler pr. dag.`,`<b>Profit</b> is income minus expenses. This month you're at <b>${money(P.profit)}</b>${P.in?` with a ${P.margin}% margin`:""}. Set a profit goal and the app works out what you need per day.`); }, b:()=>[["go:profit",T("Åbn Profit","Open Profit")],["profitgoal",T("Sæt profitmål","Set profit goal")]]},
     {k:["mission","90","dag ","day","opgave","task","tjekliste","checklist","streak","xp","level"], a:()=>T(`Din <b>mission</b> er 90 dage. Du er på dag <b>${Math.min(missionDay(),90)}</b>. Hver dag har 4 små opgaver: klarer du mindst 2, holder din streak (nu <b>${streak()}</b> 🔥). Opgaver giver XP, og din robot vokser med dit level.`,`Your <b>mission</b> is 90 days. You're on day <b>${Math.min(missionDay(),90)}</b>. Each day has 4 small tasks: do at least 2 to keep your streak (now <b>${streak()}</b> 🔥). Tasks give XP and your robot grows with your level.`), b:()=>[["checks",T("Dagens opgaver","Today's tasks")]]},
     {k:["pipeline","idé","ide","idea","video","manus","script","kanban","post"], a:()=>T("I <b>Pipeline</b> flytter du videoer fra Idé → Manuskript → Produktion → Postet. Tip: del et TikTok- eller YouTube-link til REDHUE fra telefonens del-menu, så bliver det automatisk en idé.","In <b>Pipeline</b> you move videos from Idea → Script → Production → Posted. Tip: share a TikTok or YouTube link to REDHUE from your phone's share menu and it becomes an idea automatically."), b:()=>[["idea",T("+ Ny idé","+ New idea")],["go:pipeline",T("Åbn Pipeline","Open Pipeline")]]},
-    {k:["agent","ai","hook","caption","manuskript","planlæg","planner","analys","analyst"], a:()=>T("<b>Agenterne</b> skriver for dig: Script-agent, Hook & Caption, Planlægger og Analytiker. De er en del af Pro.","The <b>agents</b> write for you: Script, Hook & Caption, Planner and Analyst. They're part of Pro."), b:()=>[["go:agents",T("Åbn Agenter","Open Agents")]].concat(hasLic()?[]:[["pro",T("Lås Pro op","Unlock Pro")]])},
+    {k:["agent","ai","hook","caption","manuskript","planlæg","planner","analys","analyst","grafik","thumbnail"], a:()=>T("<b>Agenterne</b> skriver for dig: Script-agent, Hook & Caption, Planlægger og Analytiker. De er en del af Pro.","The <b>agents</b> write for you: Script, Hook & Caption, Planner and Analyst. They're part of Pro."), b:()=>[["go:agents",T("Åbn Agenter","Open Agents")]].concat(hasLic()?[]:[["pro",T("Lås Pro op","Unlock Pro")]])},
     {k:["coach","rådgiv","advice","hjælp mig med strategi","strategi","strategy","vækst","growth"], a:()=>T("<b>AI-coachen</b> kan se dine tal og giver konkrete næste skridt. Den findes under Chat (Pro).","The <b>AI coach</b> can see your numbers and gives concrete next steps. It's under Chat (Pro)."), b:()=>[[hasLic()?"coach":"pro",hasLic()?T("Spørg coachen","Ask the coach"):T("Lås Pro op","Unlock Pro")]]},
     {k:["chat","fællesskab","community","andre creators","skriv med","forum"], a:()=>T("I <b>Chat → Fællesskab</b> skriver du med andre REDHUE-creators. Du vises med dit navn, aldrig med din licensnøgle, og du kan slette dine egne beskeder.","In <b>Chat → Community</b> you talk with other REDHUE creators. You're shown by your name, never your license key, and you can delete your own messages."), b:()=>[["go:chat",T("Åbn Chat","Open Chat")]]},
     {k:["pro","licens","license","nøgle","key","købe","buy","gumroad","pris","price","betal","opgrader","upgrade"], a:()=>hasLic()?T("Du har allerede en licens. Agenter, AI-coach og fællesskab er låst op. 🎉","You already have a license. Agents, AI coach and community are unlocked. 🎉"):T("Med <b>Pro</b> får du AI-agenter, AI-coachen og fællesskabs-chatten. Når du har købt, får du en licensnøgle på mail, som du indsætter under Indstillinger.","With <b>Pro</b> you get the AI agents, the AI coach and the community chat. After buying you get a license key by email, which you paste under Settings."), b:()=>[["pro",T("Indsæt licens","Enter license")]]},
@@ -2514,12 +2523,13 @@ $("prTable").addEventListener("click",e=>{
 });
 
 /* ---------- Agents ---------- */
-const AGENT_ICO={script:"🎬",hooks:"🪝",planner:"🗓️",analyst:"📊"};
+const AGENT_ICO={script:"🎬",hooks:"🪝",planner:"🗓️",analyst:"📊",grafik:"🎨"};
 const SCHEMA={
   script:[["niche","text",1],["topic","text",1],["row",["length","number"],["count","number"]],["tone","text"]],
   hooks:[["niche","text",1],["topic","text",1],["script","textarea"]],
   planner:[["niche","text",1],["platforms","text"],["row",["perWeek","number"],["hours","number"]],["row",["day","number"],["goal","text"]]],
-  analyst:[["niche","text",1],["row",["day","number"],["goal","text"]],["stats","textarea",1]]
+  analyst:[["niche","text",1],["row",["day","number"],["goal","text"]],["stats","textarea",1]],
+  grafik:[["niche","text",1],["topic","text",1],["row",["platform","text"],["style","text"]]]
 };
 const AG_DEF={length:30,count:2,platforms:"TikTok, Reels, Shorts",perWeek:7,hours:5};
 let agCur="script", agLast={agent:null,text:""}; const agState={};
@@ -2558,6 +2568,7 @@ function renderAgents(){
   $("agFormTitle").textContent = t().ag[agCur][0];
   $("agForm").innerHTML = SCHEMA[agCur].map(f=> f[0]==="row" ? `<div class="row">${agField(...f[1])}${agField(...f[2])}</div>` : agField(...f)).join("");
   $("chainWrap").style.display = agCur==="script"?"flex":"none";
+  Grafik.renderBrand();
   renderAgHist();
   if(agLast.text) showAgOut(agLast.text, agLast.agent); else { $("agOut").innerHTML=`<div class="empty" style="text-align:center;padding-top:40px">${t().emptyOut}</div>`; agButtons(null); }
 }
@@ -2589,9 +2600,84 @@ function md(src){
     i++; }
   close(); return h;
 }
-function showAgOut(text,agent){ $("agOutTitle").textContent=`${t().output} · ${t().ag[agent][0]}`; $("agOut").innerHTML=md(text); agButtons(agent); }
+/* ---------- Grafik-agent: brand-profil, skitser og læring ----------
+   «Træning» her betyder ikke, at modellen ændres: agenten får din brand-profil og dine
+   👍/👎 på tidligere koncepter med i hver kørsel, så forslagene rammer din stil bedre og bedre. */
+const Grafik=(()=>{
+  const KEY="redhue_brand"; const L=(da,en)=>lang==="en"?en:da;
+  const st=()=>Object.assign({colors:["#0b0b14","#ffffff","#e8113a"],font:"",tone:"",dos:"",donts:"",liked:[],disliked:[]},store.get(KEY,{}));
+  const put=b=>store.set(KEY,b);
+  let concepts=[], ratio="169", guides=true;
+  const hex=x=>/^#[0-9a-f]{6}$/i.test(String(x||""))?x:null;
+  function profileText(){ const b=st(); const lines=[];
+    lines.push((lang==="en"?"Brand colours: ":"Brand-farver: ")+b.colors.filter(hex).join(", "));
+    if(b.font) lines.push((lang==="en"?"Font: ":"Skrifttype: ")+b.font);
+    if(b.tone) lines.push((lang==="en"?"Style/tone: ":"Stil/tone: ")+b.tone);
+    if(b.dos) lines.push((lang==="en"?"Always: ":"Altid: ")+b.dos);
+    if(b.donts) lines.push((lang==="en"?"Never: ":"Aldrig: ")+b.donts);
+    b.liked.slice(0,6).forEach(c=>lines.push(`👍 "${c.text}" · ${[...(c.bg||[]),c.fg,c.accent].filter(hex).join(" ")} · ${c.layout||""}${c.why?" – "+c.why:""}`));
+    b.disliked.slice(0,6).forEach(c=>lines.push(`👎 "${c.text}" · ${[...(c.bg||[]),c.fg,c.accent].filter(hex).join(" ")}${c.why?" – "+c.why:""}`));
+    return lines.join("\n").slice(0,2400); }
+  function brandHTML(){ const b=st();
+    return `<details class="gf-brand" ${b.liked.length+b.disliked.length?"":"open"}><summary>🎓 ${esc(L("Træn agenten – dit brand","Train the agent – your brand"))} <small>${b.liked.length} 👍 · ${b.disliked.length} 👎</small></summary>
+      <div class="gf-cols">${b.colors.map((c,i)=>`<label>${esc([L("Baggrund","Background"),L("Tekst","Text"),"Accent"][i])}<input type="color" data-gf-col="${i}" value="${esc(hex(c)||"#000000")}"></label>`).join("")}</div>
+      <div class="row"><div><label>${esc(L("Skrifttype","Font"))}</label><input data-gf="font" value="${esc(b.font)}" placeholder="${esc(L("fx Anton, Bebas Neue","e.g. Anton, Bebas Neue"))}" maxlength="60"></div><div><label>${esc(L("Stil","Style"))}</label><input data-gf="tone" value="${esc(b.tone)}" placeholder="${esc(L("fx mørk og mystisk","e.g. dark and mysterious"))}" maxlength="80"></div></div>
+      <div class="row"><div><label>${esc(L("Altid","Always"))}</label><input data-gf="dos" value="${esc(b.dos)}" placeholder="${esc(L("fx gul tekst, store tal","e.g. yellow text, big numbers"))}" maxlength="140"></div><div><label>${esc(L("Aldrig","Never"))}</label><input data-gf="donts" value="${esc(b.donts)}" placeholder="${esc(L("fx røde pile, emojis","e.g. red arrows, emojis"))}" maxlength="140"></div></div>
+      <p class="sub" style="font-size:12px;margin:6px 0 0">${esc(L("Gemmes på telefonen og sendes med hver kørsel. Giv 👍 eller 👎 på skitserne, så lærer agenten din smag.","Saved on your phone and sent with each run. Give 👍 or 👎 on the sketches and the agent learns your taste."))}${b.liked.length+b.disliked.length?` <button type="button" class="small" data-gf-reset>${esc(L("Glem feedback","Forget feedback"))}</button>`:""}</p></details>`; }
+  function renderBrand(){ const el=$("gfBrand"); if(!el) return; el.innerHTML=agCur==="grafik"?brandHTML():""; }
+  function parse(text){ const m=String(text||"").match(/```json\s*([\s\S]*?)```/); if(!m) return {md:text,concepts:[]};
+    let c=[]; try{ const j=JSON.parse(m[1]); c=(j.concepts||[]).filter(x=>x&&x.text).slice(0,4).map(x=>({name:String(x.name||"").slice(0,40),text:String(x.text).slice(0,40),sub:String(x.sub||"").slice(0,60),bg:(Array.isArray(x.bg)?x.bg:[x.bg]).filter(hex).slice(0,2),fg:hex(x.fg)||"#ffffff",accent:hex(x.accent)||"#e8113a",layout:["left","center","right"].includes(x.layout)?x.layout:"left",emoji:String(x.emoji||"").slice(0,4)})); }catch(e){}
+    return {md:text.replace(m[0],"").trim(),concepts:c}; }
+  function draw(cv,c,r){ const W=r==="916"?540:640, H=r==="916"?960:360; cv.width=W; cv.height=H; const g=cv.getContext("2d");
+    const bg=c.bg.length?c.bg:["#0b0b14"]; const gr=g.createLinearGradient(0,0,W,H); gr.addColorStop(0,bg[0]); gr.addColorStop(1,bg[1]||bg[0]); g.fillStyle=gr; g.fillRect(0,0,W,H);
+    // motiv-pladsholder (emoji) i modsat side af teksten
+    const ctr=c.layout==="center"; const motifX=c.layout==="left"?W*0.74:c.layout==="right"?W*0.26:W*0.5, motifY=r==="916"?H*0.36:ctr?H*0.27:H*0.5;
+    g.globalAlpha=.9; g.font=`${Math.round(H*(r==="916"?0.2:ctr?0.3:0.42))}px system-ui,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji"`; g.textAlign="center"; g.textBaseline="middle"; g.fillText(c.emoji||"✦",motifX,motifY); g.globalAlpha=1;
+    // tekst
+    const words=c.text.toUpperCase().split(/\s+/); const lines=[]; const maxW=(c.layout==="center"?0.86:0.56)*W; let fs=Math.round(H*(r==="916"?0.085:ctr?0.14:0.17));
+    const fit=()=>{ lines.length=0; let cur=""; g.font=`900 ${fs}px Impact,"Anton","Arial Black",system-ui,sans-serif`; words.forEach(w=>{ const t=cur?cur+" "+w:w; if(g.measureText(t).width>maxW&&cur){ lines.push(cur); cur=w; } else cur=t; }); if(cur) lines.push(cur); };
+    fit(); while((lines.some(l=>g.measureText(l).width>maxW)||lines.length>3)&&fs>14){ fs-=2; fit(); }
+    const x=c.layout==="left"?W*0.06:c.layout==="right"?W*0.94:W/2; g.textAlign=c.layout==="left"?"left":c.layout==="right"?"right":"center";
+    const blockH=lines.length*fs*1.02; let y=r==="916"?H*0.62-blockH/2:ctr?H*0.68-blockH/2:H/2-blockH/2+(c.sub?-fs*0.25:0);
+    lines.forEach((l,i)=>{ const yy=y+i*fs*1.02+fs*0.5; g.lineWidth=Math.max(3,fs*0.12); g.strokeStyle="rgba(0,0,0,.55)"; g.lineJoin="round"; g.strokeText(l,x,yy); g.fillStyle=i===lines.length-1&&lines.length>1?c.accent:c.fg; g.fillText(l,x,yy); });
+    // accent-bjælke
+    const barW=Math.min(maxW,W*0.3), bx=c.layout==="left"?x:c.layout==="right"?x-barW:x-barW/2; g.fillStyle=c.accent; g.fillRect(bx,y-fs*0.35,barW,Math.max(4,fs*0.1));
+    if(c.sub){ g.font=`700 ${Math.round(fs*0.36)}px system-ui,sans-serif`; g.fillStyle=c.fg; g.globalAlpha=.9; g.fillText(c.sub,x,y+blockH+fs*0.45); g.globalAlpha=1; }
+    if(guides){ g.setLineDash([6,6]); g.strokeStyle="rgba(255,255,255,.45)"; g.lineWidth=1.5;
+      if(r==="916"){ g.strokeRect(W*0.04,H*0.14,W*0.92,H*0.66); } else { g.fillStyle="rgba(0,0,0,.45)"; g.fillRect(W*0.82,H*0.84,W*0.15,H*0.11); g.fillStyle="#fff"; g.font=`600 ${Math.round(H*0.06)}px system-ui`; g.textAlign="center"; g.fillText("12:34",W*0.895,H*0.9); }
+      g.setLineDash([]); } }
+  function renderConcepts(){ const el=$("gfOut"); if(!el) return;
+    if(!concepts.length){ el.innerHTML=""; return; }
+    el.innerHTML=`<div class="gf-bar"><span class="seg"><button type="button" data-gf-ratio="169" aria-pressed="${ratio==="169"}">16:9</button><button type="button" data-gf-ratio="916" aria-pressed="${ratio==="916"}">9:16</button></span><label class="life-chk" style="border:0;padding:0"><input type="checkbox" data-gf-guides ${guides?"checked":""}> ${esc(L("Vis sikker zone","Show safe zone"))}</label></div>
+      <div class="gf-grid ${ratio==="916"?"tall":""}">${concepts.map((c,i)=>`<figure class="gf-card"><canvas data-gf-cv="${i}" aria-label="${esc(L("Skitse af thumbnail","Thumbnail sketch"))}: ${esc(c.text)}"></canvas><figcaption><b>${esc(c.name||L("Koncept","Concept")+" "+(i+1))}</b><span class="gf-sw">${[...c.bg,c.fg,c.accent].map(x=>`<i style="background:${x}" title="${x}"></i>`).join("")}</span>
+        <span class="gf-act"><button type="button" class="small" data-gf-like="${i}" aria-label="👍">👍</button><button type="button" class="small" data-gf-dis="${i}" aria-label="👎">👎</button><button type="button" class="small" data-gf-png="${i}">PNG</button></span></figcaption></figure>`).join("")}</div>
+      <p class="sub" style="font-size:12px;margin:6px 0 10px">${esc(L("Skitser med emoji som pladsholder for motivet – brug billed-prompten nedenfor i dit billedværktøj (fx Canva eller et AI-billedværktøj) og læg teksten ovenpå.","Sketches with an emoji standing in for the subject – use the image prompt below in your image tool (e.g. Canva or an AI image tool) and put the text on top."))}</p>`;
+    concepts.forEach((c,i)=>draw(el.querySelector(`[data-gf-cv="${i}"]`),c,ratio)); }
+  function show(text){ const p=parse(text); concepts=p.concepts; $("agOut").innerHTML=`<div id="gfOut"></div>`+md(p.md); renderConcepts(); }
+  function rate(i,good){ const c=concepts[i]; if(!c) return; const b=st(); const why=good?"":"";
+    const item={text:c.text,bg:c.bg,fg:c.fg,accent:c.accent,layout:c.layout,at:Date.now(),why};
+    (good?b.liked:b.disliked).unshift(item); b.liked=b.liked.slice(0,12); b.disliked=b.disliked.slice(0,12); put(b);
+    toast(good?L("👍 Gemt – agenten laver mere af den slags","👍 Saved – the agent will do more like this"):L("👎 Gemt – agenten undgår det fremover","👎 Saved – the agent will avoid this")); renderBrand(); }
+  async function png(i){ const c=concepts[i]; if(!c) return; const cv=document.createElement("canvas"); const g0=guides; guides=false;
+    const W=ratio==="916"?1080:1280, H=ratio==="916"?1920:720; draw(cv,c,ratio); const big=document.createElement("canvas"); big.width=W; big.height=H; big.getContext("2d").drawImage(cv,0,0,W,H); guides=g0;
+    const name=`redhue-${(c.text||"thumb").toLowerCase().replace(/[^a-z0-9æøå]+/g,"-").slice(0,30)}-${ratio==="916"?"9x16":"16x9"}.png`;
+    big.toBlob(async blob=>{ if(!blob) return; if(IS_PREVIEW&&Cloud.avail()){ try{ const d=await window.claude.use("downloads"); if(d){ await d.save({filename:name,data:blob}); return; } }catch(e){ if(e&&e.code==="declined") return; } }
+      const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); },"image/png"); }
+  document.addEventListener("input",e=>{ const t=e.target; if(!t.closest||!t.closest("#gfBrand")) return; const b=st();
+    if(t.dataset.gfCol!==undefined) b.colors[+t.dataset.gfCol]=t.value; if(t.dataset.gf) b[t.dataset.gf]=t.value; put(b); });
+  document.addEventListener("click",e=>{ const t=e.target;
+    const r=t.closest("[data-gf-ratio]"); if(r){ ratio=r.dataset.gfRatio; renderConcepts(); return; }
+    const l=t.closest("[data-gf-like]"); if(l){ rate(+l.dataset.gfLike,true); return; }
+    const d=t.closest("[data-gf-dis]"); if(d){ rate(+d.dataset.gfDis,false); return; }
+    const p=t.closest("[data-gf-png]"); if(p){ png(+p.dataset.gfPng); return; }
+    if(t.closest("[data-gf-reset]")){ const b=st(); b.liked=[]; b.disliked=[]; put(b); renderBrand(); toast(L("Feedback glemt","Feedback forgotten")); } });
+  document.addEventListener("change",e=>{ if(e.target.matches&&e.target.matches("[data-gf-guides]")){ guides=e.target.checked; renderConcepts(); } });
+  return {profileText,renderBrand,show,parse,draw,st};
+})();
+function showAgOut(text,agent){ $("agOutTitle").textContent=`${t().output} · ${t().ag[agent][0]}`; if(agent==="grafik") Grafik.show(text); else $("agOut").innerHTML=md(text); agButtons(agent); }
 
 async function callAgent(agent, fields){
+  if(agent==="grafik") fields={...fields,brand:Grafik.profileText()};
   agState[agent]="run"; renderAgentCardsOnly();
   $("agOut").innerHTML=`<div class="loader"><i></i><i></i><i></i></div>`;
   if(!Net.online()){
@@ -3079,16 +3165,68 @@ Write in English.`
     user: (f, lang) => lang === "da"
       ? `Niche: ${f.niche}\nMissionsdag: ${f.day || "?"} af 90\nIndkomstmål: ${f.goal || "ikke angivet"}\nData (indsat af brugeren):\n${f.stats}`
       : `Niche: ${f.niche}\nMission day: ${f.day || "?"} of 90\nIncome goal: ${f.goal || "not set"}\nData (pasted by user):\n${f.stats}`
+  },
+  grafik: {
+    maxTokens: 2200,
+    system: {
+      da: `Du er REDHUE Grafik-agenten: art director for faceless videoer på TikTok, Reels, YouTube Shorts og YouTube. Du laver thumbnails, tekst på skærm og billed-prompts.
+Regler:
+- Tekst på thumbnail: højst 4 ord, stor og læsbar på en mobilskærm. Høj kontrast mellem tekst og baggrund.
+- Højst 3 farver plus en neutral. Giv farver som hex-koder.
+- Sikker zone: 9:16 (1080×1920) – hold tekst væk fra øverste 14 % og nederste 20 %, hvor appens knapper ligger. 16:9 YouTube-thumbnail (1280×720) – hold nederste højre hjørne fri (videolængde).
+- Ingen rigtige personers ansigter, ingen kendte figurer, logoer, varemærker eller kopier af eksisterende værker. Billed-prompts beskriver originale motiver.
+- Ingen løgnagtig clickbait: teksten skal passe til videoen.
+- Brugerens brand-profil og tidligere 👍/👎 står i beskeden, når de findes. Gentag det, der fik 👍, og undgå det, der fik 👎.
+Lav 3 tydeligt forskellige koncepter i dette format:
+## Koncept X – <navn>
+**Tekst på thumbnail:** ...
+**Undertekst (valgfri):** ...
+**Layout:** hvor tekst, motiv og accent placeres
+**Farver:** #hex baggrund, #hex tekst, #hex accent – kort hvorfor
+**Skrifttype:** forslag (gratis skrifttyper, fx fra Google Fonts)
+**Billed-prompt (AI):** på engelsk, til et billedværktøj: motiv, stil, lys, komposition, "no text, no logos"
+**Tekst på skærm i videoen:** 3 korte linjer med tidspunkt
+Afslut med præcis én JSON-blok (ingen kommentarer i den):
+\`\`\`json
+{"concepts":[{"name":"","text":"","sub":"","bg":["#000000","#000000"],"fg":"#ffffff","accent":"#ff0000","layout":"left","emoji":""}]}
+\`\`\`
+layout er "left", "center" eller "right". emoji er ét emoji, der kan stå i for motivet i en skitse.`,
+      en: `You are the REDHUE Graphics agent: art director for faceless videos on TikTok, Reels, YouTube Shorts and YouTube. You create thumbnails, on-screen text and image prompts.
+Rules:
+- Thumbnail text: at most 4 words, big and readable on a phone. High contrast between text and background.
+- At most 3 colours plus a neutral. Give colours as hex codes.
+- Safe zone: 9:16 (1080×1920) – keep text out of the top 14 % and bottom 20 % where the app's buttons sit. 16:9 YouTube thumbnail (1280×720) – keep the bottom-right corner clear (video length).
+- No real people's faces, no famous characters, logos, trademarks or copies of existing works. Image prompts describe original subjects.
+- No dishonest clickbait: the text must match the video.
+- The user's brand profile and earlier 👍/👎 are in the message when available. Repeat what got 👍 and avoid what got 👎.
+Make 3 clearly different concepts in this format:
+## Concept X – <name>
+**Thumbnail text:** ...
+**Subtitle (optional):** ...
+**Layout:** where text, subject and accent go
+**Colours:** #hex background, #hex text, #hex accent – briefly why
+**Font:** suggestion (free fonts, e.g. Google Fonts)
+**Image prompt (AI):** for an image tool: subject, style, light, composition, "no text, no logos"
+**On-screen text in the video:** 3 short lines with timing
+End with exactly one JSON block (no comments in it):
+\`\`\`json
+{"concepts":[{"name":"","text":"","sub":"","bg":["#000000","#000000"],"fg":"#ffffff","accent":"#ff0000","layout":"left","emoji":""}]}
+\`\`\`
+layout is "left", "center" or "right". emoji is a single emoji that stands in for the subject in a sketch.`
+    },
+    user: (f, lang) => lang === "da"
+      ? `Niche: ${f.niche}\nVideo/emne: ${f.topic}\nPlatform: ${f.platform || "TikTok, Reels og Shorts (9:16) + YouTube-thumbnail (16:9)"}\nØnsket stil: ${f.style || "brugerens brand, ellers dit bedste bud"}${f.brand ? "\n\nBrand-profil og tidligere feedback:\n" + f.brand : ""}`
+      : `Niche: ${f.niche}\nVideo/topic: ${f.topic}\nPlatform: ${f.platform || "TikTok, Reels and Shorts (9:16) + YouTube thumbnail (16:9)"}\nWanted style: ${f.style || "the user's brand, otherwise your best call"}${f.brand ? "\n\nBrand profile and earlier feedback:\n" + f.brand : ""}`
   }
 };
 
-const REQUIRED = { script: ["niche", "topic"], hooks: ["niche", "topic"], planner: ["niche"], analyst: ["niche", "stats"] };
+const REQUIRED = { script: ["niche", "topic"], hooks: ["niche", "topic"], planner: ["niche"], analyst: ["niche", "stats"], grafik: ["niche", "topic"] };
 
 function clean(fields) {
   const out = {};
   for (const [k, v] of Object.entries(fields || {})) {
     if (typeof v !== "string" && typeof v !== "number") continue;
-    out[k] = String(v).slice(0, k === "stats" || k === "script" ? 6000 : 400).trim();
+    out[k] = String(v).slice(0, k === "stats" || k === "script" ? 6000 : k === "brand" ? 2500 : 400).trim();
   }
   return out;
 }

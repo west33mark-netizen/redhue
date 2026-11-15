@@ -208,3 +208,10 @@ Overblik → **Vejr** og vejret på hjemmeskærmen. Data fra DMI's frie data (`o
 - **Synk:** alle dine data (undtagen enhedens egen nøgle, kø og kladder) gemmes privat i artifactens database under `data/users/<dit id>/` og følger dig mellem telefon og computer. Ændringer på én enhed vises på den anden.
 - **Backup-filer** gemmes via Claudes download-dialog.
 - Virker ikke i Claude: vejr fra DMI og YouTube (Claude tillader ikke kald til andre sider) samt fællesskab, deling af position og feedback-indbakke – de kræver Netlify-backenden.
+
+## Grafik-agent (🎨)
+Agent nr. 5 under Agenter: thumbnails (16:9 og 9:16 med sikker zone), farver, skrifttype, tekst på skærm og billed-prompts til et billedværktøj.
+- **Træn agenten:** brand-farver, skrifttype, stil, «altid» og «aldrig» gemmes på telefonen og sendes med hver kørsel.
+- **Læring:** 👍/👎 på skitserne gemmes (seneste 12 af hver) og bruges i næste kørsel, så forslagene rammer din smag. Modellen selv ændres ikke.
+- **Skitser:** agenten svarer med en JSON-blok, som appen tegner som skitser med emoji som pladsholder for motivet. «PNG» gemmer i fuld størrelse (1280×720 eller 1080×1920).
+- Regler i prompten: højst 4 ord, høj kontrast, ingen rigtige ansigter, kendte figurer eller logoer, ingen løgnagtig clickbait.
