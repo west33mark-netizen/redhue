@@ -1,4 +1,8 @@
-# Lægger REDHUE live på Netlify (redhue.netlify.app), hver gang der pushes til branchen "redhue".
+# Lægger REDHUE live på Netlify. Tre kanaler – én branch hver:
+#   alpha  → https://alpha--redhue.netlify.app   udvikling, alt det nyeste (Claude arbejder her)
+#   beta   → https://beta--redhue.netlify.app    testere (branchen "redhue" regnes også som beta)
+#   gamma  → https://redhue.netlify.app          den færdige app
+# Flyt en version videre med workflowet «Promovér» (alpha → beta → gamma).
 #
 # Alle nøgler bor ét sted: GitHub → repoet → Settings → Secrets and variables → Actions.
 #   NETLIFY_AUTH_TOKEN  (påkrævet)  Netlify → User settings → Applications → Personal access tokens. Starter med nfp_
@@ -10,7 +14,7 @@
 name: Deploy til Netlify
 on:
   push:
-    branches: [redhue]
+    branches: [alpha, beta, gamma, redhue]
   workflow_dispatch: {}
 concurrency:
   group: netlify-prod
@@ -27,6 +31,16 @@ jobs:
       REDHUE_BETA_HASHES: ${{ secrets.REDHUE_BETA_HASHES }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Kanal
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            alpha) ch=alpha; flags="--alias alpha"; url="https://alpha--redhue.netlify.app";;
+            gamma) ch=gamma; flags="--prod";        url="https://redhue.netlify.app";;
+            *)     ch=beta;  flags="--alias beta";  url="https://beta--redhue.netlify.app";;
+          esac
+          echo "CHANNEL=$ch" >> "$GITHUB_ENV"; echo "DEPLOY_FLAGS=$flags" >> "$GITHUB_ENV"; echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Branch ${GITHUB_REF_NAME} → kanal $ch → $url"
 
       - name: Tjek nøgler (viser aldrig selve nøglerne)
         id: keys
@@ -68,7 +82,7 @@ jobs:
         run: |
           STAMP="${GITHUB_SHA::7}"
           sed -i "s/^const CACHE = \"[^\"]*\";/const CACHE = \"redhue-$STAMP\";/" sw.js
-          sed -i "s/const VERSION = \"\([^\"+]*\)\(+[^\"]*\)\?\";/const VERSION = \"\1+$STAMP\";/" index.html
+          sed -i "s/const VERSION = \"\([0-9.]*\)[^\"]*\";/const VERSION = \"\1-$CHANNEL+$STAMP\";/" index.html
           grep -o 'const CACHE = "[^"]*"' sw.js; grep -o 'const VERSION = "[^"]*"' index.html
 
       - name: Synkronisér nøgler til Netlify
@@ -81,11 +95,12 @@ jobs:
               && echo "$n: synkroniseret" || echo "::warning::$n kunne ikke synkroniseres"
           done
 
-      - name: Deploy (produktion)
-        run: npx -y netlify-cli@latest deploy --build --prod --message "GitHub ${{ github.sha }}"
+      - name: Deploy
+        run: npx -y netlify-cli@latest deploy --build $DEPLOY_FLAGS --message "$CHANNEL ${{ github.sha }}"
 
       - name: Tjek at siden svarer
         run: |
           sleep 5
-          for p in / /sw.js /privatliv.html; do echo "$p: $(curl -s -o /dev/null -w '%{http_code}' https://redhue.netlify.app$p)"; done
-          echo "API feedback (forventer 403 uden ejer-nøgle): $(curl -s -o /dev/null -w '%{http_code}' https://redhue.netlify.app/api/feedback)"
+          for p in / /sw.js /privatliv.html; do echo "$SITE_URL$p: $(curl -s -o /dev/null -w '%{http_code}' $SITE_URL$p)"; done
+          echo "API feedback (forventer 403 uden ejer-nøgle): $(curl -s -o /dev/null -w '%{http_code}' $SITE_URL/api/feedback)"
+          echo "### REDHUE $CHANNEL er live: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"

@@ -18,5 +18,6 @@ jobs:
           chk https://redhue.netlify.app/privatliv.html 200
           chk https://redhue.netlify.app/api/feedback 403
           chk https://redhue.netlify.app/api/chat 402
+          chk https://beta--redhue.netlify.app/ 200
           if [ $fail = 1 ]; then echo "::error title=REDHUE har et problem::Mindst én adresse svarede forkert – se listen ovenfor."; exit 1; fi
           echo "Alt kører ✓"

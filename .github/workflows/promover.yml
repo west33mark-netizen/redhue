@@ -1,0 +1,31 @@
+# Flyt en version videre: alpha → beta (til testere) eller beta → gamma (den færdige app).
+# Kør den fra GitHub → Actions → «Promovér» → Run workflow.
+name: Promovér
+on:
+  workflow_dispatch:
+    inputs:
+      trin:
+        description: "Hvad skal flyttes?"
+        type: choice
+        options: ["alpha → beta", "beta → gamma"]
+        default: "alpha → beta"
+permissions:
+  contents: write
+  actions: write
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Flyt
+        env: { GH_TOKEN: "${{ github.token }}", TRIN: "${{ inputs.trin }}" }
+        run: |
+          case "$TRIN" in "alpha → beta") from=alpha; to=beta;; *) from=beta; to=gamma;; esac
+          git fetch origin "$from" "$to"
+          git checkout -B "$to" "origin/$to"
+          if ! git merge --ff-only "origin/$from"; then echo "::error::$to har ændringer, som ikke er i $from. Ret det i $from først."; exit 1; fi
+          git push origin "$to"
+          # Et push fra en workflow starter ikke andre workflows af sig selv – så vi starter udgivelsen direkte
+          gh workflow run netlify.yml --ref "$to"
+          echo "### $from → $to flyttet ($(git rev-parse --short HEAD)) og udgives nu" >> "$GITHUB_STEP_SUMMARY"

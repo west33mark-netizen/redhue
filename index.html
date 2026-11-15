@@ -585,6 +585,8 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .net-pill[hidden]{display:none!important}
 .net-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
 .net-pill.off::before{background:transparent;border:1.5px solid currentColor;width:5px;height:5px}
+.beta-tag[data-ch="alpha"]{color:#ff7a8f}
+.beta-tag[data-ch="gamma"]{color:var(--ok,#3ddc97)}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -613,14 +615,14 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 </div>
 <div class="app">
   <aside id="side">
-    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>Offline</span></div>
+    <div class="brand"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag" data-channel>BETA</span></h1><span class="net-pill" data-net hidden>Offline</span></div>
     <nav id="navSide"></nav>
     <div class="side-foot"><button class="talk" data-talk id="talkD">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtn">EN</button></div>
   </aside>
 
   <div>
     <div class="topbar">
-      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag">BETA</span></h1><span class="net-pill" data-net hidden>Offline</span></div>
+      <div class="brand" style="padding:0"><div class="dot"></div><h1>RED<span>HUE</span><span class="beta-tag" data-channel>BETA</span></h1><span class="net-pill" data-net hidden>Offline</span></div>
       <div class="tb-r"><button class="talk" data-talk id="talkM">🗣️ <span data-t="talkBtn"></span></button><button class="small" id="langBtnM">EN</button></div>
     </div>
     <main id="main">
@@ -1095,6 +1097,8 @@ const CFG = {
 // Kører vi som den rigtige app, eller som forhåndsvisning (fx inde i Claude-appen)?
 const ON_SITE = (()=>{ try{ const o=location.origin; return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) || /\.netlify\.app$/.test(location.hostname) || o===CFG.SITE; }catch(e){ return false; } })();
 const IS_PREVIEW = !ON_SITE;
+// Kanal ud fra adressen: alpha--redhue / beta--redhue / redhue.netlify.app (gamma)
+const CHANNEL = (()=>{ try{ const h=location.hostname; if(/^alpha--/.test(h)||/^(localhost|127\.0\.0\.1)$/.test(h)) return "alpha"; if(/^beta--/.test(h)) return "beta"; if(h==="redhue.netlify.app") return "gamma"; }catch(e){} return "beta"; })();
 const apiUrl = p => (ON_SITE ? "" : CFG.SITE) + p;
 const APP_URL = ON_SITE ? location.origin + location.pathname : CFG.SITE + "/";
 CFG.API = apiUrl(CFG.API);
@@ -2607,7 +2611,7 @@ const Beta=(()=>{
     $("btTitle").textContent=L("Beta","Beta");
     $("btSub").textContent=L("Du bruger en testudgave. Fortæl os, hvad der virker, og hvad der driller – det former appen.","You're using a test version. Tell us what works and what doesn't – it shapes the app.");
     const access=isBetaKey(lic)?(hasLic()?L("Beta-kode (Pro gratis til "+betaUntil()+")","Beta code (Pro free until "+betaUntil()+")"):L("Beta-koden er udløbet","Beta code has expired")):lic?L("Licens","License"):L("Ingen – gratis-delen","None – free tier");
-    $("btRows").innerHTML=[[L("Version","Version"),VERSION],[L("Adgang","Access"),access],[L("Tidszone","Time zone"),TZ()]].map(([a,b])=>`<div class="beta-row"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");
+    $("btRows").innerHTML=[[L("Version","Version"),VERSION],[L("Kanal","Channel"),CHANNEL],[L("Adgang","Access"),access],[L("Tidszone","Time zone"),TZ()]].map(([a,b])=>`<div class="beta-row"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");
     $("btFb").textContent=L("Send feedback","Send feedback");
     $("btPriv").textContent=L("Privatliv & vilkår","Privacy & terms");
     $("btInbox").textContent=L("Feedback-indbakke","Feedback inbox");
@@ -2632,7 +2636,7 @@ const Beta=(()=>{
   async function send(){
     const text=$("fbText").value.trim(); if(text.length<3){ toast(L("Skriv lidt mere","Write a bit more")); return; }
     const incl=$("fbIncl").checked, btn=$("fbSend"); btn.disabled=true;
-    const body={kind,text,contact:$("fbContact").value.trim(),version:VERSION};
+    const body={kind,text,contact:$("fbContact").value.trim(),version:VERSION,channel:CHANNEL};
     if(incl){ body.page=current; body.errors=(window.__errs||[]).join("\n"); }
     const headers={"content-type":"application/json"}; const lic=store.get(K.lic,""); if(lic) headers["x-license"]=lic;
     if(!Net.online()){ Net.enqueue({type:"feedback",headers,body}); $("fbText").value=""; close(); toast(L("Offline – feedback gemt og sendes, når du er online","Offline – feedback saved and sent when you're online")); btn.disabled=false; return; }
@@ -2649,7 +2653,7 @@ const Beta=(()=>{
       if(r.status===403){ box.innerHTML=`<div class="sub">${esc(L("Kun ejeren kan se indbakken.","Only the owner can see the inbox."))}</div>`; return; }
       if(!r.ok) throw 0;
       const ic={idea:"💡",bug:"🐞",other:"💬"};
-      box.innerHTML=j.items.length?j.items.map(it=>`<div class="fb-item${it.done?" done":""}"><div class="fb-meta">${ic[it.kind]||"💬"} ${esc(new Date(it.at).toLocaleString(lang==="en"?"en-GB":"da-DK",{timeZone:TZ()}))} · ${esc(it.version||"?")} · ${esc(it.page||"-")}${it.contact?" · "+esc(it.contact):""}</div><div>${esc(it.text)}</div>${it.errors?`<div class="fb-err" style="margin-top:6px">${esc(it.errors)}</div>`:""}<div class="actions" style="margin-top:6px"><button class="small" data-fbdone="${esc(it.key)}">${it.done?esc(L("Genåbn","Reopen")):esc(L("Markér behandlet","Mark done"))}</button></div></div>`).join(""):`<div class="sub">${esc(L("Ingen feedback endnu.","No feedback yet."))}</div>`;
+      box.innerHTML=j.items.length?j.items.map(it=>`<div class="fb-item${it.done?" done":""}"><div class="fb-meta">${ic[it.kind]||"💬"} ${esc(new Date(it.at).toLocaleString(lang==="en"?"en-GB":"da-DK",{timeZone:TZ()}))} · ${esc((it.channel?it.channel.toUpperCase()+" ":"")+(it.version||"?"))} · ${esc(it.page||"-")}${it.contact?" · "+esc(it.contact):""}</div><div>${esc(it.text)}</div>${it.errors?`<div class="fb-err" style="margin-top:6px">${esc(it.errors)}</div>`:""}<div class="actions" style="margin-top:6px"><button class="small" data-fbdone="${esc(it.key)}">${it.done?esc(L("Genåbn","Reopen")):esc(L("Markér behandlet","Mark done"))}</button></div></div>`).join(""):`<div class="sub">${esc(L("Ingen feedback endnu.","No feedback yet."))}</div>`;
     }catch{ box.innerHTML=`<div class="sub">${esc(L("Kunne ikke hente. Åbn appen på redhue.netlify.app.","Couldn't load. Open the app at redhue.netlify.app."))}</div>`; }
   }
   $("btFb").onclick=()=>open("idea"); $("btUpd").onclick=()=>Updater.check(true); $("btRestart").onclick=()=>{ toast(L("Genstarter…","Restarting…")); setTimeout(()=>Updater.hardRestart(),300); }; $("btInbox").onclick=inbox;
@@ -2900,7 +2904,7 @@ __safeRun("render",()=>renderAll());
 __safeRun("4D",()=>D4.apply());
 __safeRun("tale",()=>Talk.refresh());
 __safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
-__safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init());
+__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init());
 </script>
 </body>
 </html>
