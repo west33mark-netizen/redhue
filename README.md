@@ -201,3 +201,10 @@ Overblik → **Vejr** og vejret på hjemmeskærmen. Data fra DMI's frie data (`o
 - **Målt nu:** nærmeste DMI-station (metObs, seneste time) med afstand.
 - **Gennemsigtighed:** «Hvor kommer tallene fra?» viser kilde, model, parameternavne, enheder, punkt og tidspunkter. Parameternavne slås op i DMI's metadata, så det tåler navneændringer.
 - Position afrundes til ca. 5 km og gemmes kun på telefonen. Svar caches 15 min.
+
+## Sky-tilstand: REDHUE i Claude
+Åbnes appen som Claude-artifact (ikke på Netlify), kører den i Claudes sky:
+- **AI** (agenter, coach, mor/far) køres med Claude via `sample` og præcis de samme instruktioner som serveren – de ligger i `netlify/lib/prompts.mjs` og indlejres i `index.html` med `node tools/embed-prompts.mjs` (CI tjekker, at kopien er opdateret).
+- **Synk:** alle dine data (undtagen enhedens egen nøgle, kø og kladder) gemmes privat i artifactens database under `data/users/<dit id>/` og følger dig mellem telefon og computer. Ændringer på én enhed vises på den anden.
+- **Backup-filer** gemmes via Claudes download-dialog.
+- Virker ikke i Claude: vejr fra DMI og YouTube (Claude tillader ikke kald til andre sider) samt fællesskab, deling af position og feedback-indbakke – de kræver Netlify-backenden.

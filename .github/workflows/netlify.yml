@@ -79,6 +79,7 @@ jobs:
         run: |
           node -e "const s=require('fs').readFileSync('index.html','utf8');const m=[...s.matchAll(/<script>([\s\S]*?)<\/script>/g)];m.forEach((x,i)=>{try{new Function(x[1])}catch(e){console.error('::error::Syntaksfejl i script #'+i+' i index.html: '+e.message);process.exit(1)}});console.log('index.html: '+m.length+' scripts OK')"
           node --check sw.js && echo "sw.js OK"
+          node tools/embed-prompts.mjs --check
           for f in netlify/functions/*.mjs; do npx -y esbuild "$f" --bundle --platform=node --format=esm --outfile=/tmp/x.mjs --log-level=error || { echo "::error::$f kan ikke bygges"; exit 1; }; node --input-type=module -e "await import('$PWD/$f')" || { echo "::error::$f fejler ved indlæsning"; exit 1; }; echo "$f OK"; done
 
       - name: Versionsstempel (så telefoner altid får besked om ny version)
