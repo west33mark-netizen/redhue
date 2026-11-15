@@ -638,6 +638,14 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .life-pant{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.life-pant span{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:14px}.life-pant b{font-size:20px}.life-pant small{color:var(--muted);font-size:11.5px}
 .life-tree{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}.tr-row .lbl{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .tr-ppl{display:flex;gap:8px;flex-wrap:wrap}.tr-p{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);text-align:left;min-width:120px}.tr-p small{color:var(--muted);font-size:12px}.tr-p.me{border-color:var(--vi)}
+.yt-card h3{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.yt-head{display:flex;align-items:center;gap:12px;margin-bottom:10px}.yt-head img{width:44px;height:44px;border-radius:50%}
+.yt-head .ytl{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#ff0033;color:#fff;font-size:18px;flex:none}
+.yt-head b{display:block;font-size:16px}.yt-head small{color:var(--muted)}
+.yt-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}.yt-kpi span{border:1px solid var(--line);border-radius:12px;padding:8px 10px;font-size:12px;color:var(--muted)}.yt-kpi b{display:block;font-size:18px;color:var(--text);font-variant-numeric:tabular-nums}
+.yt-v{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px;color:var(--text);text-decoration:none}.yt-v span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.yt-v span:last-child{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+.yt-sh{font-size:10.5px;padding:1px 6px;border-radius:6px;background:rgba(255,0,51,.15);color:#ff5c7a;margin-right:6px}
+.kc-yt{display:inline-block;margin-top:6px;font-size:12px;color:#ff5c7a;text-decoration:none}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -700,6 +708,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             <div id="todayChecks"></div>
           </div>
         </div>
+        <div class="card yt-card" id="ytCard" style="margin-top:12px"></div>
         <div class="grid g3" style="margin-top:12px">
           <div class="card">
             <h3><span data-t="pipeline"></span><button class="small ghost" data-go="pipeline" data-t="open"></button></h3>
@@ -1154,7 +1163,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.7-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.8-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1568,6 +1577,7 @@ document.addEventListener("click", e=>{
 
 /* ---------- Section renderers ---------- */
 function renderOverview(){
+  try{ YT.render(); YT.load(false); }catch(e){}
   renderAvatars();
   const h=nowHour();
   $("greet").textContent = [h<10?t().hi:h<18?t().hiDay:t().hiEve, S.profile.name].filter(Boolean).join(", ");
@@ -1618,7 +1628,7 @@ function renderPipeline(){
   $("kanban").innerHTML = COLS.map((col,ci)=>{
     const cards=S.kanban.filter(c=>c.col===col);
     return `<div class="col"><h4><span>${t().cols[col]}</span><span class="mono">${cards.length}</span></h4>`+
-      (cards.length? cards.map(c=>`<div class="kc"><div class="t">${esc(c.title)}</div>${c.notes?`<div class="n">${esc(c.notes)}</div>`:""}
+      (cards.length? cards.map(c=>`<div class="kc"><div class="t">${esc(c.title)}</div>${c.notes?`<div class="n">${esc(c.notes)}</div>`:""}${c.yt?`<a class="kc-yt" href="https://youtu.be/${esc(c.yt.id)}" target="_blank" rel="noopener">▶ ${fmtNum(c.yt.views)} ${lang==="en"?"views":"visninger"}</a>`:""}
         <div class="ctl"><span class="tag">${esc(c.platform==="all"?"All":c.platform)}</span><span>
         ${ci>0?`<button data-mv="${c.id}" data-d="-1" aria-label="back">←</button>`:""}
         ${ci<3?`<button data-mv="${c.id}" data-d="1" aria-label="forward">→</button>`:""}
@@ -2615,7 +2625,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app","redhue_youtube"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -2928,6 +2938,53 @@ $("resetBtn").onclick=()=>{ if(!confirm(t().confirmReset)) return; S=structuredC
 /* ---------- Liv-apps: sanglære, nyhedslære, billige opskrifter, kontrolleret dating,
    genbrugsvejledning, stamtræ og hygiejneplan. Alt ligger på telefonen og virker offline.
    Hver app har også en færdig indholds-niche ("Brug som niche"). ---------- */
+/* ---------- YouTube ----------
+   Forbinder din kanal: navn, abonnenter, visninger og seneste videoer (offentlige tal via /api/youtube).
+   Uden YouTube-nøgle på serveren virker det med kanal-id (UC…) via kanalens offentlige feed.
+   «Match med pipeline» sætter visninger på dine postede kort, når titlerne passer. */
+function fmtNum(n){ n=+n||0; try{ return new Intl.NumberFormat(lang==="en"?"en-GB":"da-DK",{notation:n>=100000?"compact":"standard",maximumFractionDigits:1}).format(n); }catch(e){ return String(n); } }
+const YT=(()=>{
+  const KEY="redhue_youtube"; const L=(da,en)=>lang==="en"?en:da;
+  const st=()=>Object.assign({channel:"",last:null,at:0},store.get(KEY,{}));
+  let busy=false, editing=false;
+  const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9æøå ]/g," ").replace(/\s+/g," ").trim();
+  async function load(force){
+    const s=st(); if(!s.channel||busy) return;
+    if(!force&&s.last&&Date.now()-s.at<10*60*1000) return render();
+    if(!Net.online()){ render(); return; }
+    busy=true; render();
+    try{ const r=await Net.tfetch(apiUrl("/api/youtube?channel="+encodeURIComponent(s.channel)),{},15000); const j=await r.json().catch(()=>({}));
+      if(!r.ok) throw new Error(j.error||r.status);
+      const n=st(); n.last=j; n.at=Date.now(); n.err=""; store.set(KEY,n); match(true);
+    }catch(e){ const n=st(); n.err=String(e.message||e); store.set(KEY,n); }
+    busy=false; render();
+  }
+  function match(silent){ const v=(st().last||{}).videos||[]; let hit=0;
+    S.kanban.forEach(c=>{ const t=norm(c.title); if(!t) return; const m=v.find(x=>{ const vt=norm(x.title); return vt===t||(t.length>=8&&vt.includes(t))||(vt.length>=8&&t.includes(vt)); });
+      if(m){ c.yt={id:m.id,views:m.views}; if(c.col!=="posted") c.col="posted"; hit++; } });
+    if(hit){ save(); try{ renderPipeline(); }catch(e){} }
+    if(!silent) toast(hit?L(`${hit} kort i pipeline matchet med YouTube`,`${hit} pipeline cards matched with YouTube`):L("Ingen titler passede – navngiv kortene som videoerne","No titles matched – name the cards like the videos"));
+    return hit; }
+  const errTxt=e=>({need_channel_id:L("Brug kanalens id (starter med UC …) – @navn kræver en YouTube-nøgle på serveren. Find id'et under YouTube → Indstillinger → Avanceret.","Use the channel id (starts with UC …) – @handles need a YouTube key on the server. Find the id under YouTube → Settings → Advanced."),not_found:L("Kanalen blev ikke fundet.","Channel not found."),bad_channel:L("Det ligner ikke et kanal-link, @navn eller id.","That doesn't look like a channel link, @handle or id."),youtube_unreachable:L("YouTube svarer ikke lige nu – prøv igen senere.","YouTube isn't responding – try again later."),timeout:L("Det tog for lang tid – tjek nettet.","Timed out – check your connection."),network:L("Ingen forbindelse. Åbn appen på redhue.netlify.app.","No connection. Open the app at redhue.netlify.app.")}[e]||L("Kunne ikke hente kanalen.","Couldn't load the channel."));
+  function render(){
+    const el=$("ytCard"); if(!el) return; const s=st(), d=s.last;
+    const head=`<h3><span>▶ YouTube</span>${s.channel&&!editing?`<span><button class="small ghost" data-yt="refresh" ${busy?"disabled":""}>${busy?esc(L("Henter…","Loading…")):esc(L("Opdater","Refresh"))}</button><button class="small ghost" data-yt="edit">${esc(L("Skift","Change"))}</button></span>`:""}</h3>`;
+    if(!s.channel||editing){ el.innerHTML=head+`<p class="sub" style="margin:0 0 8px">${esc(L("Forbind din kanal og se abonnenter, visninger og de seneste videoer her. Kun offentlige tal – intet login.","Connect your channel to see subscribers, views and latest videos here. Public numbers only – no login."))}</p>
+      <form id="ytForm" class="life-form"><input id="ytIn" placeholder="${esc(L("Kanal-link, @navn eller id (UC…)","Channel link, @handle or id (UC…)"))}" value="${esc(s.channel)}" autocomplete="off" required maxlength="120"><div class="actions"><button class="primary">${esc(L("Forbind","Connect"))}</button>${editing?`<button type="button" data-yt="cancel">${esc(L("Annullér","Cancel"))}</button>`:""}</div></form>`;
+      $("ytForm").onsubmit=e=>{ e.preventDefault(); const n=st(); n.channel=$("ytIn").value.trim(); n.last=null; n.at=0; n.err=""; store.set(KEY,n); editing=false; load(true); }; return; }
+    if(!d){ el.innerHTML=head+(s.err?`<p class="sub" style="color:var(--am)">${esc(errTxt(s.err))}</p>`:`<p class="sub">${esc(busy?L("Henter kanalen…","Loading channel…"):Net.online()?L("Tryk Opdater.","Tap Refresh."):L("Offline – hentes, når du er online.","Offline – loads when you're online."))}</p>`); return; }
+    const ago=Math.round((Date.now()-s.at)/60000);
+    el.innerHTML=head+`<div class="yt-head">${d.thumb?`<img src="${esc(d.thumb)}" alt="">`:`<span class="ytl">▶</span>`}<div><b>${esc(d.title||s.channel)}</b><small>${esc(d.handle?d.handle+" · ":"")}${esc(ago<1?L("lige nu","just now"):L(`opdateret for ${ago} min siden`,`updated ${ago} min ago`))}</small></div></div>
+      <div class="yt-kpi"><span><b>${d.subscribers==null?"–":fmtNum(d.subscribers)}</b>${esc(L("abonnenter","subscribers"))}</span><span><b>${fmtNum(d.recent.views)}</b>${esc(L(`visninger, seneste ${d.recent.count}`,`views, last ${d.recent.count}`))}</span><span><b>${fmtNum(d.recent.avgViews)}</b>${esc(L("snit pr. video","avg per video"))}</span></div>
+      ${d.videos.slice(0,5).map(v=>`<a class="yt-v" href="https://youtu.be/${esc(v.id)}" target="_blank" rel="noopener"><span>${v.short?`<i class="yt-sh">Short</i>`:""}${esc(v.title)}</span><span>${fmtNum(v.views)}</span></a>`).join("")}
+      ${d.source==="feed"?`<p class="sub" style="margin:8px 0 0;font-size:12px">${esc(L("Abonnenter vises, når serveren har en YouTube-nøgle.","Subscribers show once the server has a YouTube key."))}</p>`:""}
+      ${s.err?`<p class="sub" style="margin:6px 0 0;font-size:12px;color:var(--am)">${esc(errTxt(s.err))} ${esc(L("Viser sidste hentede tal.","Showing last loaded numbers."))}</p>`:""}
+      <div class="actions"><button class="small" data-yt="match">${esc(L("Match med pipeline","Match with pipeline"))}</button></div>`;
+  }
+  document.addEventListener("click",e=>{ const b=e.target.closest("[data-yt]"); if(!b) return; const k=b.dataset.yt;
+    if(k==="refresh") load(true); if(k==="edit"){ editing=true; render(); } if(k==="cancel"){ editing=false; render(); } if(k==="match") match(false); });
+  return {render,load,match,st};
+})();
 const Life=(()=>{
   const KEY="redhue_life";
   const L=(da,en)=>lang==="en"?en:da;

@@ -173,3 +173,22 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - Push til en branch udgiver automatisk til dens adresse. Appen viser selv sin kanal (ALPHA/BETA/GAMMA) ved logoet og i Indstillinger → Beta, og feedback mærkes med kanalen.
 - **Flyt videre:** GitHub → Actions → «Promovér» → vælg *alpha → beta* eller *beta → gamma* → Run workflow. Kun hurtig-flytning (fast-forward), så en kanal aldrig mister noget.
 - Alle kanaler deler nøgler og feedback-indbakke.
+
+## Backend (samlet)
+Alle endpoints ligger i `netlify/functions/` og deler `netlify/lib/shared.mjs`: CORS, preflight, licens/beta-tjek, spam-bremse og `endpoint()`-indgangen med fælles fejlhåndtering.
+
+| Endpoint | Hvad | Kræver |
+|---|---|---|
+| `/api/health` | Status: hvilke dele er klar (viser kun *om* nøgler er sat) | – |
+| `/api/agents` | AI-agenter | Pro + `ANTHROPIC_API_KEY` |
+| `/api/coach` | AI-coach og mor/far | Pro + `ANTHROPIC_API_KEY` |
+| `/api/chat` | Fællesskab | Pro |
+| `/api/safe` | Deling, SOS, find enheder | – (find enheder: Pro) |
+| `/api/feedback` | Beta-feedback og ejer-indbakke | – (indbakke: ejer) |
+| `/api/youtube` | Kanalens offentlige tal og seneste videoer | – (`YOUTUBE_API_KEY` giver abonnenter og @navne) |
+
+Nye endpoints: `export default endpoint("navn", async (req, ctx) => json(200, {...}), { limit: [60, 60_000] })` og tilføj navnet i `ROUTES`.
+Alle nøgler sættes i GitHub Secrets og synkroniseres til Netlify ved hver udgivelse.
+
+### YouTube
+Overblik → **YouTube**: indsæt kanal-link, @navn eller kanal-id (UC…). Uden nøgle bruges kanalens offentlige feed (kræver UC-id, ingen abonnenter). Med `YOUTUBE_API_KEY` vises abonnenter, og @navne virker. «Match med pipeline» sætter visninger på kort, hvis titel passer til en video, og flytter dem til Postet. Kun offentlige tal – intet login eller upload.

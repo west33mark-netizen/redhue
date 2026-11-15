@@ -10,6 +10,7 @@
 #   REDHUE_DEV_KEY      (valgfri)   din ejer-nøgle (REDHUE-…)                                 → ejer-adgang + feedback-indbakke
 #   GUMROAD_PRODUCT_ID  (valgfri)   fra dit Gumroad-produkt                                   → betalte licenser
 #   REDHUE_BETA_HASHES  (valgfri)   ekstra beta-koder som hashes, kommasepareret
+#   YOUTUBE_API_KEY     (valgfri)   Google Cloud → YouTube Data API v3 → API-nøgle. Starter med AIza → abonnenter + @navne
 # Ved hver deploy synkroniseres de valgfri nøgler til Netlifys miljøvariabler. Nøglerne vises aldrig i loggen.
 name: Deploy til Netlify
 on:
@@ -29,6 +30,7 @@ jobs:
       REDHUE_DEV_KEY: ${{ secrets.REDHUE_DEV_KEY }}
       GUMROAD_PRODUCT_ID: ${{ secrets.GUMROAD_PRODUCT_ID }}
       REDHUE_BETA_HASHES: ${{ secrets.REDHUE_BETA_HASHES }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -58,6 +60,7 @@ jobs:
           chk REDHUE_DEV_KEY "$REDHUE_DEV_KEY" "REDHUE-"
           chk GUMROAD_PRODUCT_ID "$GUMROAD_PRODUCT_ID" ""
           chk REDHUE_BETA_HASHES "$REDHUE_BETA_HASHES" ""
+          chk YOUTUBE_API_KEY "$YOUTUBE_API_KEY" "AIza"
 
       - name: Tjek at beta-datoen er ens i app og server
         run: |
@@ -87,7 +90,7 @@ jobs:
 
       - name: Synkronisér nøgler til Netlify
         run: |
-          for n in ANTHROPIC_API_KEY REDHUE_DEV_KEY GUMROAD_PRODUCT_ID REDHUE_BETA_HASHES; do
+          for n in ANTHROPIC_API_KEY REDHUE_DEV_KEY GUMROAD_PRODUCT_ID REDHUE_BETA_HASHES YOUTUBE_API_KEY; do
             v="${!n}"; skip="SKIP_$n"
             if [ -z "$v" ] || [ -n "${!skip}" ]; then continue; fi
             npx -y netlify-cli@latest env:set "$n" "$v" --secret --force > /dev/null 2>&1 \
@@ -103,4 +106,5 @@ jobs:
           sleep 5
           for p in / /sw.js /privatliv.html; do echo "$SITE_URL$p: $(curl -s -o /dev/null -w '%{http_code}' $SITE_URL$p)"; done
           echo "API feedback (forventer 403 uden ejer-nøgle): $(curl -s -o /dev/null -w '%{http_code}' $SITE_URL/api/feedback)"
+          echo "Backend-status: $(curl -s --max-time 15 $SITE_URL/api/health)"
           echo "### REDHUE $CHANNEL er live: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"

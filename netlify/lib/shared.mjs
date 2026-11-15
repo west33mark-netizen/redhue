@@ -106,3 +106,25 @@ export function limited(name, key, max, windowMs) {
   buckets.set(id, b);
   return b.count > max;
 }
+
+// ---------- Samlet backend ----------
+// Alle endpoints bruger samme indgang: CORS, preflight, fejlhåndtering og (valgfri) spam-bremse.
+//   export default endpoint("youtube", async (req, ctx) => json(200, {...}), { limit: [60, 60_000] })
+// ctx: { ip, license, url }. Uventede fejl bliver til 500 { error:"server_error" } i stedet for et nedbrud.
+export const ROUTES = {
+  agents: "AI-agenter (Pro)", coach: "AI-coach og mor/far (Pro)", chat: "Fællesskab (Pro)",
+  safe: "Tryghed: deling, SOS, find enheder", feedback: "Beta-feedback", youtube: "YouTube-kanal (offentlige tal)", health: "Status"
+};
+export function endpoint(name, fn, opts = {}) {
+  return async (req) => {
+    const pre = preflight(req); if (pre) return pre;
+    const ctx = {
+      ip: req.headers.get("x-nf-client-connection-ip") || "anon",
+      license: req.headers.get("x-license") || "",
+      url: new URL(req.url)
+    };
+    if (opts.limit && limited(name, ctx.ip, opts.limit[0], opts.limit[1])) return json(429, { error: "rate_limited" });
+    try { return await fn(req, ctx); }
+    catch (e) { console.error(`[${name}]`, e && e.stack || e); return json(500, { error: "server_error" }); }
+  };
+}
