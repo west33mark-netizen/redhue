@@ -1,5 +1,7 @@
 # REDHUE · Mission Control (v3)
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3d54a324-e30b-443a-b89f-ba58d7fcc01f/deploy-status)](https://app.netlify.com/projects/redhue/deploys)
+
 Ét samlet dashboard til din faceless creator-forretning:
 
 | Sektion | Indhold |
