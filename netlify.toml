@@ -1,11 +1,15 @@
+# Netlify bygger en ren udgave i dist/ (kun appens filer + samlede funktioner), så kildekode,
+# README og værktøjer aldrig bliver offentlige. Samme pakke som redhue-netlify.zip til træk-og-slip.
 [build]
-  publish = "."
-  functions = "netlify/functions"
+  command = "npm run build"
+  publish = "dist"
+  functions = "dist/netlify/functions"
 
-# Lokal udvikling: app + agenter (functions) på én samlet port
+# Lokal udvikling: app + funktioner på én samlet port
 [dev]
   framework = "#static"
   publish = "."
+  functions = "netlify/functions"
   port = 8888
   autoLaunch = true
 

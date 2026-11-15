@@ -100,7 +100,9 @@ jobs:
           done
 
       - name: Deploy
-        run: npx -y netlify-cli@latest deploy --build $DEPLOY_FLAGS --message "$CHANNEL ${{ github.sha }}"
+        run: |
+          node tools/build-drop.mjs
+          npx -y netlify-cli@latest deploy --dir dist --functions dist/netlify/functions $DEPLOY_FLAGS --message "$CHANNEL ${{ github.sha }}"
 
       - name: Tjek at siden svarer
         run: |
