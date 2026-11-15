@@ -603,6 +603,41 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .seg button[aria-pressed="true"]{background:var(--vi);color:#fff}
 .vo-quiet{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--muted)}
 .vo-quiet input{width:auto}
+.os-sub{grid-column:1/-1;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 2px -2px}
+.life-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.life-app{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--panel);min-height:118px}
+.life-app .ic{font-size:26px;width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:color-mix(in srgb,var(--c) 18%,transparent)}
+.life-app b{font-size:15px}.life-app small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.life-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.life-head h3{margin:0;flex:1;min-width:0;font-size:19px}
+.life-view{display:flex;flex-direction:column;gap:12px}
+.life-card{margin:0}.life-card h4{margin:4px 0 6px;font-size:17px}.life-card p{margin:0 0 6px}
+.life-card .lbl{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.life-stats{display:flex;gap:10px}.life-stats span{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:13px;color:var(--muted)}.life-stats b{display:block;font-size:22px;color:var(--text)}
+.life-timer{font:600 40px/1 ui-monospace,monospace;margin:8px 0;font-variant-numeric:tabular-nums}
+.life-notes{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.life-notes button{padding:12px 0;font-weight:700}
+.life-tuner{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.life-tuner #tnNote{font:700 30px ui-monospace,monospace;min-width:64px}
+.tn-bar{flex:1;min-width:140px;height:10px;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--ok) 45%,var(--ok) 55%,var(--red));position:relative}
+.tn-bar i{position:absolute;top:-5px;left:50%;width:4px;height:20px;border-radius:2px;background:var(--text);transform:translateX(-2px);transition:left .1s}.tn-bar i.ok{background:var(--ok)}
+.life-tuner small{width:100%;color:var(--muted)}
+.life-ol,.life-ul{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}.life-ol li.now{color:var(--text);font-weight:600;background:color-mix(in srgb,var(--vi) 18%,transparent);border-radius:8px;padding:4px 8px;margin-left:-8px}
+.life-links,.life-tags{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.life-links a{padding:6px 10px;border:1px solid var(--line);border-radius:99px;font-size:13px;color:var(--text);text-decoration:none}
+.life-tags span{padding:5px 10px;border:1px solid var(--line);border-radius:99px;font-size:12.5px}
+.life-form{display:flex;flex-direction:column;gap:8px;margin-top:8px}.life-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.life-chk{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-size:14.5px;border-top:1px solid var(--line)}.life-chk:first-of-type{border-top:0}.life-chk input{width:auto;margin-top:3px}.life-chk.done{color:var(--muted)}
+.life-li{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid var(--line)}.life-li small{color:var(--muted)}
+.life-det summary{cursor:pointer;padding:6px 0;font-weight:600}.life-det p{color:var(--muted);font-size:14px}
+.life-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.life-row{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.life-row.static{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:10px 0}
+.life-row span:first-child{display:flex;flex-direction:column;min-width:0}.life-row small{color:var(--muted);font-size:12.5px}.life-kr{white-space:nowrap;font-size:13px;color:var(--ok)}
+.life-pp{display:flex;align-items:center;gap:12px;margin:10px 0}.life-ing{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.life-alert{border-color:var(--am)!important;background:color-mix(in srgb,var(--am) 10%,var(--panel))}
+.life-search{width:100%;font-size:16px;padding:12px 14px}
+.life-hit{border-left:4px solid var(--c);padding:8px 12px;margin:8px 0;background:var(--panel);border-radius:0 10px 10px 0;display:flex;flex-direction:column;gap:2px}.life-hit span{color:var(--c);font-weight:600}.life-hit small{color:var(--muted)}
+.life-pant{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.life-pant span{border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:14px}.life-pant b{font-size:20px}.life-pant small{color:var(--muted);font-size:11.5px}
+.life-tree{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}.tr-row .lbl{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.tr-ppl{display:flex;gap:8px;flex-wrap:wrap}.tr-p{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);text-align:left;min-width:120px}.tr-p small{color:var(--muted);font-size:12px}.tr-p.me{border-color:var(--vi)}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -910,6 +945,11 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
       </section>
 
       <!-- TRYGHED -->
+      <section class="section" id="s-life">
+        <h2 class="sec" data-t="life"></h2>
+        <p class="sub" data-t="lifeSub"></p>
+        <div id="lifeBody"></div>
+      </section>
       <section class="section" id="s-safe">
         <h2 class="sec" data-t="safe"></h2>
         <p class="sub" data-t="safeSub"></p>
@@ -1114,7 +1154,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.6-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.7-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1173,6 +1213,7 @@ let lang = store.get(K.lang,"da");
 /* ---------- i18n ---------- */
 const T = {
  da:{
+  life:"Liv", lifeSub:"Små apps til hverdagen – sang, nyheder, billig mad, tryg dating, genbrug, stamtræ og hygiejne. Alt bliver på telefonen.",
   overview:"Overblik", mission:"Mission", pipeline:"Pipeline", wallet:"Wallet", portfolio:"Portefølje", products:"Produkter", agents:"Agenter", settings:"Indstillinger",
   hi:"Godmorgen", hiDay:"Hej", hiEve:"Godaften", open:"Åbn →", cashflow:"Pengestrøm · 6 mdr", today:"I dag", activity:"Seneste aktivitet",
   heroMeta:(d,p)=>`Dag ${d} af 90 · ${p}% af månedsmålet`,
@@ -1288,6 +1329,7 @@ const T = {
   home:"Hjem", osDay:(d)=>`DAG ${d}/90`, osMission:"Mission", osOfGoal:p=>`${p}% af månedsmålet`, osToday:(n)=>`I dag: ${n}/4 ✓`, osLevel:"Level", osQIn:"Indtægt", osQIdea:"Ny idé", osPipeS:["Idé","Manus","Prod.","Postet"]
  },
  en:{
+  life:"Life", lifeSub:"Small everyday apps – singing, news, cheap meals, safe dating, recycling, family tree and hygiene. Everything stays on your phone.",
   overview:"Overview", mission:"Mission", pipeline:"Pipeline", wallet:"Wallet", portfolio:"Portfolio", products:"Products", agents:"Agents", settings:"Settings",
   hi:"Good morning", hiDay:"Hi", hiEve:"Good evening", open:"Open →", cashflow:"Cash flow · 6 mo", today:"Today", activity:"Recent activity",
   heroMeta:(d,p)=>`Day ${d} of 90 · ${p}% of monthly goal`,
@@ -1407,7 +1449,7 @@ const t = () => T[lang];
 
 /* ---------- Navigation ---------- */
 const NAV = [
-  ["home","⌂"],["overview","◎"],["mission","🎯"],["pipeline","▦"],["agents","🤖"],["chat","💬"],["wallet","💳"],["profit","💰"],["portfolio","📈"],["products","🛒"],["safe","🛡️"],["settings","⚙︎"]
+  ["home","⌂"],["overview","◎"],["mission","🎯"],["pipeline","▦"],["agents","🤖"],["chat","💬"],["wallet","💳"],["profit","💰"],["portfolio","📈"],["products","🛒"],["life","🌱"],["safe","🛡️"],["settings","⚙︎"]
 ];
 const IS_PHONE = matchMedia("(max-width:860px)").matches;
 const SAFE_VIEW = (location.hash.match(/^#safe\?view=([a-z0-9]{6,20})/)||[])[1]||"";
@@ -2573,7 +2615,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -2883,6 +2925,299 @@ $("resetBtn").onclick=()=>{ if(!confirm(t().confirmReset)) return; S=structuredC
 
 
 /* ---------- Render ---------- */
+/* ---------- Liv-apps: sanglære, nyhedslære, billige opskrifter, kontrolleret dating,
+   genbrugsvejledning, stamtræ og hygiejneplan. Alt ligger på telefonen og virker offline.
+   Hver app har også en færdig indholds-niche ("Brug som niche"). ---------- */
+const Life=(()=>{
+  const KEY="redhue_life";
+  const L=(da,en)=>lang==="en"?en:da;
+  const st=()=>Object.assign({song:{log:{}},news:{log:[]},food:{shop:[],fav:[]},date:{plan:{},checks:{},checkin:null,notes:[]},tree:{people:[]},hyg:{days:{},last:{}}},store.get(KEY,{}));
+  const put=s=>{ store.set(KEY,s); window.__autosave&&window.__autosave.touch(); };
+  let cur=store.get("redhue_life_app","");
+  const days=(a,b)=>Math.round((Date.parse(b)-Date.parse(a))/864e5);
+  const streakOf=set=>{ let n=0,d=today(); if(!set[d]) d=addDays(d,-1); while(set[d]){ n++; d=addDays(d,-1); } return n; };
+  const say=(txt,role="guide")=>{ try{ Voice.speak(txt,role); }catch(e){} };
+
+  /* ===== Indhold ===== */
+  const APPS=[
+    {id:"song", ic:"🎤", c:"#ff5c8a", n:["Sanglære","Singing"], d:["Opvarmning, toner og stemmemåler","Warm-up, notes and pitch meter"]},
+    {id:"news", ic:"📰", c:"#4cc3ff", n:["Nyhedslære","News sense"], d:["Læs nyheder klogt og lær af dem","Read news wisely and learn from it"]},
+    {id:"food", ic:"🍲", c:"#ffb547", n:["Billig mad","Cheap meals"], d:["Lette, billige opskrifter","Easy, cheap recipes"]},
+    {id:"date", ic:"💞", c:"#c084fc", n:["Tryg dating","Safe dating"], d:["Plan, tjek-ind og røde flag","Plan, check-in and red flags"]},
+    {id:"waste",ic:"♻️", c:"#3ddc97", n:["Genbrug","Recycling"], d:["Hvor skal det hen? Pant og sortering","Where does it go? Deposits and sorting"]},
+    {id:"tree", ic:"🌳", c:"#a3e635", n:["Stamtræ","Family tree"], d:["Din familie, generation for generation","Your family, generation by generation"]},
+    {id:"hyg",  ic:"🫧", c:"#67e8f9", n:["Hygiejne","Hygiene"], d:["Daglig plan med streak","Daily plan with streak"]}
+  ];
+
+  // --- Sang
+  const WARM=[["Vejrtrækning","Ånd ind på 4, hold 4, ud på 6. Skuldrene nede.",60],["Læbetril","Brrr med løse læber, glid op og ned i tonehøjde.",60],["Summen","Sum på 'mmm' med lukket mund. Mærk det kildre i næsen.",60],["Sirene","Glid fra din dybeste til din lyseste tone på 'ng' – og ned igen.",60],["Skala","Syng do-re-mi-fa-so-la-ti-do med tonerne herunder.",120],["Hold en tone","Vælg en behagelig tone og hold den roligt i 8 sekunder. Gentag 5 gange.",60]];
+  const NOTES=[["C",261.63],["D",293.66],["E",329.63],["F",349.23],["G",392.00],["A",440.00],["H",493.88],["C²",523.25]];
+  const NN=["C","C#","D","D#","E","F","F#","G","G#","A","B","H"];
+  // --- Nyheder
+  const NQ=["Hvem står bag – et medie, en organisation eller en ukendt profil?","Hvornår er det fra – er det nyt eller genbrugt?","Hvad er kilden – kan du finde den oprindelige kilde?","Hvem bliver citeret – og hvem mangler at komme til orde?","Er det en nyhed, en mening (debat/leder) eller en annonce?"];
+  const NSRC=[["DR Nyheder","https://www.dr.dk/nyheder"],["TV 2","https://nyheder.tv2.dk"],["Ritzau","https://ritzau.dk"],["TjekDet (faktatjek)","https://www.tjekdet.dk"]];
+  const NWORDS=[["Primærkilde","Den oprindelige kilde – fx en rapport, en dom eller den person, det handler om."],["Leder","Avisens egen mening. Ikke en nyhed."],["Debatindlæg","En læsers eller eksperts mening."],["Clickbait","En overskrift, der lover mere end artiklen holder."],["Deepfake","Billede, lyd eller video, der er lavet eller ændret med AI, så det ligner noget ægte."],["Faktatjek","En gennemgang af, om en påstand passer."],["Anonym kilde","En kilde, mediet kender, men ikke navngiver. Mediet bør forklare hvorfor."]];
+  // --- Mad (pris er et groft skøn pr. portion – afhænger af butik og tilbud)
+  const FOOD=[
+    {n:"Havregrød med æble",t:10,p:4,kr:"3–5",ing:[[100,"g","havregryn"],[3,"dl","vand"],[3,"dl","mælk"],[1,"","æble, revet"],[1,"tsk","kanel"],[1,"knivspids","salt"]],steps:["Kog havregryn, vand og salt op under omrøring.","Skru ned, tilsæt mælk og lad det simre 5 minutter.","Top med revet æble og kanel."]},
+    {n:"Linsesuppe med gulerod",t:30,p:4,kr:"8–12",ing:[[250,"g","røde linser"],[1,"","løg"],[3,"","gulerødder"],[1,"dåse","hakkede tomater"],[1,"l","vand"],[2,"","bouillonterninger"],[1,"tsk","spidskommen"]],steps:["Hak løg og gulerødder og svits dem i lidt olie.","Tilsæt linser, tomater, vand, bouillon og spidskommen.","Kog 20 minutter, til linserne er møre.","Blend helt eller halvt. Smag til med salt og peber."]},
+    {n:"Pasta med tun og tomat",t:20,p:4,kr:"10–14",ing:[[400,"g","pasta"],[1,"dåse","tun i vand"],[1,"dåse","hakkede tomater"],[1,"","løg"],[2,"fed","hvidløg"],[1,"tsk","oregano"]],steps:["Kog pastaen efter pakken.","Svits løg og hvidløg, tilsæt tomater og oregano og kog 10 minutter.","Rør tunen i og vend med pastaen."]},
+    {n:"Stegte ris med æg",t:15,p:2,kr:"8–12",ing:[[3,"dl","kogte ris (gerne fra i går)"],[2,"","æg"],[200,"g","frosne grøntsager"],[2,"spsk","soya"],[1,"spsk","olie"]],steps:["Steg grøntsagerne i olie et par minutter.","Skub dem til side, slå æggene ud og rør dem til røræg.","Tilsæt ris og soya og steg, til alt er varmt."]},
+    {n:"Chili sin carne",t:35,p:4,kr:"9–13",ing:[[2,"dåser","kidneybønner"],[1,"dåse","hakkede tomater"],[1,"","løg"],[1,"","peberfrugt"],[2,"tsk","chili- eller tacokrydderi"],[3,"dl","ris"]],steps:["Kog risene.","Svits løg og peberfrugt, tilsæt krydderi.","Tilsæt skyllede bønner og tomater og kog 20 minutter.","Server med ris."]},
+    {n:"Kyllingelår med rodfrugter",t:50,p:4,kr:"15–22",ing:[[8,"","kyllingeunderlår"],[1,"kg","kartofler"],[4,"","gulerødder"],[1,"","løg"],[2,"spsk","olie"],[1,"tsk","paprika"]],steps:["Tænd ovnen på 200 grader.","Skær grøntsagerne i stykker og vend dem med olie, salt og paprika i et fad.","Læg lårene ovenpå og bag 40–45 minutter, til kødet er gennemstegt."]},
+    {n:"Kartoffelomelet",t:30,p:3,kr:"7–10",ing:[[6,"","æg"],[600,"g","kartofler"],[1,"","løg"],[2,"spsk","olie"]],steps:["Skær kartofler og løg i tynde skiver og steg dem møre i olien ved middel varme.","Pisk æggene med salt og hæld over.","Læg låg på og steg ved svag varme, til omeletten er fast."]},
+    {n:"Biksemad af rester",t:20,p:2,kr:"5–10",ing:[[500,"g","kogte kartofler"],[200,"g","rester af kød eller pølser"],[1,"","løg"],[2,"","æg"]],steps:["Skær alt i tern.","Brun løg og kartofler på panden, tilsæt kødet.","Server med spejlæg og evt. rødbeder."]},
+    {n:"Pandekager",t:25,p:4,kr:"3–5",ing:[[3,"","æg"],[200,"g","hvedemel"],[5,"dl","mælk"],[1,"spsk","sukker"],[1,"knivspids","salt"]],steps:["Pisk mel, sukker, salt og halvdelen af mælken jævnt.","Pisk resten af mælken og æggene i.","Bag tynde pandekager på en varm pande med lidt smør."]},
+    {n:"Nudelsuppe med grønt og æg",t:15,p:2,kr:"7–10",ing:[[2,"pakker","nudler"],[8,"dl","vand"],[1,"","bouillonterning"],[150,"g","frosne grøntsager"],[2,"","æg"],[1,"spsk","soya"]],steps:["Kog vand med bouillon og soya.","Tilsæt grøntsager og nudler og kog 3 minutter.","Slå æggene ud i suppen og lad dem trække 3–4 minutter."]}
+  ];
+  // --- Dating
+  const DCHK=["Mød hinanden et offentligt sted første gang","Kom og tag hjem på egen hånd","En ven kender planen og hvornår du er hjemme","Telefonen er opladet","Du har set personen på video eller fundet profilen andre steder","Du overfører aldrig penge til en, du ikke har mødt","Du bestemmer selv, hvor meget du drikker – hold øje med dit glas","Du har en udvej: et opkald eller en undskyldning, hvis det ikke føles rigtigt"];
+  const DFLAG=["Beder om penge, gaver eller hjælp med økonomi","Vil hurtigt mødes privat eller hente dig derhjemme","Undgår videoopkald og billeder i dag","Historien ændrer sig","Presser på eller bliver sur, når du siger nej","Vil have dig væk fra venner og familie","Taler nedsættende om tidligere partnere hele tiden"];
+  const DIDEA=["Gåtur og kaffe to go","Loppemarked","Museum med gratis dag","Picnic i parken","Brætspilscafé","Løbetur eller cykeltur"];
+  // --- Genbrug (de 10 fraktioner; sortering og indsamling varierer fra kommune til kommune)
+  const FR={mad:["Madaffald","#7bc96f"],papir:["Papir","#4cc3ff"],pap:["Pap","#c8a165"],plast:["Plast","#c084fc"],metal:["Metal","#9aa3b2"],glas:["Glas","#3ddc97"],karton:["Mad- og drikkekartoner","#ffb547"],tekstil:["Tekstilaffald","#ff8fb1"],farligt:["Farligt affald","#ff5c5c"],rest:["Restaffald","#6b7280"],pant:["Pant – i automaten","#22c55e"],plads:["Genbrugspladsen","#eab308"],genbrug:["Genbrug/giv videre","#a3e635"]};
+  const WASTE=[["Kaffegrums","mad"],["Teposer","mad"],["Kartoffelskræller","mad"],["Brød","mad"],["Æggeskaller","mad"],["Kød- og fiskerester","mad"],["Aviser","papir"],["Reklamer","papir"],["Printerpapir","papir"],["Kuverter (også med rude)","papir"],["Kvitteringer","rest","Kvitteringer er tit termopapir – restaffald."],["Papkasser","pap","Fold dem sammen."],["Toiletrulle","pap"],["Æggebakke","pap"],["Pizzaæske, ren","pap"],["Pizzaæske med fedt og ost","rest"],["Plastflaske uden pant","plast"],["Plastbakke fra kød (skyllet)","plast"],["Plastpose","plast"],["Bobleplast","plast"],["Chipspose","rest","Ofte lavet af flere lag – restaffald i de fleste kommuner."],["Konservesdåse","metal","Skyl den."],["Låg fra glas","metal"],["Alufolie og -bakker (rene)","metal"],["Kapsler","metal"],["Syltetøjsglas","glas","Skyl det. Låget til metal."],["Vinflaske uden pant","glas"],["Drikkeglas og porcelæn","rest","Drikkeglas og porcelæn er ikke emballageglas – restaffald eller genbrugspladsen."],["Mælkekarton","karton"],["Juicekarton","karton"],["Hullede strømper","tekstil","Rent og tørt."],["Slidt håndklæde","tekstil"],["Hel trøje, du ikke bruger","genbrug","Hele tekstiler giver du videre eller sælger."],["Batterier","farligt","Batteriboks, butik eller genbrugspladsen."],["Elpærer og sparepærer","farligt"],["Maling og kemikalier","farligt"],["Spraydåser","farligt"],["Medicinrester","farligt","Aflever på apoteket."],["Gammel telefon","plads","Elektronik – genbrugspladsen eller butikkens indsamling."],["Opladere og kabler","plads"],["Møbler","plads"],["Bleer","rest"],["Støvsugerposer","rest"],["Servietter og køkkenrulle","rest"],["Tandbørste","rest"],["Ølflaske med pant","pant"],["Sodavandsdåse med pant","pant"],["Vandflaske med pant","pant"]];
+  // --- Hygiejne
+  const HD=[["teeth_am","Børst tænder (morgen)"],["teeth_pm","Børst tænder (aften)"],["floss","Tandtråd eller mellemrumsbørste"],["wash","Bad eller vask"],["deo","Deodorant"],["clean","Rent undertøj og sokker"],["hands","Vask hænder før mad"],["water","Drik vand"]];
+  const HW=[["sheets","Skift sengetøj",14],["towel","Skift håndklæde",7],["nails","Klip negle",14],["laundry","Vask tøj",7],["brush","Ny tandbørste",90],["phone","Tør telefonen af",7]];
+
+  /* ===== Nicher (begge dele: hver app er også en færdig faceless-niche) ===== */
+  const NICHE={
+    song:{n:"Sangtips for begyndere",pil:["Opvarmning på 60 sekunder","Typiske fejl og hurtige fix","Før/efter-øvelser"],hooks:["Du synger falsk af én grund – og den er nem at rette","60 sekunder, der får din stemme til at lyde bedre","Stop med at synge fra halsen. Gør det her i stedet","Den øvelse, sangere laver før hver koncert"],ideas:["60-sekunders opvarmning","Læbetril forklaret","Find din tonehøjde med en app","3 fejl alle begyndere laver","Hold en tone længere","Vejrtrækning for sangere"],money:["Affiliate på mikrofoner og øvelsesapps","Betalt øvelsesprogram (PDF)","Sponsorater fra musikapps"]},
+    news:{n:"Nyheder forklaret enkelt",pil:["Dagens nyhed på 30 sekunder","Sådan spotter du falske nyheder","Ord fra nyhederne forklaret"],hooks:["Sådan ser du på 10 sekunder, om en nyhed er falsk","Det ord hører du i nyhederne hver dag – men hvad betyder det?","3 spørgsmål, før du deler noget","Overskriften lyver ikke. Men den fortæller heller ikke det hele"],ideas:["Leder vs. nyhed","Hvad er en primærkilde?","Deepfake – sådan spotter du dem","Ugens nyhed på 30 sek.","Clickbait-tjek","Hvem ejer medierne?"],money:["Nyhedsbrev med sponsor","Skolemateriale til undervisere","Platform-indtægter"]},
+    food:{n:"Mad for under 15 kr",pil:["Hele retter under 15 kr pr. portion","Restemad","Ugens madplan"],hooks:["Aftensmad til fire for under 50 kr","Det her koster 5 kr pr. portion – og smager af meget mere","Lav ikke ny mad. Lav biksemad","Studiebudget, men restaurant-smag"],ideas:["Linsesuppe til 10 kr","Stegte ris af gårsdagens rester","Pandekager til 4 kr","Ugens madplan under 300 kr","Tilbudsjagt: 3 tricks","Chili sin carne"],money:["Affiliate på køkkengrej","Madplaner som betalt PDF","Samarbejde med supermarkeder"]},
+    date:{n:"Tryg dating",pil:["Før daten: tjekliste","Røde flag","Billige date-idéer"],hooks:["Tre røde flag, du skal tage alvorligt","Gør det her, før du mødes med én fra en app","Billig date, der ikke føles billig","Beder de om penge? Så er svaret nej"],ideas:["Tjekliste før første date","Romance scam – sådan virker det","6 date-idéer under 100 kr","Exit-plan på en date","Grænser og samtykke kort","Sådan fortæller du en ven din plan"],money:["Affiliate på sikkerhedsapps","Samarbejde med datingapps","Guide som betalt PDF"]},
+    waste:{n:"Sorter rigtigt",pil:["Hvor skal det hen?","Myter om affald","Pant og penge"],hooks:["Pizzaæsken – pap eller rest? Det afhænger af én ting","Du har sorteret kvitteringer forkert hele livet","Så mange penge giver dine pantflasker","Chipsposen er ikke plast. Her er hvorfor"],ideas:["Pizzaæske-testen","Kvitteringer = restaffald","Pant A, B og C forklaret","Batterier – hvorfor de er farlige","Tekstilaffald vs. genbrug","Drikkeglas er ikke glasaffald"],money:["Samarbejde med kommuner og forsyninger","Affiliate på sorteringsspande","Skolemateriale"]},
+    tree:{n:"Slægtsforskning for begyndere",pil:["Kom i gang","Kilder og arkiver","Familiehistorier"],hooks:["Sådan finder du din oldefar på en aften","Spørg din bedstemor om det her, før det er for sent","Tre gratis steder at starte din slægtsforskning","Jeg fandt et navn i et kirkebog – og så skete det her"],ideas:["Start med dig selv og gå baglæns","5 spørgsmål til de ældste i familien","Kirkebøger forklaret","Folketællinger","Sådan tegner du et stamtræ","Gem familiens billeder rigtigt"],money:["Affiliate på slægtstjenester og DNA-tests","Betalt hjælp til slægtsforskning","Skabeloner til stamtræer"]},
+    hyg:{n:"Enkel hverdagshygiejne",pil:["Rutiner der holder","Hvor tit skal man …?","Billige vaner"],hooks:["Hvor tit skal du egentlig skifte sengetøj?","Din tandbørste er for gammel. Sådan ved du det","Den rutine på 5 minutter, der ændrer din morgen","Det glemmer de fleste at vaske"],ideas:["Morgenrutine på 5 min","Sengetøj: hvor tit?","Tandbørste hver 3. måned","Håndklæder og vask","Ting du glemmer at gøre rent","Hygiejne-tjekliste"],money:["Affiliate på tandbørster og plejeprodukter","Sponsorater fra plejemærker","Rutineplaner som PDF"]}
+  };
+
+  /* ===== Render ===== */
+  function render(){
+    const el=$("lifeBody"); if(!el) return;
+    if(!cur){ el.innerHTML=`<div class="life-grid">${APPS.map(a=>`<button class="life-app" data-life="${a.id}" style="--c:${a.c}"><span class="ic">${a.ic}</span><b>${esc(L(...a.n))}</b><small>${esc(L(...a.d))}</small></button>`).join("")}</div>`; return; }
+    const a=APPS.find(x=>x.id===cur); if(!a){ cur=""; return render(); }
+    el.innerHTML=`<div class="life-head"><button class="small" data-life-back>← ${esc(L("Alle","All"))}</button><h3 style="--c:${a.c}">${a.ic} ${esc(L(...a.n))}</h3><button class="small" data-life-niche>${esc(L("Brug som niche","Use as niche"))}</button></div><div class="life-view" id="lifeView"></div>`;
+    ({song:rSong,news:rNews,food:rFood,date:rDate,waste:rWaste,tree:rTree,hyg:rHyg}[cur])();
+  }
+  function open(id){ cur=id||""; store.set("redhue_life_app",cur); if(current!=="life") go("life"); else render(); }
+
+  // ----- Sang
+  let warmI=0, warmT=null, warmLeft=0, ac=null, tun=null;
+  function tone(f,ms=700){ try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(), g=ac.createGain(); o.type="triangle"; o.frequency.value=f; g.gain.setValueAtTime(0,ac.currentTime); g.gain.linearRampToValueAtTime(.25,ac.currentTime+.04); g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+ms/1000); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime+ms/1000+.05); }catch(e){} }
+  function rSong(){
+    const s=st(), m=s.song.log[today()]||0, str=streakOf(Object.fromEntries(Object.entries(s.song.log).filter(([,v])=>v>0)));
+    const w=WARM[warmI];
+    $("lifeView").innerHTML=`<div class="life-stats"><span><b>${m}</b> ${esc(L("min i dag","min today"))}</span><span><b>${str}</b> ${esc(L("dage i træk","day streak"))}</span></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Opvarmning","Warm-up"))} · ${warmI+1}/${WARM.length}</div><h4>${esc(w[0])}</h4><p>${esc(w[1])}</p>
+        <div class="life-timer" id="lfTimer">${warmT?fmtS(warmLeft):fmtS(w[2])}</div>
+        <div class="actions"><button class="primary" data-song="go">${warmT?esc(L("Pause","Pause")):esc(L("Start","Start"))}</button><button data-song="next">${esc(L("Næste","Next"))}</button><button data-song="say">🔊</button></div></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Toner – tryk og syng med","Notes – tap and sing along"))}</div><div class="life-notes">${NOTES.map(([n,f])=>`<button data-note="${f}">${n}</button>`).join("")}</div>
+        <div class="actions"><button data-song="up">${esc(L("Skala op","Scale up"))}</button><button data-song="down">${esc(L("Skala ned","Scale down"))}</button></div></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Stemmemåler","Pitch meter"))}</div><p class="sub" style="margin:0 0 8px">${esc(L("Syng en tone – måleren viser hvilken, og om du er for lav eller høj. Lyden bliver på telefonen.","Sing a note – the meter shows which one and whether you're flat or sharp. The sound stays on your phone."))}</p>
+        <div class="life-tuner"><span id="tnNote">–</span><div class="tn-bar"><i id="tnNeedle"></i></div><small id="tnCents"></small></div>
+        <div class="actions"><button data-song="tuner">${tun?esc(L("Stop måler","Stop meter")):esc(L("Start måler","Start meter"))}</button></div></div>`;
+  }
+  const fmtS=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+  function songLog(sec){ const s=st(); s.song.log[today()]=Math.round(((s.song.log[today()]||0)+sec/60)*10)/10; put(s); }
+  function warmTick(){ warmLeft--; const el=$("lfTimer"); if(el) el.textContent=fmtS(Math.max(0,warmLeft)); if(warmLeft%30===0) songLog(30);
+    if(warmLeft<=0){ clearInterval(warmT); warmT=null; buzz(30); if(warmI<WARM.length-1){ warmI++; say(WARM[warmI][0]+". "+WARM[warmI][1]); } else { toast(L("Opvarmning færdig 🎤","Warm-up done 🎤")); warmI=0; } if(cur==="song") rSong(); } }
+  async function tunerToggle(){
+    if(tun){ tun.stop(); tun=null; rSong(); return; }
+    try{ const ms=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false}}); ac=ac||new (window.AudioContext||window.webkitAudioContext)(); await ac.resume();
+      const src=ac.createMediaStreamSource(ms), an=ac.createAnalyser(); an.fftSize=2048; src.connect(an); const buf=new Float32Array(an.fftSize); let raf=0;
+      const loop=()=>{ an.getFloatTimeDomainData(buf); const f=pitch(buf,ac.sampleRate); const nEl=$("tnNote");
+        if(nEl&&f){ const n=12*Math.log2(f/440)+69, r=Math.round(n), cents=Math.round((n-r)*100); nEl.textContent=NN[((r%12)+12)%12]+(Math.floor(r/12)-1); $("tnNeedle").style.left=(50+cents)+"%"; $("tnCents").textContent=(cents>0?"+":"")+cents+" cent · "+f.toFixed(0)+" Hz"; $("tnNeedle").classList.toggle("ok",Math.abs(cents)<=10); }
+        raf=requestAnimationFrame(loop); };
+      tun={stop:()=>{ cancelAnimationFrame(raf); ms.getTracks().forEach(t=>t.stop()); }}; rSong(); loop();
+    }catch(e){ toast(L("Mikrofonen er ikke tilgængelig her – prøv i den installerede app","The microphone isn't available here – try the installed app")); }
+  }
+  // Autokorrelation: finder grundtonen i et lydstykke
+  function pitch(b,sr){ let rms=0; for(const x of b) rms+=x*x; rms=Math.sqrt(rms/b.length); if(rms<.01) return 0;
+    let best=-1,bestC=0; const min=Math.floor(sr/1000), max=Math.floor(sr/70);
+    for(let lag=min;lag<max;lag++){ let c=0; for(let i=0;i<b.length-lag;i++) c+=b[i]*b[i+lag]; if(c>bestC){ bestC=c; best=lag; } }
+    return best>0?sr/best:0; }
+
+  // ----- Nyheder
+  function rNews(){
+    const s=st(), dset={}; s.news.log.forEach(x=>dset[x.d]=1);
+    $("lifeView").innerHTML=`<div class="life-stats"><span><b>${s.news.log.length}</b> ${esc(L("ting lært","things learned"))}</span><span><b>${streakOf(dset)}</b> ${esc(L("dage i træk","day streak"))}</span></div>
+      <div class="card life-card"><div class="lbl">${esc(L("5 spørgsmål før du tror på – eller deler – en nyhed","5 questions before you believe – or share – a story"))}</div><ol class="life-ol">${NQ.map(q=>`<li>${esc(q)}</li>`).join("")}</ol><div class="actions"><button data-say-text="${esc(NQ.join(" "))}">🔊 ${esc(L("Læs op","Read aloud"))}</button></div></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Dagens nyhed","Today's story"))}</div><div class="life-links">${NSRC.map(([n,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join("")}</div>
+        <form id="nwForm" class="life-form"><input id="nwT" placeholder="${esc(L("Overskrift","Headline"))}" required maxlength="140"><input id="nwS" placeholder="${esc(L("Kilde (fx DR)","Source (e.g. DR)"))}" maxlength="60"><textarea id="nwL" placeholder="${esc(L("Hvad lærte jeg? Én sætning.","What did I learn? One sentence."))}" maxlength="400" required></textarea>
+        <label class="life-chk"><input type="checkbox" id="nwQ"> ${esc(L("Jeg har stillet de 5 spørgsmål","I asked the 5 questions"))}</label><button class="primary">${esc(L("Gem","Save"))}</button></form></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Mine noter","My notes"))}</div>${s.news.log.length?s.news.log.slice(0,10).map(x=>`<div class="life-li"><b>${esc(x.t)}</b><span>${esc(x.l)}</span><small>${esc(x.d)}${x.s?" · "+esc(x.s):""}${x.q?" · ✓ 5 spm.":""}</small></div>`).join(""):`<p class="sub">${esc(L("Gem din første nyhed ovenfor.","Save your first story above."))}</p>`}</div>
+      <div class="card life-card"><div class="lbl">${esc(L("Ord fra nyhederne","News words"))}</div>${NWORDS.map(([w,d])=>`<details class="life-det"><summary>${esc(w)}</summary><p>${esc(d)}</p></details>`).join("")}</div>`;
+    $("nwForm").onsubmit=e=>{ e.preventDefault(); const s=st(); s.news.log.unshift({d:today(),t:$("nwT").value.trim(),s:$("nwS").value.trim(),l:$("nwL").value.trim(),q:$("nwQ").checked}); s.news.log=s.news.log.slice(0,200); put(s); toast(L("Gemt – godt lært 📰","Saved – nicely learned 📰")); rNews(); };
+  }
+
+  // ----- Mad
+  let foodI=-1, foodP=0, cookStep=-1;
+  const fmtQ=q=>{ if(!q) return ""; const r=Math.round(q*10)/10; return String(r).replace(".",","); };
+  function rFood(){
+    const s=st();
+    if(foodI<0){
+      $("lifeView").innerHTML=`<p class="sub" style="margin:0 0 10px">${esc(L("Pris pr. portion er et groft skøn og afhænger af butik og tilbud.","Price per portion is a rough estimate and depends on store and offers."))}</p>
+        <div class="life-list">${FOOD.map((r,i)=>`<button class="life-row" data-food="${i}"><span><b>${esc(r.n)}</b><small>${r.t} min · ${r.p} ${esc(L("pers.","serv."))}</small></span><span class="life-kr">ca. ${r.kr} kr</span></button>`).join("")}</div>
+        <div class="card life-card"><div class="lbl">${esc(L("Indkøbsliste","Shopping list"))} (${s.food.shop.filter(x=>!x.done).length})</div>${s.food.shop.length?s.food.shop.map((x,i)=>`<label class="life-chk${x.done?" done":""}"><input type="checkbox" data-shop="${i}" ${x.done?"checked":""}> ${esc(x.t)}</label>`).join("")+`<div class="actions"><button class="small" data-shop-clear>${esc(L("Fjern købte","Remove bought"))}</button></div>`:`<p class="sub">${esc(L("Tom. Tilføj fra en opskrift.","Empty. Add from a recipe."))}</p>`}</div>`;
+      return; }
+    const r=FOOD[foodI], p=foodP||r.p, k=p/r.p;
+    $("lifeView").innerHTML=`<div class="card life-card"><button class="small" data-food-back>← ${esc(L("Opskrifter","Recipes"))}</button><h4 style="margin-top:10px">${esc(r.n)}</h4><p class="sub">${r.t} min · ca. ${r.kr} kr ${esc(L("pr. portion","per portion"))}</p>
+      <div class="life-pp"><button class="small" data-pp="-1">−</button><b>${p} ${esc(L("personer","servings"))}</b><button class="small" data-pp="1">+</button></div>
+      <ul class="life-ing">${r.ing.map(([q,u,n])=>`<li><b>${fmtQ(q*k)} ${esc(u)}</b> ${esc(n)}</li>`).join("")}</ul>
+      <div class="actions"><button data-food-shop>${esc(L("Læg på indkøbslisten","Add to shopping list"))}</button><button class="primary" data-cook>${esc(L("Lav den – trin for trin","Cook it – step by step"))}</button></div>
+      <ol class="life-ol">${r.steps.map((x,i)=>`<li class="${i===cookStep?"now":""}">${esc(x)}</li>`).join("")}</ol>
+      ${cookStep>=0?`<div class="actions"><button data-cook-prev>${esc(L("Forrige","Back"))}</button><button class="primary" data-cook-next>${cookStep<r.steps.length-1?esc(L("Næste trin","Next step")):esc(L("Færdig","Done"))}</button><button data-cook-say>🔊</button></div>`:""}</div>`;
+  }
+
+  // ----- Dating
+  let ckTimer=null;
+  function rDate(){
+    const s=st(), P=s.date.plan, done=DCHK.filter((_,i)=>s.date.checks[i]).length, ci=s.date.checkin;
+    const ecs=store.get("redhue_ec",[]);
+    $("lifeView").innerHTML=`${ci?`<div class="card life-card life-alert"><b>${esc(L("Tjek-ind aktivt","Check-in active"))}</b><p>${esc(L("Svar senest","Check in by"))} ${esc(new Date(ci.at).toLocaleTimeString(lang==="en"?"en-GB":"da-DK",{hour:"2-digit",minute:"2-digit",timeZone:TZ()}))}. ${esc(L("Appen minder dig – men kun mens den er åben.","The app reminds you – but only while it's open."))}</p><div class="actions"><button class="primary" data-ck-ok>${esc(L("Jeg er ok","I'm OK"))}</button><button data-go="safe" style="border-color:var(--red);color:var(--red)">SOS</button></div></div>`:""}
+      <div class="card life-card"><div class="lbl">${esc(L("Før daten","Before the date"))} · ${done}/${DCHK.length}</div>${DCHK.map((x,i)=>`<label class="life-chk${s.date.checks[i]?" done":""}"><input type="checkbox" data-dchk="${i}" ${s.date.checks[i]?"checked":""}> ${esc(x)}</label>`).join("")}</div>
+      <div class="card life-card"><div class="lbl">${esc(L("Date-plan til en ven","Date plan for a friend"))}</div>
+        <form id="dpForm" class="life-form"><input id="dpWho" placeholder="${esc(L("Hvem (fornavn / profil)","Who (first name / profile)"))}" value="${esc(P.who||"")}" maxlength="80"><input id="dpWhere" placeholder="${esc(L("Hvor","Where"))}" value="${esc(P.where||"")}" maxlength="120"><input id="dpWhen" type="datetime-local" value="${esc(P.when||"")}"><label class="sub" for="dpBack">${esc(L("Jeg tjekker ind senest","I'll check in by"))}</label><input id="dpBack" type="time" value="${esc(P.back||"")}">
+        <select id="dpFriend"><option value="">${esc(L("Vælg ven fra nødkontakter","Pick a friend from emergency contacts"))}</option>${ecs.map((c,i)=>`<option value="${i}" ${String(P.friend)===String(i)?"selected":""}>${esc(c.name)}</option>`).join("")}</select>
+        <div class="actions"><button class="primary">${esc(L("Gem og del planen","Save and share the plan"))}</button><button type="button" data-ck-start>${esc(L("Start tjek-ind","Start check-in"))}</button></div></form>
+        <div id="dpOut"></div></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Røde flag – stop eller vent","Red flags – stop or slow down"))}</div><ul class="life-ul">${DFLAG.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Grænser","Boundaries"))}</div><p>${esc(L("Et ja gælder kun lige nu og kan altid trækkes tilbage. Det er ok at gå, når som helst. Respekterer den anden ikke et nej, er det svaret.","A yes only counts right now and can always be taken back. It's fine to leave at any time. If they don't respect a no, that is the answer."))}</p>
+        <p class="sub">${esc(L("Ring 112 ved fare. Lev Uden Volds hotline 1888 er åben døgnet rundt og anonym – også hvis du er i tvivl.","Call 112 if in danger. Lev Uden Vold's hotline 1888 is open around the clock and anonymous – also if you're unsure."))}</p><div class="actions"><a class="btn" href="tel:112">112</a><a class="btn" href="tel:1888">1888</a></div></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Billige date-idéer","Cheap date ideas"))}</div><div class="life-tags">${DIDEA.map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>`;
+    $("dpForm").onsubmit=e=>{ e.preventDefault(); const s=st(); s.date.plan={who:$("dpWho").value.trim(),where:$("dpWhere").value.trim(),when:$("dpWhen").value,back:$("dpBack").value,friend:$("dpFriend").value}; put(s);
+      const P=s.date.plan, f=ecs[+P.friend], when=P.when?new Date(P.when).toLocaleString("da-DK",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
+      const msg=`Hej${f?" "+f.name:""}! Jeg skal på date${P.who?" med "+P.who:""}${P.where?" på "+P.where:""}${when?" "+when:""}. Jeg skriver senest kl. ${P.back||"?"}. Hører du ikke fra mig, så ring til mig.`;
+      const ph=f?String(f.phone).replace(/[^\d+]/g,""):"";
+      $("dpOut").innerHTML=`<div class="fb-err" style="margin-top:10px;white-space:pre-wrap;user-select:all">${esc(msg)}</div><div class="actions">${ph?`<a class="btn primary" href="sms:${esc(ph)}?body=${encodeURIComponent(msg)}">SMS</a>`:""}<button type="button" data-dp-copy>${esc(L("Kopiér","Copy"))}</button>${navigator.share?`<button type="button" data-dp-share>${esc(L("Del","Share"))}</button>`:""}</div>`;
+      $("dpOut").onclick=ev=>{ if(ev.target.closest("[data-dp-copy]")) navigator.clipboard&&navigator.clipboard.writeText(msg).then(()=>toast(L("Kopieret","Copied")),()=>{}); if(ev.target.closest("[data-dp-share]")) navigator.share({text:msg}).catch(()=>{}); };
+      toast(L("Planen er gemt","Plan saved")); };
+  }
+  function checkinWatch(){ clearInterval(ckTimer); const ci=st().date.checkin; if(!ci) return;
+    ckTimer=setInterval(()=>{ const c=st().date.checkin; if(!c){ clearInterval(ckTimer); return; }
+      if(Date.now()>=c.at&&!c.warned){ const s=st(); s.date.checkin.warned=true; put(s); buzz([200,100,200]); toast(L("Tid til at tjekke ind – er du ok?","Time to check in – are you OK?")); try{ Voice.speak(L("Tid til at tjekke ind. Er du okay?","Time to check in. Are you okay?"),"mom"); }catch(e){} if(current!=="life"||cur!=="date"){ cur="date"; go("life"); } else rDate(); } },15000); }
+
+  // ----- Genbrug
+  let wq="";
+  function rWaste(){
+    const q=wq.toLowerCase().trim(), hits=q?WASTE.filter(([n])=>n.toLowerCase().includes(q)):[];
+    $("lifeView").innerHTML=`<input id="wsQ" class="life-search" placeholder="${esc(L("Hvad vil du smide ud? Fx pizzaæske","What are you throwing out? E.g. pizza box"))}" value="${esc(wq)}" autocomplete="off">
+      <div id="wsHits">${hitsHTML(hits,q)}</div>
+      <div class="card life-card"><div class="lbl">${esc(L("Pant","Deposits"))}</div><div class="life-pant"><span><b>A</b> 1 kr<small>${esc(L("glasflasker og dåser under 1 l","glass bottles and cans under 1 l"))}</small></span><span><b>B</b> 1,50 kr<small>${esc(L("plastflasker under 1 l","plastic bottles under 1 l"))}</small></span><span><b>C</b> 3 kr<small>${esc(L("flasker og dåser 1–20 l","bottles and cans 1–20 l"))}</small></span></div><p class="sub" style="margin:8px 0 0">${esc(L("Kilde: Dansk Retursystem. Se mærket på emballagen.","Source: Dansk Retursystem. Check the mark on the packaging."))}</p></div>
+      <div class="card life-card"><div class="lbl">${esc(L("De 10 affaldstyper","The 10 waste types"))}</div><div class="life-tags">${["mad","papir","pap","plast","metal","glas","karton","tekstil","farligt","rest"].map(k=>`<span style="border-color:${FR[k][1]}">${esc(FR[k][0])}</span>`).join("")}</div><p class="sub" style="margin:8px 0 0">${esc(L("Alle kommuner sorterer de samme 10 typer, men spande og afhentning er forskellige. Tjek din kommunes affaldsside, hvis du er i tvivl.","All municipalities sort the same 10 types, but bins and collection differ. Check your municipality's waste page if unsure."))}</p></div>`;
+    $("wsQ").oninput=e=>{ wq=e.target.value; const q=wq.toLowerCase().trim(); $("wsHits").innerHTML=hitsHTML(q?WASTE.filter(([n])=>n.toLowerCase().includes(q)):[],q); };
+  }
+  function hitsHTML(hits,q){ if(!q) return `<div class="life-tags" style="margin:10px 0">${["Pizzaæske, ren","Kvitteringer","Batterier","Chipspose","Drikkeglas og porcelæn","Hullede strømper"].map(x=>`<button class="small" data-ws="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
+    if(!hits.length) return `<p class="sub" style="margin:10px 0">${esc(L("Ikke på listen. Er det mest én slags materiale og rent, så den type – ellers restaffald. Tjek din kommune.","Not on the list. If it's mostly one clean material, that type – otherwise residual waste. Check your municipality."))}</p>`;
+    return hits.slice(0,8).map(([n,k,tip])=>`<div class="life-hit" style="--c:${FR[k][1]}"><b>${esc(n)}</b><span>→ ${esc(FR[k][0])}</span>${tip?`<small>${esc(tip)}</small>`:""}</div>`).join(""); }
+
+  // ----- Stamtræ
+  function rTree(){
+    const s=st(), P=s.tree.people;
+    if(!P.length){ P.push({id:uid(),name:(S.profile&&S.profile.name)||L("Mig","Me"),me:true,parents:[],partner:""}); put(s); }
+    // generationer: mig = 0, forældre = -1, børn = +1
+    const gen={}, me=P.find(p=>p.me)||P[0]; gen[me.id]=0; const q=[me.id];
+    while(q.length){ const id=q.shift(), p=P.find(x=>x.id===id); if(!p) continue;
+      (p.parents||[]).forEach(pid=>{ if(gen[pid]===undefined){ gen[pid]=gen[id]-1; q.push(pid); } });
+      P.filter(c=>(c.parents||[]).includes(id)).forEach(c=>{ if(gen[c.id]===undefined){ gen[c.id]=gen[id]+1; q.push(c.id); } });
+      if(p.partner&&gen[p.partner]===undefined){ gen[p.partner]=gen[id]; q.push(p.partner); } }
+    P.forEach(p=>{ if(gen[p.id]===undefined) gen[p.id]=0; });
+    const rows=[...new Set(Object.values(gen))].sort((a,b)=>a-b);
+    const gname=g=>g===0?L("Din generation","Your generation"):g===-1?L("Forældre","Parents"):g===-2?L("Bedsteforældre","Grandparents"):g===-3?L("Oldeforældre","Great-grandparents"):g<-3?L(`${-g-1}. generation op`,`${-g-1} generations up`):g===1?L("Børn","Children"):g===2?L("Børnebørn","Grandchildren"):L(`${g}. generation ned`,`${g} generations down`);
+    $("lifeView").innerHTML=`<div class="life-tree">${rows.map(g=>`<div class="tr-row"><div class="lbl">${esc(gname(g))}</div><div class="tr-ppl">${P.filter(p=>gen[p.id]===g).map(p=>`<button class="tr-p${p.me?" me":""}" data-tp="${p.id}"><b>${esc(p.name)}</b><small>${esc([p.born,p.died?"† "+p.died:""].filter(Boolean).join(" – "))}</small>${p.partner?`<small>♥ ${esc((P.find(x=>x.id===p.partner)||{}).name||"")}</small>`:""}</button>`).join("")}</div></div>`).join("")}</div>
+      <div class="card life-card"><div class="lbl">${esc(L("Tilføj person","Add person"))}</div><form id="tpForm" class="life-form"><input id="tpName" placeholder="${esc(L("Navn","Name"))}" required maxlength="80"><div class="life-2"><input id="tpBorn" placeholder="${esc(L("Født (år)","Born (year)"))}" inputmode="numeric" maxlength="10"><input id="tpDied" placeholder="${esc(L("Død (år)","Died (year)"))}" inputmode="numeric" maxlength="10"></div>
+        <div class="life-2"><select id="tpRel"><option value="parent">${esc(L("er forælder til","is parent of"))}</option><option value="child">${esc(L("er barn af","is child of"))}</option><option value="partner">${esc(L("er partner til","is partner of"))}</option><option value="sibling">${esc(L("er søskende til","is sibling of"))}</option></select><select id="tpTo">${P.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join("")}</select></div>
+        <button class="primary">${esc(L("Tilføj","Add"))}</button></form><p class="sub" style="margin:8px 0 0">${esc(L("Stamtræet ligger kun på din telefon og kommer med i auto-gem og backup.","The tree is only on your phone and is included in auto-save and backups."))}</p></div>
+      <div id="tpEdit"></div>`;
+    $("tpForm").onsubmit=e=>{ e.preventDefault(); const s=st(), P=s.tree.people, to=P.find(p=>p.id===$("tpTo").value), rel=$("tpRel").value;
+      const np={id:uid(),name:$("tpName").value.trim(),born:$("tpBorn").value.trim(),died:$("tpDied").value.trim(),parents:[],partner:""};
+      if(rel==="parent"){ to.parents=[...(to.parents||[]),np.id].slice(-2); }
+      if(rel==="child"){ np.parents=[to.id]; if(to.partner) np.parents.push(to.partner); }
+      if(rel==="partner"){ np.partner=to.id; to.partner=np.id; }
+      if(rel==="sibling"){ np.parents=[...(to.parents||[])]; if(!np.parents.length){ const pp={id:uid(),name:L("Ukendt forælder","Unknown parent"),parents:[],partner:""}; P.push(pp); to.parents=[pp.id]; np.parents=[pp.id]; } }
+      P.push(np); put(s); toast(L("Tilføjet til stamtræet 🌳","Added to the tree 🌳")); rTree(); };
+  }
+  function treeEdit(id){ const s=st(), p=s.tree.people.find(x=>x.id===id); if(!p) return;
+    $("tpEdit").innerHTML=`<div class="card life-card"><div class="lbl">${esc(p.name)}</div><form id="teForm" class="life-form"><input id="teName" value="${esc(p.name)}" maxlength="80"><div class="life-2"><input id="teBorn" value="${esc(p.born||"")}" placeholder="${esc(L("Født","Born"))}"><input id="teDied" value="${esc(p.died||"")}" placeholder="${esc(L("Død","Died"))}"></div><textarea id="teNote" placeholder="${esc(L("Historie, sted, erindringer …","Story, place, memories …"))}" maxlength="1000">${esc(p.note||"")}</textarea>
+      <div class="actions"><button class="primary">${esc(L("Gem","Save"))}</button>${p.me?"":`<button type="button" data-te-del style="color:var(--red)">${esc(L("Slet","Delete"))}</button>`}</div></form></div>`;
+    $("tpEdit").scrollIntoView({block:"nearest",behavior:"smooth"});
+    $("teForm").onsubmit=e=>{ e.preventDefault(); const s=st(), q=s.tree.people.find(x=>x.id===id); Object.assign(q,{name:$("teName").value.trim()||q.name,born:$("teBorn").value.trim(),died:$("teDied").value.trim(),note:$("teNote").value.trim()}); put(s); rTree(); };
+    $("tpEdit").querySelector("[data-te-del]")?.addEventListener("click",()=>{ const s=st(); s.tree.people=s.tree.people.filter(x=>x.id!==id).map(x=>({...x,parents:(x.parents||[]).filter(i=>i!==id),partner:x.partner===id?"":x.partner})); put(s); rTree(); }); }
+
+  // ----- Hygiejne
+  function rHyg(){
+    const s=st(), d=s.hyg.days[today()]||{}, n=HD.filter(([k])=>d[k]).length;
+    const full={}; Object.entries(s.hyg.days).forEach(([k,v])=>{ if(HD.filter(([i])=>v[i]).length>=6) full[k]=1; });
+    $("lifeView").innerHTML=`<div class="life-stats"><span><b>${n}/${HD.length}</b> ${esc(L("i dag","today"))}</span><span><b>${streakOf(full)}</b> ${esc(L("dage i træk (6+)","day streak (6+)"))}</span></div>
+      <div class="card life-card"><div class="lbl">${esc(L("Hver dag","Every day"))}</div>${HD.map(([k,t])=>`<label class="life-chk${d[k]?" done":""}"><input type="checkbox" data-hd="${k}" ${d[k]?"checked":""}> ${esc(t)}</label>`).join("")}</div>
+      <div class="card life-card"><div class="lbl">${esc(L("Med mellemrum","Now and then"))}</div>${HW.map(([k,t,every])=>{ const last=s.hyg.last[k], ago=last?days(last,today()):null, due=ago===null||ago>=every;
+        return `<div class="life-row static"><span><b>${esc(t)}</b><small>${esc(L(`ca. hver ${every}. dag`,`about every ${every} days`))} · ${ago===null?esc(L("aldrig markeret","never marked")):ago===0?esc(L("i dag","today")):esc(L(`for ${ago} dage siden`,`${ago} days ago`))}</small></span><button class="small ${due?"primary":""}" data-hw="${k}">${due?esc(L("Gjort nu","Done now")):"✓"}</button></div>`; }).join("")}</div>
+      <p class="sub">${esc(L("Intervallerne er tommelfingerregler. Følg din tandlæges eller læges råd, hvis du har fået andre.","Intervals are rules of thumb. Follow your dentist's or doctor's advice if it differs."))}</p>`;
+  }
+
+  /* ===== Niche ===== */
+  function nicheHTML(id){ const N=NICHE[id];
+    return `<div class="card life-card life-niche"><div class="lbl">${esc(L("Indholds-niche","Content niche"))}</div><h4>${esc(N.n)}</h4>
+      <div class="lbl" style="margin-top:8px">${esc(L("Søjler","Pillars"))}</div><div class="life-tags">${N.pil.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+      <div class="lbl" style="margin-top:10px">Hooks</div><ul class="life-ul">${N.hooks.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="lbl" style="margin-top:10px">${esc(L("Indtægter","Income"))}</div><ul class="life-ul">${N.money.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="actions"><button class="primary" data-niche-use="${id}">${esc(L(`Gør til min niche + ${N.ideas.length} idéer i pipeline`,`Make it my niche + ${N.ideas.length} ideas in pipeline`))}</button><button data-niche-close>${esc(L("Luk","Close"))}</button></div></div>`; }
+  function useNiche(id){ const N=NICHE[id]; S.mission.niche=N.n;
+    const have=new Set(S.kanban.map(k=>k.title)); let added=0;
+    N.ideas.forEach((t,i)=>{ if(have.has(t)) return; S.kanban.push({id:uid(),title:t,platform:"all",col:"idea",notes:"Hook: "+N.hooks[i%N.hooks.length],created:Date.now()}); added++; });
+    save(); try{ logAct("kanban",N.n); }catch(e){} toast(L(`Niche sat: ${N.n} · ${added} idéer i pipeline`,`Niche set: ${N.n} · ${added} ideas in pipeline`)); }
+
+  /* ===== Hændelser ===== */
+  document.addEventListener("click",e=>{
+    const T=e.target; if(!T.closest("#s-life")) return;
+    const a=T.closest("[data-life]"); if(a){ open(a.dataset.life); return; }
+    if(T.closest("[data-life-back]")){ clearInterval(warmT); warmT=null; foodI=-1; cookStep=-1; cur=""; store.set("redhue_life_app",""); render(); return; }
+    if(T.closest("[data-life-niche]")){ const v=$("lifeView"); const ex=v.querySelector(".life-niche"); if(ex){ ex.remove(); return; } v.insertAdjacentHTML("afterbegin",nicheHTML(cur)); return; }
+    const nu=T.closest("[data-niche-use]"); if(nu){ useNiche(nu.dataset.nicheUse); return; }
+    if(T.closest("[data-niche-close]")){ T.closest(".life-niche").remove(); return; }
+    // sang
+    const sg=T.closest("[data-song]"); if(sg){ const k=sg.dataset.song;
+      if(k==="go"){ if(warmT){ clearInterval(warmT); warmT=null; } else { warmLeft=warmLeft>0?warmLeft:WARM[warmI][2]; warmT=setInterval(warmTick,1000); } rSong(); }
+      if(k==="next"){ clearInterval(warmT); warmT=null; warmI=(warmI+1)%WARM.length; warmLeft=0; rSong(); }
+      if(k==="say") say(WARM[warmI][0]+". "+WARM[warmI][1]);
+      if(k==="up"||k==="down"){ const seq=k==="up"?NOTES:[...NOTES].reverse(); seq.forEach(([,f],i)=>setTimeout(()=>tone(f,600),i*650)); songLog(10); }
+      if(k==="tuner") tunerToggle(); return; }
+    const nt=T.closest("[data-note]"); if(nt){ tone(+nt.dataset.note,900); return; }
+    const sx=T.closest("[data-say-text]"); if(sx){ say(sx.dataset.sayText); return; }
+    // mad
+    const fd=T.closest("[data-food]"); if(fd){ foodI=+fd.dataset.food; foodP=FOOD[foodI].p; cookStep=-1; rFood(); window.scrollTo(0,0); return; }
+    if(T.closest("[data-food-back]")){ foodI=-1; cookStep=-1; rFood(); return; }
+    const pp=T.closest("[data-pp]"); if(pp){ foodP=Math.max(1,Math.min(12,(foodP||FOOD[foodI].p)+ +pp.dataset.pp)); rFood(); return; }
+    if(T.closest("[data-food-shop]")){ const s=st(), r=FOOD[foodI], k=(foodP||r.p)/r.p; r.ing.forEach(([q,u,n])=>{ const t=`${fmtQ(q*k)} ${u} ${n}`.replace(/\s+/g," ").trim(); if(!s.food.shop.some(x=>x.t===t&&!x.done)) s.food.shop.push({t,done:false}); }); put(s); toast(L("Lagt på indkøbslisten 🛒","Added to shopping list 🛒")); return; }
+    if(T.closest("[data-cook]")){ cookStep=0; rFood(); say(FOOD[foodI].steps[0]); return; }
+    if(T.closest("[data-cook-next]")){ const r=FOOD[foodI]; if(cookStep<r.steps.length-1){ cookStep++; rFood(); say(r.steps[cookStep]); } else { cookStep=-1; rFood(); toast(L("Velbekomme 🍲","Enjoy 🍲")); } return; }
+    if(T.closest("[data-cook-prev]")){ cookStep=Math.max(0,cookStep-1); rFood(); say(FOOD[foodI].steps[cookStep]); return; }
+    if(T.closest("[data-cook-say]")){ say(FOOD[foodI].steps[cookStep]); return; }
+    if(T.closest("[data-shop-clear]")){ const s=st(); s.food.shop=s.food.shop.filter(x=>!x.done); put(s); rFood(); return; }
+    // dating
+    if(T.closest("[data-ck-start]")){ const t=$("dpBack").value; if(!t){ toast(L("Vælg et tidspunkt for tjek-ind","Pick a check-in time")); return; }
+      const [h,m]=t.split(":").map(Number), now=new Date(); const zp=zparts(now); let at=now.getTime()+(((h*60+m)-(+zp.hour*60+ +zp.minute))*60000); if(at<now.getTime()) at+=864e5;
+      const s=st(); s.date.checkin={at,warned:false}; put(s); checkinWatch(); rDate(); toast(L("Tjek-ind startet","Check-in started")); return; }
+    if(T.closest("[data-ck-ok]")){ const s=st(); s.date.checkin=null; put(s); clearInterval(ckTimer); rDate(); toast(L("Godt at høre 💜","Good to hear 💜")); return; }
+    // genbrug
+    const ws=T.closest("[data-ws]"); if(ws){ wq=ws.dataset.ws; rWaste(); return; }
+    // stamtræ
+    const tp=T.closest("[data-tp]"); if(tp){ treeEdit(tp.dataset.tp); return; }
+    // hygiejne
+    const hw=T.closest("[data-hw]"); if(hw){ const s=st(); s.hyg.last[hw.dataset.hw]=today(); put(s); rHyg(); return; }
+  });
+  document.addEventListener("change",e=>{
+    const T=e.target; if(!T.closest||!T.closest("#s-life")) return;
+    if(T.dataset.dchk!==undefined){ const s=st(); s.date.checks[T.dataset.dchk]=T.checked; put(s); rDate(); }
+    if(T.dataset.shop!==undefined){ const s=st(); s.food.shop[+T.dataset.shop].done=T.checked; put(s); rFood(); }
+    if(T.dataset.hd!==undefined){ const s=st(); const d=s.hyg.days[today()]||(s.hyg.days[today()]={}); d[T.dataset.hd]=T.checked; const keys=Object.keys(s.hyg.days).sort(); keys.slice(0,-60).forEach(k=>delete s.hyg.days[k]); put(s); rHyg(); if(HD.every(([k])=>d[k])) toast(L("Alt klaret i dag 🫧","All done today 🫧")); }
+  });
+  function osIcons(){ return APPS.map(a=>`<button class="os-app" data-os="life:${a.id}" style="--c:${a.c}"><span class="ico">${a.ic}</span><span class="t">${esc(L(...a.n))}</span></button>`).join(""); }
+  function init(){ checkinWatch(); }
+  return {render,open,osIcons,init,APPS,NICHE,_st:st};
+})();
+
 /* ---------- REDHUE OS: hjemmeskærm ---------- */
 const OS_APPS = [["mission","🎯","var(--red)"],["pipeline","▦","var(--cy)"],["agents","🤖","var(--vi)"],["wallet","💳","var(--ok)"],
   ["profit","💰","var(--ok)"],["portfolio","📈","var(--bl)"],["products","🛒","var(--am)"],["q-in","＋","var(--ok)"]];
@@ -2921,7 +3256,7 @@ function renderHome(){
   const lb=Parent.label();
   $("osWidgets").insertAdjacentHTML("beforeend",`<button class="os-w wide note" data-os="parent" style="flex-direction:column;align-items:stretch;gap:4px"><div class="lbl">💌 ${esc(lb.name)} ${lb.em}</div><div class="txt">${esc(Parent.note())}</div></button>`);
   if(Voice.available()&&store.get("redhue_voice",{on:true}).on!==false){ const w=$("osWidgets").querySelector('[data-os="parent"]'); w.insertAdjacentHTML("afterbegin",`<span class="say" data-say="${Parent.cfg?Parent.cfg().role:"mom"}" role="button" tabindex="0" style="position:absolute;top:10px;right:10px;float:none;margin:0">🔊</span>`); }
-  $("osApps").innerHTML=OS_APPS.map(osAppHTML).join("");
+  $("osApps").innerHTML=OS_APPS.map(osAppHTML).join("")+`<div class="os-sub">${esc(t().life)}</div>`+Life.osIcons();
   $("osDock").innerHTML=OS_DOCK.map(osAppHTML).join("");
   renderOsSheets();
 }
@@ -2946,6 +3281,7 @@ $("os").addEventListener("click",e=>{
   if(id==="q-in"){ go("wallet"); setTimeout(()=>{ $("wType").value="in"; fillCats(); $("wAmt").focus(); },80); return; }
   if(id==="q-idea"){ go("pipeline"); setTimeout(()=>$("kTitle").focus(),80); return; }
   if(id==="parent"){ chTab="parent"; go("chat"); return; }
+  if(id.startsWith("life:")){ Life.open(id.slice(5)); return; }
   go(id);
 });
 /* --- OS 2: ark, gestus, haptik, badge, deling --- */
@@ -3042,7 +3378,7 @@ function applyStatic(){
   document.querySelectorAll(".buyLink").forEach(a=>{ a.href=CFG.GUMROAD_URL; a.hidden=!buyOk; });
 }
 function renderSection(id){
-  ({overview:renderOverview,mission:renderMission,pipeline:renderPipeline,wallet:renderWallet,portfolio:renderPortfolio,products:renderProducts,agents:renderAgents,settings:renderSettings,home:renderHome,profit:renderProfit,chat:renderChat,safe:()=>Safe.render()}[id]||(()=>{}))();
+  ({overview:renderOverview,mission:renderMission,pipeline:renderPipeline,wallet:renderWallet,portfolio:renderPortfolio,products:renderProducts,agents:renderAgents,settings:renderSettings,home:renderHome,profit:renderProfit,chat:renderChat,safe:()=>Safe.render(),life:()=>Life.render()}[id]||(()=>{}))();
 }
 function renderAll(){ applyStatic(); go(current); }
 const toggleLang=()=>{ lang = lang==="da"?"en":"da"; store.set(K.lang,lang); renderAll(); };
@@ -3058,7 +3394,7 @@ __safeRun("render",()=>renderAll());
 __safeRun("4D",()=>D4.apply());
 __safeRun("tale",()=>Talk.refresh());
 __safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
-__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init()); __safeRun("auto-gem",()=>AutoSave.init()); __safeRun("hilsen",()=>Voice.daily());
+__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init()); __safeRun("auto-gem",()=>AutoSave.init()); __safeRun("hilsen",()=>Voice.daily()); __safeRun("liv",()=>Life.init());
 </script>
 </body>
 </html>
