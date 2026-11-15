@@ -587,6 +587,15 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .net-pill.off::before{background:transparent;border:1.5px solid currentColor;width:5px;height:5px}
 .beta-tag[data-ch="alpha"]{color:#ff7a8f}
 .beta-tag[data-ch="gamma"]{color:var(--ok,#3ddc97)}
+.as-status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.as-status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ok,#3ddc97);flex:none}
+.as-status.busy::before{background:var(--am,#ffc247)}
+.as-list{display:flex;flex-direction:column;margin-top:10px}
+.as-item{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+.as-item .when{font-weight:600}
+.as-item .what{grid-column:1;color:var(--muted);font-size:12px;min-width:0;overflow-wrap:anywhere}
+.as-item .btns{grid-row:1/3;grid-column:2;display:flex;gap:6px}
+.as-item button.arm{border-color:var(--red);color:var(--red)}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -1007,6 +1016,13 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
             </div>
             <div id="impReport" class="imp-report" hidden></div>
           </div>
+          <div class="card" id="asCard">
+            <h3 id="asTitle"></h3>
+            <p class="sub" style="margin-bottom:8px" id="asSub"></p>
+            <div class="as-status" id="asStatus"></div>
+            <div class="actions" style="margin-top:8px"><button id="asNow"></button></div>
+            <div id="asList" class="as-list"></div>
+          </div>
           <div class="card" style="grid-column:1/-1">
             <h3 data-t="legacy"></h3>
             <p class="sub" style="margin-bottom:8px" data-t="legacySub"></p>
@@ -1088,7 +1104,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.4-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.5-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1140,7 +1156,7 @@ S.mission = Object.assign(structuredClone(DEFAULT.mission), S.mission||{});
 // Profilbillede: nye brugere starter neutralt (forbogstav). Eksisterende installationer fra før
 // profilbilleder fandtes (dvs. ejerens egen) beholder den oprindelige buste.
 { const saved=store.get(K.state,null); if(saved && (!saved.profile || saved.profile.avatar===undefined)) S.profile=Object.assign({},S.profile,{avatar:"avatar.png"}); S.profile=Object.assign({name:"",avatar:""},S.profile); }
-const save = () => { store.set(K.state,S); updateBadge(); window.__moments&&window.__moments.scan(); };
+const save = () => { store.set(K.state,S); updateBadge(); window.__moments&&window.__moments.scan(); window.__autosave&&window.__autosave.touch(); };
 
 let lang = store.get(K.lang,"da");
 
@@ -2506,7 +2522,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -2516,8 +2532,95 @@ function renderSettings(){
   const lk=legacyKeys();
   $("legacyTable").innerHTML = lk.length? `<tr><th>${t().key}</th><th class="num">${t().size}</th></tr>`+lk.map(([k,n])=>`<tr><td class="mono" style="font-size:13px;word-break:break-all">${esc(k)}</td><td class="num mono">${n<1024?n+" B":(n/1024).toFixed(1)+" KB"}</td></tr>`).join("") : `<tr><td class="empty">${t().noLegacy}</td></tr>`;
   $("legacyExp").style.display = lk.length?"":"none";
-  Beta.render();
+  Beta.render(); AutoSave.paint();
 }
+/* ---------- Auto-gem ----------
+   Alt gemmes allerede løbende. Auto-gem tager desuden kopier af alle dine data
+   (efter ændringer, når appen lukkes, og én pr. dag), så du kan gå tilbage, hvis noget går galt.
+   Kopierne ligger kun på telefonen (IndexedDB). Ufærdige tekster i felter huskes også. */
+const AutoSave=(()=>{
+  const L=(da,en)=>lang==="en"?en:da;
+  const SKIP=new Set(["redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave"]);
+  const KEEP_RECENT=20, KEEP_DAYS=14, KEEP_MANUAL=10;
+  const DRAFT_IDS=["fbText","chCoachIn","paIn","chRoomIn","gratIn","kTitle","wNote"];
+  let timer=null, lastHash="", lastAt=0, dbp=null, mem=[];
+  // --- lager: IndexedDB, ellers localStorage (fx i forhåndsvisning)
+  function db(){ if(dbp) return dbp; dbp=new Promise(res=>{ try{ const r=indexedDB.open("redhue-autosave",1);
+      r.onupgradeneeded=()=>r.result.createObjectStore("snaps",{keyPath:"id"}); r.onsuccess=()=>res(r.result); r.onerror=()=>res(null); }catch(e){ res(null); } }); return dbp; }
+  async function all(){ const d=await db(); if(!d) return store.get("redhue_autosave",mem);
+    return new Promise(res=>{ try{ const q=d.transaction("snaps").objectStore("snaps").getAll(); q.onsuccess=()=>res((q.result||[]).sort((a,b)=>b.at-a.at)); q.onerror=()=>res([]); }catch(e){ res([]); } }); }
+  async function put(sn){ const d=await db(); if(!d){ const l=[sn,...store.get("redhue_autosave",mem)].slice(0,5); mem=l; store.set("redhue_autosave",l); return; }
+    return new Promise(res=>{ try{ const t=d.transaction("snaps","readwrite"); t.objectStore("snaps").put(sn); t.oncomplete=res; t.onerror=res; }catch(e){ res(); } }); }
+  async function del(ids){ const d=await db(); if(!d||!ids.length) return;
+    return new Promise(res=>{ try{ const t=d.transaction("snaps","readwrite"); ids.forEach(i=>t.objectStore("snaps").delete(i)); t.oncomplete=res; t.onerror=res; }catch(e){ res(); } }); }
+  // --- kopier
+  function collect(){ const data={}; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith("redhue_")&&!SKIP.has(k)) data[k]=localStorage.getItem(k); } }catch(e){} return data; }
+  const hash=str=>{ let h=5381; for(let i=0;i<str.length;i++) h=(h*33+str.charCodeAt(i))|0; return String(h>>>0); };
+  function summary(data){ try{ const st=JSON.parse(data[K.state]||"{}"); const inc=(st.wallet||[]).filter(w=>w.type==="in").reduce((a,w)=>a+(+w.amount||0),0);
+      return {name:(st.profile&&st.profile.name)||"", wallet:(st.wallet||[]).length, pipeline:(st.kanban||[]).length, income:inc}; }catch(e){ return {}; } }
+  async function snap(reason,force){
+    const data=collect(); const str=JSON.stringify(data); const h=hash(str);
+    if(!force&&h===lastHash) return null;
+    if(!Object.keys(data).length) return null;
+    const sn={id:Date.now()+"-"+Math.random().toString(36).slice(2,6),at:Date.now(),reason,hash:h,size:str.length,sum:summary(data),version:VERSION,data};
+    await put(sn); lastHash=h; lastAt=sn.at; await prune(); paint(); return sn;
+  }
+  async function prune(){ const l=await all(); const keep=new Set(), days=new Set(); let manual=0;
+    l.forEach((sn,i)=>{ const day=new Date(sn.at).toISOString().slice(0,10), age=(Date.now()-sn.at)/864e5;
+      if(i<KEEP_RECENT) keep.add(sn.id);
+      if(age<=KEEP_DAYS&&!days.has(day)){ days.add(day); keep.add(sn.id); }
+      if((sn.reason==="manual"||sn.reason==="before-restore")&&manual<KEEP_MANUAL){ manual++; keep.add(sn.id); } });
+    await del(l.filter(sn=>!keep.has(sn.id)).map(sn=>sn.id)); }
+  function touch(){ clearTimeout(timer); const st=$("asStatus"); if(st){ st.classList.add("busy"); st.textContent=L("Gemmer kopi…","Saving copy…"); } timer=setTimeout(()=>snap("auto"),20000); }
+  async function restore(id){
+    const l=await all(); const sn=l.find(x=>x.id===id); if(!sn) return toast(L("Kopien findes ikke længere","That copy no longer exists"));
+    await snap("before-restore",true);
+    try{ const rm=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith("redhue_")&&!SKIP.has(k)&&!(k in sn.data)) rm.push(k); }
+      rm.forEach(k=>localStorage.removeItem(k)); Object.entries(sn.data).forEach(([k,v])=>localStorage.setItem(k,v)); }catch(e){ return toast(L("Kunne ikke gendanne: ","Couldn't restore: ")+e.message); }
+    store.set("redhue_restored",sn.at); location.reload();
+  }
+  // --- visning
+  const REASON={auto:["efter ændring","after a change"],daily:["dagens kopi","daily copy"],close:["da appen lukkede","when the app closed"],manual:["gemt af dig","saved by you"],"before-restore":["før gendannelse","before restore"]};
+  const fmt=t=>new Date(t).toLocaleString(lang==="en"?"en-GB":"da-DK",{timeZone:TZ(),weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+  let armed="", showAll=false;
+  async function paint(){
+    if(!$("asCard")) return;
+    $("asTitle").textContent=L("Auto-gem","Auto-save");
+    $("asSub").textContent=L("Alt gemmes løbende på telefonen. Her ligger også kopier fra de sidste 14 dage, så du kan gå tilbage.","Everything is saved on your phone as you go. Copies from the last 14 days are kept here so you can go back.");
+    $("asNow").textContent=L("Gem en kopi nu","Save a copy now");
+    const l=await all(); const st=$("asStatus"); clearTimeout(timer&&0);
+    st.classList.remove("busy");
+    st.textContent=l.length?L(`Senest gemt ${fmt(l[0].at)} · ${l.length} kopier`,`Last saved ${fmt(l[0].at)} · ${l.length} copies`):L("Ingen kopier endnu – den første tages om lidt","No copies yet – the first one is taken shortly");
+    $("asList").innerHTML=l.slice(0,showAll?50:4).map(sn=>{ const s=sn.sum||{}, r=REASON[sn.reason]||REASON.auto;
+      const what=[L(r[0],r[1]), s.wallet!=null?L(`${s.wallet} ${s.wallet===1?"post":"poster"} i wallet`,`${s.wallet} wallet entries`):"", s.pipeline!=null?L(`${s.pipeline} i pipeline`,`${s.pipeline} in pipeline`):"", fmtSize(sn.size)].filter(Boolean).join(" · ");
+      return `<div class="as-item"><span class="when">${esc(fmt(sn.at))}</span><span class="btns"><button class="small" data-as-dl="${esc(sn.id)}">${esc(L("Hent","Get"))}</button><button class="small${armed===sn.id?" arm":""}" data-as-rs="${esc(sn.id)}">${esc(armed===sn.id?L("Tryk igen","Tap again"):L("Gendan","Restore"))}</button></span><span class="what">${esc(what)}</span></div>`; }).join("")+(l.length>4?`<button class="small" data-as-more style="margin-top:8px;align-self:flex-start">${esc(showAll?L("Vis færre","Show fewer"):L(`Vis alle ${l.length}`,`Show all ${l.length}`))}</button>`:"");
+  }
+  // --- kladder: ufærdig tekst i felter huskes i 24 timer
+  function drafts(){
+    const D=store.get("redhue_drafts",{}); const now=Date.now();
+    DRAFT_IDS.forEach(id=>{ const el=$(id); const d=D[id]; if(el&&d&&!el.value&&now-d.at<864e5) el.value=d.v; });
+    setInterval(()=>{ const cur=store.get("redhue_drafts",{}); let ch=false;
+      DRAFT_IDS.forEach(id=>{ const el=$(id); if(!el) return; const v=el.value||"";
+        if(v.trim()){ if(!cur[id]||cur[id].v!==v){ cur[id]={v,at:Date.now()}; ch=true; } } else if(cur[id]){ delete cur[id]; ch=true; } });
+      if(ch) store.set("redhue_drafts",cur); },2000);
+  }
+  function init(){
+    $("asNow").onclick=async()=>{ const sn=await snap("manual",true); toast(sn?L("Kopi gemt ✓","Copy saved ✓"):L("Intet at gemme endnu","Nothing to save yet")); };
+    $("asList").onclick=async e=>{ if(e.target.closest("[data-as-more]")){ showAll=!showAll; paint(); return; } const d=e.target.closest("[data-as-dl]"), r=e.target.closest("[data-as-rs]");
+      if(d){ const sn=(await all()).find(x=>x.id===d.dataset.asDl); if(!sn) return; const data={}; Object.entries(sn.data).forEach(([k,v])=>{ try{ data[k]=JSON.parse(v); }catch{ data[k]=v; } });
+        download(`redhue-kopi-${new Date(sn.at).toISOString().slice(0,16).replace(":","")}.json`,{app:"REDHUE",v:3,exported:new Date(sn.at).toISOString(),state:data[K.state]||{},agentHistory:data[K.hist]||[],all:data}); return; }
+      if(r){ const id=r.dataset.asRs; if(armed!==id){ armed=id; paint(); setTimeout(()=>{ if(armed===id){ armed=""; paint(); } },4000); return; } armed=""; restore(id); } };
+    const restored=store.get("redhue_restored",0); if(restored){ store.set("redhue_restored",0); setTimeout(()=>toast(L("Gendannet til ","Restored to ")+fmt(restored)+" ✓"),700); }
+    // daglig kopi + kopi når appen lukkes/skjules
+    all().then(l=>{ if(l[0]){ lastHash=l[0].hash; lastAt=l[0].at; } const today0=new Date().toISOString().slice(0,10);
+      if(!l.some(x=>new Date(x.at).toISOString().slice(0,10)===today0)) setTimeout(()=>snap("daily",true),3000); paint(); });
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"){ clearTimeout(timer); snap("close"); } });
+    addEventListener("pagehide",()=>{ clearTimeout(timer); snap("close"); });
+    drafts();
+  }
+  window.__autosave={touch};
+  return {init,paint,snap,all,restore};
+})();
 /* ---------- Offline først ----------
    Alt i appen gemmes på telefonen og virker uden net. Det, der kræver server
    (AI, feedback), lægges i en kø og sendes automatisk, når nettet er tilbage. */
@@ -2904,7 +3007,7 @@ __safeRun("render",()=>renderAll());
 __safeRun("4D",()=>D4.apply());
 __safeRun("tale",()=>Talk.refresh());
 __safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
-__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init());
+__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init()); __safeRun("auto-gem",()=>AutoSave.init());
 </script>
 </body>
 </html>
