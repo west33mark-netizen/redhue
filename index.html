@@ -596,6 +596,13 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
 .as-item .what{grid-column:1;color:var(--muted);font-size:12px;min-width:0;overflow-wrap:anywhere}
 .as-item .btns{grid-row:1/3;grid-column:2;display:flex;gap:6px}
 .as-item button.arm{border-color:var(--red);color:var(--red)}
+.vo-auto{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:14px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;padding:7px 12px;font-size:13px;min-height:0}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--vi);color:#fff}
+.vo-quiet{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--muted)}
+.vo-quiet input{width:auto}
 .beta-tag{display:inline-block;vertical-align:middle;margin-left:8px;font:700 9px/1 system-ui,sans-serif;letter-spacing:.08em;padding:4px 6px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--am,#ffc247);-webkit-text-fill-color:currentColor}
 .fb-sheet{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
 .fb-sheet[hidden],#btInbox[hidden]{display:none!important}
@@ -991,7 +998,10 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <div class="card">
             <h3 data-t="voT"></h3>
             <p class="sub" style="margin-bottom:6px" id="voSub"></p>
-            <div class="actions" style="margin-top:0"><button id="voBtn" class="primary"></button><button id="voAutoBtn"></button></div>
+            <div class="actions" style="margin-top:0"><button id="voBtn" class="primary"></button></div>
+            <div class="vo-auto"><span id="voAutoLbl"></span><div class="seg" id="voAutoSeg" role="group"></div></div>
+            <p class="sub" id="voAutoHint" style="margin:6px 0 0;font-size:13px"></p>
+            <label class="vo-quiet"><input type="checkbox" id="voQuiet"> <span id="voQuietL"></span></label>
             <div id="voRows"></div>
             <div class="vo-rate"><span data-t="voRate"></span><input type="range" id="voRate" min="0.7" max="1.1" step="0.05"><span class="mono" id="voRateV"></span></div>
           </div>
@@ -1104,7 +1114,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "0.9.5-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "0.9.6-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1427,7 +1437,7 @@ function money(n, withCur=true){
   return withCur ? `${s} ${cur()}` : s;
 }
 function fmtDate(d, opts={day:"2-digit",month:"short"}){ const iso=typeof d==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(d); return new Date(iso?d+"T12:00:00Z":d).toLocaleDateString(lang==="da"?"da-DK":"en-GB",{...opts,timeZone:iso?"UTC":TZ()}); }
-function toast(msg){ const el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),1700); }
+function toast(msg){ try{ if(typeof Voice!=="undefined") Voice.autoSay(msg,"guide","all"); }catch(e){} const el=$("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),1700); }
 function logAct(type, text){ S.log.unshift({type,text,at:Date.now()}); S.log = S.log.slice(0,40); }
 function addXP(n){
   const before = level(); S.xp += n; save();
@@ -1590,7 +1600,8 @@ $("wType").onchange=fillCats;
 const Voice=(()=>{
   const KEY="redhue_voice", ss=window.speechSynthesis;
   const ok=!!(ss&&window.SpeechSynthesisUtterance);
-  const cfg=()=>Object.assign({on:true,rate:.9,voices:{}},store.get(KEY,{}));
+  const cfg=()=>{ const c=Object.assign({on:true,rate:.9,voices:{},auto:"answers",quiet:true},store.get(KEY,{}));
+    if(c.auto===true) c.auto="answers"; if(c.auto===false) c.auto="off"; if(!["off","answers","all"].includes(c.auto)) c.auto="answers"; return c; };
   const TONE={mom:{pitch:1.08},dad:{pitch:.86},mentor:{pitch:.98},coach:{pitch:1},guide:{pitch:1.04}};
   const FEM=/female|kvinde|woman|frau|sara|helle|naja|ida|christel|pernille|freja|tilde|zira|samantha|karen|susan|serena|tessa|fiona|victoria|moira|allison|ava|kate|jenny|aria|emma/i;
   const MAL=/male|mand|man\b|magnus|jeppe|mads|carsten|daniel|alex|fred|tom|george|guy|ryan|david|mark|thomas|lee|oliver/i;
@@ -1626,21 +1637,61 @@ const Voice=(()=>{
   document.addEventListener("click",e=>{ const b=e.target.closest("[data-say]"); if(!b) return; e.stopPropagation();
     const box=b.closest(".ch-msg,.gd-m,.os-w"); if(!box) return; const c=box.cloneNode(true); c.querySelectorAll(".say,.nt,.lbl,.who").forEach(x=>x.remove());
     speak(c.innerHTML,b.dataset.say,b); },true);
+  /* ---------- Automatisk oplæsning ----------
+     Niveauer: "off" · "answers" (coach, mor/far, guide) · "all" (også beskeder, fejringer og dagens hilsen).
+     Taler aldrig i stilletid (22–07), aldrig når appen er skjult, og venter på første tryk
+     (telefoner tillader ikke lyd, før man har rørt skærmen). Automatiske beskeder venter i kø
+     og afbryder ikke hinanden; tryk på 🔊 eller Tal afbryder altid. */
+  let unlocked=false; const q=[]; let qBusy=false;
+  const quietNow=()=>{ if(!cfg().quiet) return false; const h=nowHour(); return h>=22||h<7; };
+  const level=()=>ok&&cfg().on?cfg().auto:"off";
+  function wants(kind){ const l=level(); if(l==="off") return false; return kind==="answer"?true:l==="all"; }
+  function pump(){
+    if(qBusy||!q.length||!unlocked||document.hidden) return;
+    if(ss.speaking||ss.pending||curBtn){ setTimeout(pump,800); return; }
+    const it=q.shift(); qBusy=true; const before=current;
+    speak(it.text,it.role);
+    const u=current; if(!u||u===before){ qBusy=false; setTimeout(pump,200); return; }
+    const done=()=>{ qBusy=false; setTimeout(pump,350); }; const prev=u.onend; u.onend=u.onerror=()=>{ try{ prev&&prev(); }catch(e){} done(); };
+  }
+  function autoSay(text,role="mentor",kind="answer"){
+    if(!wants(kind)||quietNow()) return false;
+    const s=clean(text); if(!s) return false;
+    if(q.some(x=>x.s===s)) return false;
+    if(kind!=="answer"&&q.length>=3) return false;
+    if(kind==="answer"){ for(let i=q.length-1;i>=0;i--) if(q[i].kind!=="answer") q.splice(i,1); }
+    q.push({text,role,kind,s}); setTimeout(pump,60); return true;
+  }
+  const unlock=()=>{ if(unlocked) return; unlocked=true;
+    try{ if(ok){ const u=new SpeechSynthesisUtterance(" "); u.volume=0; ss.speak(u); } }catch(e){}
+    setTimeout(pump,250); };
+  ["pointerdown","keydown","touchstart"].forEach(ev=>addEventListener(ev,unlock,{once:true,capture:true,passive:true}));
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden) q.length=0; });
+  // Dagens hilsen fra mor/far/mentor – én gang om dagen ved første tryk
+  function daily(){ if(!wants("all")) return; const k="redhue_voice_day"; if(store.get(k,"")===today()) return;
+    try{ const lb=Parent.label(); const n=Parent.note(); if(!n) return; store.set(k,today());
+      autoSay((lang==="en"?"Good to see you. ":"Godt at se dig. ")+n+" – "+lb.name, Parent.cfg?Parent.cfg().role:"mom","all"); }catch(e){} }
+  const pname=()=>{ try{ return Parent.label().name; }catch(e){ return lang==="en"?"mom":"mor"; } };
   function renderSettings(){
     const L=t(), c=cfg(), v=forLang();
     $("voSub").textContent=ok&&all().length?L.voSubOk(v.length):L.voSubNone;
     $("voBtn").textContent=c.on?L.voOn:L.voOff; $("voBtn").classList.toggle("primary",c.on); $("voBtn").disabled=!ok;
-    $("voAutoBtn").textContent=c.auto?L.voAutoOn:L.voAutoOff; $("voAutoBtn").classList.toggle("primary",!!c.auto); $("voAutoBtn").disabled=!ok||!c.on;
+    const LL=(da,en)=>lang==="en"?en:da;
+    $("voAutoLbl").textContent=LL("Læs automatisk op","Read aloud automatically");
+    $("voAutoSeg").innerHTML=[["off",LL("Fra","Off")],["answers",LL("Svar","Replies")],["all",LL("Alt","Everything")]].map(([k,l])=>`<button type="button" data-voauto="${k}" aria-pressed="${c.auto===k}" ${!ok||!c.on?"disabled":""}>${esc(l)}</button>`).join("");
+    $("voAutoHint").textContent=c.auto==="off"?LL("Appen taler kun, når du trykker 🔊 eller Tal.","The app only speaks when you tap 🔊 or Talk."):c.auto==="answers"?LL("Svar fra coach, mor/far og guiden læses op af sig selv.","Replies from the coach, mom/dad and the guide are read aloud."):LL("Også beskeder, fejringer og en hilsen fra "+pname()+" hver dag.","Also messages, celebrations and a daily greeting from "+pname()+".");
+    $("voQuiet").checked=c.quiet!==false; $("voQuietL").textContent=LL("Stille kl. 22–07","Quiet 22–07");
     $("voRate").value=c.rate; $("voRateV").textContent=(+c.rate).toFixed(2)+"×";
     $("voRows").innerHTML=!ok||!all().length?"":["mom","dad","mentor","coach","guide"].map(r=>`<div class="vo-row"><span>${esc(L.voWho[r])}</span><select data-vo="${r}"><option value="">${esc(L.voAuto)}${auto(r)?" · "+esc(auto(r).name):""}</option>${v.map(x=>`<option value="${esc(x.voiceURI)}" ${c.voices[r]===x.voiceURI?"selected":""}>${esc(x.name)}</option>`).join("")}</select><button class="small" data-votest="${r}">${esc(L.voTest)}</button></div>`).join(""); }
   $("voBtn").onclick=()=>{ const c=cfg(); c.on=!c.on; store.set(KEY,c); stop(); renderSettings(); if(window.Talk) Talk.refresh(); };
-  $("voAutoBtn").onclick=()=>{ const c=cfg(); c.auto=!c.auto; store.set(KEY,c); renderSettings(); };
+  $("voAutoSeg").onclick=e=>{ const b=e.target.closest("[data-voauto]"); if(!b) return; const c=cfg(); c.auto=b.dataset.voauto; store.set(KEY,c); renderSettings(); if(c.auto!=="off"){ unlocked=true; autoSay(lang==="en"?"Automatic reading is on.":"Automatisk oplæsning er slået til.","guide","answer"); } };
+  $("voQuiet").onchange=()=>{ const c=cfg(); c.quiet=$("voQuiet").checked; store.set(KEY,c); };
   $("voRate").oninput=()=>{ const c=cfg(); c.rate=+$("voRate").value; store.set(KEY,c); $("voRateV").textContent=c.rate.toFixed(2)+"×"; };
   $("voRows").addEventListener("change",e=>{ const s=e.target.closest("[data-vo]"); if(!s) return; const c=cfg(); if(s.value) c.voices[s.dataset.vo]=s.value; else delete c.voices[s.dataset.vo]; store.set(KEY,c); });
   $("voRows").addEventListener("click",e=>{ const b=e.target.closest("[data-votest]"); if(b) speak(t().voSample,b.dataset.votest,b); });
   if(ok&&ss.addEventListener) ss.addEventListener("voiceschanged",()=>{ if(current==="settings") renderSettings(); });
   addEventListener("pagehide",stop); document.addEventListener("visibilitychange",()=>{ if(document.hidden) stop(); });
-  return { speak, stop, btn, renderSettings, clean, available:()=>ok, on:()=>cfg().on, auto:()=>ok&&cfg().on&&!!cfg().auto };
+  return { speak, stop, btn, renderSettings, clean, available:()=>ok, on:()=>cfg().on, auto:()=>wants("answer")&&!quietNow(), autoSay, daily, level };
 })();
 
 /* ---------- Tryghed: SOS, frivillig positionsdeling, andre med appen, find mine enheder ----------
@@ -1873,7 +1924,7 @@ const Parent=(()=>{
     try{ const r=await fetch(COACH_API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({license:store.get(K.lic,""),lang,persona:cfg(),messages:store.get(HIST,[]).slice(-20),context:coachContext()})});
       const j=await r.json().catch(()=>({})); if(r.ok&&j.text) text=j.text; else err=j.error||"default"; }catch{ err="network"; }
     busy=false; const h2=store.get(HIST,[]);
-    if(text){ h2.push({role:"assistant",content:text}); store.set(HIST,h2.slice(-30)); if(Voice.auto()) setTimeout(()=>Voice.speak(md(text),cfg().role),50); } else { h2.pop(); store.set(HIST,h2); $("paIn").value=q; toast(t().errors[err]||t().errors.default); }
+    if(text){ h2.push({role:"assistant",content:text}); store.set(HIST,h2.slice(-30)); Voice.autoSay(md(text),cfg().role,"answer"); } else { h2.pop(); store.set(HIST,h2); $("paIn").value=q; toast(t().errors[err]||t().errors.default); }
     if(current==="chat") render(); }
   $("paForm").onsubmit=e=>{ e.preventDefault(); ask($("paIn").value); };
   $("paIn").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!matchMedia("(max-width:860px)").matches){ e.preventDefault(); $("paForm").requestSubmit(); } });
@@ -1936,7 +1987,7 @@ const Moments=(()=>{ const KEY="redhue_moments"; let queue=[], showing=false, ti
     if(!showing) next(); }
   function next(){ const id=queue.shift(); if(!id){ showing=false; return; } showing=true;
     const base=id.split("-")[0], M=t().mom, [em,title,txt]=M[base];
-    $("momEm").textContent=em; $("momT").textContent=title; $("momP").textContent=txt;
+    $("momEm").textContent=em; $("momT").textContent=title; $("momP").textContent=txt; try{ Voice.autoSay(title+". "+txt,(Parent.cfg?Parent.cfg().role:"mom"),"all"); }catch(e){}
     const acts=[];
     if(base==="kind") acts.push(`<button class="primary" data-mom="one">${esc(M.one)}</button>`);
     else if(hasLic()) acts.push(`<button data-mom="share" data-txt="${esc(em+" "+title)}">${esc(M.share)}</button>`);
@@ -2085,7 +2136,7 @@ const Guide = (()=>{
   }
 
   // Visning
-  function say(html,btns=[],keep){ const s=st(); s.log.push({b:1,h:html,a:btns}); s.log=s.log.slice(-40); save(s); render(); if(Voice.auto()&&!$("gd").hidden) Voice.speak(html,"guide"); }
+  function say(html,btns=[],keep){ const s=st(); s.log.push({b:1,h:html,a:btns}); s.log=s.log.slice(-40); save(s); render(); if(!$("gd").hidden) Voice.autoSay(html,"guide","answer"); }
   function me(txt){ const s=st(); s.log.push({b:0,h:esc(txt)}); s.log=s.log.slice(-40); save(s); render(); }
   function render(){
     const s=st(), el=$("gdList");
@@ -2226,7 +2277,7 @@ async function coachAsk(q){
     const j=await r.json().catch(()=>({})); if(r.ok&&j.text) text=j.text; else err=j.error||"default";
   }catch{ err="network"; }
   chBusy=false;
-  if(text){ const h2=store.get(K_COACH,[]); h2.push({role:"assistant",content:text}); store.set(K_COACH,h2.slice(-30)); addXP(1); if(Voice.auto()) setTimeout(()=>Voice.speak(md(text),"coach"),50); }
+  if(text){ const h2=store.get(K_COACH,[]); h2.push({role:"assistant",content:text}); store.set(K_COACH,h2.slice(-30)); addXP(1); Voice.autoSay(md(text),"coach","answer"); }
   else { const h2=store.get(K_COACH,[]); h2.pop(); store.set(K_COACH,h2); $("chCoachIn").value=q; toast(t().errors[err]||t().errors.default); }
   if(current==="chat") renderCoach();
 }
@@ -2522,7 +2573,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -3007,7 +3058,7 @@ __safeRun("render",()=>renderAll());
 __safeRun("4D",()=>D4.apply());
 __safeRun("tale",()=>Talk.refresh());
 __safeRun("priser",()=>{ if(S.crypto.length && (!S.pricesAt || Date.now()-S.pricesAt>10*60e3)) refreshPrices(); });
-__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init()); __safeRun("auto-gem",()=>AutoSave.init());
+__safeRun("kanal",()=>document.querySelectorAll("[data-channel]").forEach(el=>{ el.textContent=CHANNEL.toUpperCase(); el.dataset.ch=CHANNEL; })); __safeRun("opdatering",()=>Updater.init()); __safeRun("offline",()=>Net.init()); __safeRun("auto-gem",()=>AutoSave.init()); __safeRun("hilsen",()=>Voice.daily());
 </script>
 </body>
 </html>
