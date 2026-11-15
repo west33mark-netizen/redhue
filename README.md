@@ -157,3 +157,8 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - Uden net vises «📴 Offline». AI-kørsler og feedback lægges i kø (`redhue_outbox`) og sendes automatisk, når nettet er tilbage (AI-svar lander i Historik).
 - SOS virker uden internet: GPS-position i SMS'en, og 112 – begge går over telefonnettet.
 - Skrifttyper indlæses uden at blokere opstart og gemmes til offline brug. Appen beder browseren om at beskytte sine data mod oprydning.
+
+### Automatik
+- **Push til `redhue`** → kvalitetstjek → versionsstempel (så telefoner får «Ny version klar») → nøgler synkroniseres fra GitHub Secrets til Netlify → udgivelse → tjek at siden svarer. Fejler et trin, udgives intet, og GitHub mailer dig.
+- **Hver morgen** tjekker «Daglig helbredstjek», at siden og serveren svarer. Fejler den, mailer GitHub dig.
+- Nøgler ændres kun ét sted: GitHub → Settings → Secrets and variables → Actions.
