@@ -218,3 +218,6 @@ Agent nr. 5 under Agenter: thumbnails (16:9 og 9:16 med sikker zone), farver, sk
 - **Læring:** 👍/👎 på skitserne gemmes (seneste 12 af hver) og bruges i næste kørsel, så forslagene rammer din smag. Modellen selv ændres ikke.
 - **Skitser:** agenten svarer med en JSON-blok, som appen tegner som skitser med emoji som pladsholder for motivet. «PNG» gemmer i fuld størrelse (1280×720 eller 1080×1920).
 - Regler i prompten: højst 4 ord, høj kontrast, ingen rigtige ansigter, kendte figurer eller logoer, ingen løgnagtig clickbait.
+
+## Rettigheder
+© Mark. Alle rettigheder forbeholdes. Koden er ikke open source, og der er ikke givet nogen licens til at bruge, kopiere eller videresælge den.
