@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REDHUE – Privatliv og betavilkår</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070712">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{--ink:#070712;--line:rgba(255,255,255,.11);--text:#f2f1f8;--muted:#a3a1b8;--vi:#9b6bff;--am:#ffc247}
+*{box-sizing:border-box}
+html,body{background:var(--ink);color:var(--text);margin:0}
+body{font:17px/1.65 Georgia,'Iowan Old Style',serif;padding:0 16px}
+main{max-width:68ch;margin:0 auto;padding:40px 0 80px}
+h1{font:700 34px/1.15 system-ui,sans-serif;letter-spacing:-.02em;margin:0 0 6px}
+h2{font:700 21px/1.3 system-ui,sans-serif;margin:40px 0 8px}
+h3{font:600 17px/1.3 system-ui,sans-serif;margin:24px 0 4px}
+p,li{color:#dddbe8}
+.meta{color:var(--muted);font:14px/1.5 system-ui,sans-serif}
+.draft{border:1px dashed var(--am);color:var(--am);border-radius:10px;padding:10px 14px;font:14px/1.5 system-ui,sans-serif;margin:20px 0}
+.ph{background:rgba(255,194,71,.14);color:var(--am);padding:0 4px;border-radius:4px;font-family:system-ui,sans-serif;font-size:.92em}
+table{border-collapse:collapse;width:100%;font:14px/1.45 system-ui,sans-serif;margin:10px 0}
+th,td{text-align:left;vertical-align:top;border-top:1px solid var(--line);padding:9px 8px 9px 0}
+th{color:var(--muted);font-weight:600}
+.tbl{overflow-x:auto}
+a{color:#c9b6ff}
+nav{display:flex;gap:16px;flex-wrap:wrap;font:15px system-ui,sans-serif;margin:18px 0 0}
+:focus-visible{outline:2px solid var(--vi);outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+  <a href="./" class="meta" style="text-decoration:none">← REDHUE</a>
+  <h1 style="margin-top:18px">Privatliv og betavilkår</h1>
+  <p class="meta">Gælder REDHUE version 0.9 (beta). Senest opdateret <span class="ph">[dato]</span>.</p>
+  <div class="draft" id="draftNote">Udkast. Felter markeret med gult skal udfyldes og gennemgås, før appen gives til testere.</div>
+  <nav><a href="#privatliv">Privatlivspolitik</a><a href="#vilkaar">Betavilkår</a><a href="#kontakt">Kontakt</a></nav>
+
+  <h2 id="privatliv">Privatlivspolitik</h2>
+  <h3>Dataansvarlig</h3>
+  <p><span class="ph">[Navn / virksomhed]</span>, CVR <span class="ph">[CVR-nr.]</span>, <span class="ph">[adresse]</span>. Mail: <span class="ph">[kontakt-mail]</span>.</p>
+
+  <h3>Det meste bliver på din telefon</h3>
+  <p>Mission, pipeline, wallet, portefølje, produkter, profilbillede, nødkontakter og indstillinger gemmes kun i din browser på din egen enhed. Vi kan ikke se dem. Sletter du appens data eller bruger «Nulstil alt», er de væk. Du kan selv tage en sikkerhedskopi under Indstillinger.</p>
+
+  <h3>Det, der sendes til vores server</h3>
+  <div class="tbl"><table>
+    <tr><th>Funktion</th><th>Hvad</th><th>Hvor længe</th></tr>
+    <tr><td>Licens og beta-kode</td><td>Nøglen sendes med for at tjekke Pro-adgang. Køb tjekkes hos Gumroad.</td><td>Ikke gemt hos os; tjekket huskes op til 6 timer i serverens hukommelse.</td></tr>
+    <tr><td>AI-agenter, coach og mor/far</td><td>Det, du skriver, og de tal fra appen, du vælger at give med (fx indtægt og streak). Sendes til Anthropic for at lave svaret.</td><td>Ikke gemt hos os. Samtalen gemmes kun på din enhed.</td></tr>
+    <tr><td>Fællesskabs-chat</td><td>Dit visningsnavn, dine beskeder, sejre og reaktioner, knyttet til et anonymt id afledt af licensen.</td><td>De nyeste 500 beskeder; du kan selv slette dine.</td></tr>
+    <tr><td>Del position og SOS</td><td>Din position, tidspunkt og evt. batteriniveau, kun mens du aktivt deler.</td><td>Til delingen stopper eller udløber (1, 4 eller 24 timer), derefter slettet.</td></tr>
+    <tr><td>Find mine enheder</td><td>Enhedsnavn, seneste position og batteri, kun hvis du slår det til.</td><td>Til du slår det fra eller fjerner enheden.</td></tr>
+    <tr><td>Feedback</td><td>Din tekst, valgfri mail, version, side, seneste fejlbeskeder og browsertype. Ingen IP-adresse gemmes.</td><td>Til betaperioden slutter, dog højst <span class="ph">[6 måneder]</span>.</td></tr>
+  </table></div>
+
+  <h3>Position</h3>
+  <p>REDHUE henter kun din position, når appen er åben, og du selv har startet en deling, SOS eller Find mine enheder. Der er ingen skjult sporing. Andre kan kun se din position via et link eller en kode, som du selv giver dem, og du kan stoppe delingen når som helst.</p>
+
+  <h3>Retsgrundlag</h3>
+  <p><span class="ph">[Gennemgå: fx GDPR art. 6, stk. 1, litra b (levering af tjenesten du har bedt om) for licens, chat, AI og deling; litra f (legitim interesse i at rette fejl) for feedback og fejlrapporter.]</span></p>
+
+  <h3>Databehandlere</h3>
+  <ul>
+    <li>Netlify, Inc. (hosting og lagring) – USA. <span class="ph">[Overførselsgrundlag, fx EU-US Data Privacy Framework / standardkontraktbestemmelser]</span></li>
+    <li>Anthropic PBC (AI-svar) – USA. <span class="ph">[Overførselsgrundlag]</span></li>
+    <li>Gumroad, Inc. (betaling og licens) – USA. <span class="ph">[Overførselsgrundlag]</span></li>
+  </ul>
+  <p>REDHUE deler ingen data med sundhedsvæsenet, med myndigheder eller med annoncører, og sælger ikke data.</p>
+
+  <h3>Dine rettigheder</h3>
+  <p>Du kan få indsigt i, rettet eller slettet de oplysninger, vi har om dig, og gøre indsigelse. Skriv til <span class="ph">[kontakt-mail]</span>. Du kan klage til Datatilsynet, datatilsynet.dk.</p>
+
+  <h2 id="vilkaar">Betavilkår</h2>
+  <ol>
+    <li><b>Det er en testudgave.</b> Funktioner kan ændre sig, gå i stykker eller forsvinde. Tag sikkerhedskopi af dine data under Indstillinger.</li>
+    <li><b>Beta-koder</b> giver Pro gratis til og med <span class="ph">28. februar 2027</span>. Koden er personlig og må ikke deles. Den kan lukkes ved misbrug.</li>
+    <li><b>Ikke en nødtjeneste.</b> SOS og positionsdeling virker kun med net, strøm og åben app. Ring altid 112 ved fare for liv og helbred.</li>
+    <li><b>Ingen sundheds- eller økonomirådgivning.</b> AI-coachen og mor/far er en AI, ikke en læge, psykolog eller rådgiver. Indtægtstal og mål er dine egne skøn, ikke et løfte.</li>
+    <li><b>Fællesskabet</b>: vær ordentlig. Ingen chikane, spam eller andres personoplysninger. Vi kan slette beskeder og lukke adgang.</li>
+    <li><b>Ansvar</b>: <span class="ph">[Ansvarsbegrænsning – gennemgå efter dansk ret og forbrugerregler]</span></li>
+    <li><b>Feedback</b> må vi bruge til at forbedre appen uden betaling.</li>
+  </ol>
+
+  <h2 id="kontakt">Kontakt</h2>
+  <p><span class="ph">[kontakt-mail]</span> · eller brug «Send feedback» i appen under Indstillinger.</p>
+</main>
+</body>
+</html>

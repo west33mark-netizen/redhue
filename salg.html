@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REDHUE – 90 dage til din første indtægt som faceless creator</title>
+<meta name="description" content="Daglig plan, pipeline fra idé til postet video, profit-overblik og AI-agenter til faceless creators på TikTok, Reels og Shorts.">
+<meta name="theme-color" content="#070712">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070712; --ink2:#0e0e1d; --glass:rgba(255,255,255,.05); --line:rgba(255,255,255,.11);
+  --text:#f2f1f8; --muted:#a3a1b8; --cy:#3ee8ff; --vi:#9b6bff; --ma:#ff4fd8; --ok:#3ddc97;
+  --crystal:linear-gradient(110deg,var(--cy),var(--vi) 50%,var(--ma));
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);scroll-behavior:smooth}
+body{color:var(--text);font-family:'Space Grotesk',system-ui,sans-serif;font-size:17px;line-height:1.55;background:var(--ink);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;filter:blur(70px);
+  background:radial-gradient(30% 26% at 8% 6%,rgba(62,232,255,.20),transparent 70%),radial-gradient(30% 28% at 92% 18%,rgba(255,79,216,.16),transparent 70%),radial-gradient(36% 30% at 60% 96%,rgba(155,107,255,.20),transparent 70%)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--cy);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* Top */
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.16em;font-size:17px;text-decoration:none}
+.logo i{width:11px;height:11px;border-radius:50%;background:var(--crystal);box-shadow:0 0 14px var(--vi)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:12px;font:inherit;font-weight:500;font-size:16px;text-decoration:none;border:1px solid var(--line);background:var(--glass);color:var(--text);cursor:pointer}
+.btn:hover{border-color:rgba(255,255,255,.28)}
+.btn.main{border:0;background:var(--crystal);color:#08081a;font-weight:700}
+.btn.main:hover{filter:brightness(1.08)}
+.btn.sm{padding:9px 16px;font-size:15px}
+[hidden]{display:none!important}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;padding:48px 0 72px}
+h1{font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.035em;font-weight:700;max-width:13ch}
+.lead{margin-top:22px;font-size:19px;color:var(--muted);max-width:52ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.price-note{margin-top:12px;font-size:14px;color:var(--muted)}
+
+.days{margin-top:44px;display:grid;grid-template-columns:repeat(30,1fr);gap:4px;max-width:560px}
+.days b{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,.07)}
+.days b.on{background:var(--crystal);background-size:3000% 100%;box-shadow:0 0 8px rgba(155,107,255,.35)}
+.days b.today{background:transparent;outline:2px solid var(--cy);outline-offset:-2px}
+.days-cap{margin-top:12px;font-size:14px;color:var(--muted);max-width:56ch}
+.days-cap strong{color:var(--text);font-weight:500}
+
+/* Phone */
+.phone{justify-self:center;width:300px;border-radius:44px;padding:12px;background:linear-gradient(160deg,#2a2a40,#0c0c18 40%,#1c1c2e);box-shadow:0 40px 90px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.08)}
+.screen{border-radius:34px;overflow:hidden;background:var(--ink);position:relative;padding:14px 14px 12px;min-height:600px;display:flex;flex-direction:column}
+.screen::before{content:"";position:absolute;inset:-30%;filter:blur(40px);background:radial-gradient(40% 30% at 10% 10%,rgba(62,232,255,.25),transparent 70%),radial-gradient(40% 30% at 90% 30%,rgba(255,79,216,.2),transparent 70%),radial-gradient(40% 30% at 50% 95%,rgba(155,107,255,.25),transparent 70%)}
+.screen>*{position:relative}
+.st{display:flex;justify-content:space-between;font:500 10px 'JetBrains Mono',monospace;color:var(--muted)}
+.clock{text-align:center;margin:18px 0 4px;font:600 62px/1 'JetBrains Mono',monospace;letter-spacing:-.05em;background:var(--crystal);-webkit-background-clip:text;background-clip:text;color:transparent}
+.date{text-align:center;font-size:13px}
+.greet{text-align:center;font-size:11px;color:var(--muted);margin-bottom:14px}
+.w{border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:16px;padding:10px 12px}
+.w .l{font-size:9px;color:var(--muted);letter-spacing:.06em}
+.w .n{font:600 16px 'JetBrains Mono',monospace;margin-top:3px}
+.wrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.mis{display:flex;gap:12px;align-items:center}
+.ring{width:54px;height:54px;flex:none}
+.pos{color:var(--ok)}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 6px;margin-top:16px}
+.app{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9px}
+.app span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:20px;border:1px solid var(--line);background:rgba(255,255,255,.06)}
+.dock{margin-top:auto;display:flex;justify-content:space-around;padding:8px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.dock span{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-size:18px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.phone-cap{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+
+/* Sections */
+section{padding:72px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.025em;max-width:22ch}
+.intro{margin-top:14px;color:var(--muted);max-width:60ch}
+.feats{display:grid;grid-template-columns:1fr 1fr;gap:44px 56px;margin-top:44px}
+.feat{padding-top:18px;border-top:2px solid var(--c)}
+.feat h3{font-size:21px;letter-spacing:-.01em}
+.feat p{margin-top:8px;color:var(--muted);max-width:48ch}
+.feat .eg{margin-top:14px;font:500 13px 'JetBrains Mono',monospace;color:var(--text);display:flex;flex-wrap:wrap;gap:6px}
+.feat .eg span{padding:4px 9px;border-radius:7px;background:var(--glass);border:1px solid var(--line)}
+
+.plans{display:grid;grid-template-columns:1fr 1.15fr;gap:20px;margin-top:40px;align-items:stretch}
+.plan{border:1px solid var(--line);border-radius:22px;padding:28px;background:var(--glass)}
+.plan.pro{border:0;position:relative;background:linear-gradient(var(--ink2),var(--ink2)) padding-box,var(--crystal) border-box;border:1.5px solid transparent}
+.plan h3{font-size:22px}
+.plan .p{font:600 34px 'JetBrains Mono',monospace;margin:10px 0 2px;letter-spacing:-.03em}
+.plan .pn{font-size:14px;color:var(--muted)}
+.plan ul{list-style:none;margin:22px 0 26px;display:grid;gap:10px}
+.plan li{display:grid;grid-template-columns:20px 1fr;gap:8px}
+.plan li::before{content:"✓";color:var(--ok)}
+.plan .btn{width:100%}
+.agents{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:-8px 0 26px}
+.agents div{font-size:14px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.agents b{display:block;font-weight:500}
+.agents span{color:var(--muted);font-size:13px}
+
+.data{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.data p+p{margin-top:14px}
+.data .muted{color:var(--muted)}
+
+details{border-bottom:1px solid var(--line);padding:18px 0}
+details:first-of-type{margin-top:28px;border-top:1px solid var(--line)}
+summary{cursor:pointer;font-size:18px;font-weight:500;list-style:none;display:flex;justify-content:space-between;gap:20px}
+summary::after{content:"+";color:var(--muted);font-size:22px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin-top:10px;color:var(--muted);max-width:64ch}
+
+.final{padding-top:84px;padding-bottom:84px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:14px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:48px;padding-top:24px}
+  .feats,.plans,.data{grid-template-columns:1fr;gap:32px}
+  .days{grid-template-columns:repeat(15,1fr)}
+}
+@media(max-width:420px){.phone{width:100%;max-width:300px}.agents{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:no-preference){
+  .days b.on{animation:fill .5s both;animation-delay:calc(var(--i) * 28ms)}
+  @keyframes fill{from{opacity:0;transform:scale(.4)}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="#top"><i></i>REDHUE</a>
+    <a class="btn sm" href="index.html">Åbn appen</a>
+  </header>
+
+  <div class="hero" id="top">
+    <div>
+      <h1>90 dage til din første indtægt som faceless creator</h1>
+      <p class="lead">REDHUE giver dig en plan for hver dag, en pipeline fra idé til postet video og et ærligt overblik over, hvad du faktisk tjener. Til TikTok, Instagram Reels og YouTube Shorts.</p>
+      <div class="cta">
+        <a class="btn main" href="index.html">Start gratis</a>
+        <a class="btn buy" href="#">Få Pro</a>
+      </div>
+      <p class="price-note">Gratis uden konto. Pro med AI-agenter, coach og chat: <span class="price"></span></p>
+
+      <div class="days" id="days" aria-hidden="true"></div>
+      <p class="days-cap"><strong>Hver firkant er en dag.</strong> Fire små opgaver om dagen, og du ser din streak vokse, mens missionen skrider frem.</p>
+    </div>
+
+    <div>
+      <div class="phone" role="img" aria-label="REDHUE's hjemmeskærm på en telefon med ur, mission, profit og app-ikoner">
+        <div class="screen">
+          <div class="st"><span>REDHUE OS</span><span>DAG 23/90 &nbsp; 21:47</span></div>
+          <div class="clock">21:47</div>
+          <div class="date">Fredag 13. november</div>
+          <div class="greet">Godaften, Sara</div>
+          <div class="w mis">
+            <svg class="ring" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#3ee8ff"/><stop offset=".5" stop-color="#9b6bff"/><stop offset="1" stop-color="#ff4fd8"/></linearGradient></defs><circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/><circle cx="40" cy="40" r="32" fill="none" stroke="url(#g)" stroke-width="9" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="150" transform="rotate(-90 40 40)"/><text x="40" y="47" text-anchor="middle" fill="#f2f1f8" font-family="JetBrains Mono" font-size="20" font-weight="600">23</text></svg>
+            <div><div class="l">Mission</div><div class="n">62% af målet</div><div class="l" style="margin-top:2px">I dag 3/4 ✓ · 9 🔥</div></div>
+          </div>
+          <div class="wrow">
+            <div class="w"><div class="l">Profit, måned</div><div class="n pos">3.140 kr</div></div>
+            <div class="w"><div class="l">Level 4</div><div class="n">🤖 372 XP</div></div>
+          </div>
+          <div class="apps">
+            <div class="app"><span>🎯</span>Mission</div><div class="app"><span>▦</span>Pipeline</div><div class="app"><span>🤖</span>Agenter</div><div class="app"><span>💳</span>Wallet</div>
+            <div class="app"><span>💰</span>Profit</div><div class="app"><span>📈</span>Portefølje</div><div class="app"><span>🛒</span>Produkter</div><div class="app"><span>＋</span>Indtægt</div>
+          </div>
+          <div class="dock"><span>◎</span><span>🎯</span><span>💳</span><span>⚙︎</span></div>
+        </div>
+      </div>
+      <p class="phone-cap">Sådan ser hjemmeskærmen ud. Tallene er et eksempel.</p>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2>Alt du skal bruge for at komme fra idé til indtægt</h2>
+    <p class="intro">Ét sted til planen, videoerne og pengene, så du ikke skal jonglere med noter, regneark og fem apps.</p>
+    <div class="feats">
+      <div class="feat" style="--c:var(--cy)">
+        <h3>En plan for hver dag</h3>
+        <p>Fire faste opgaver om dagen holder dig i gang: post, skriv, engagér og log dine tal. Du optjener XP og bygger en streak.</p>
+        <div class="eg"><span>Post 1 video</span><span>1 nyt manuskript</span><span>15 min engagement</span><span>Log tal</span></div>
+      </div>
+      <div class="feat" style="--c:var(--vi)">
+        <h3>Fra idé til postet video</h3>
+        <p>Saml alle dine idéer og flyt dem videre, efterhånden som de bliver til manuskripter, optagelser og opslag.</p>
+        <div class="eg"><span>Idé</span><span>Manuskript</span><span>Produktion</span><span>Postet</span></div>
+      </div>
+      <div class="feat" style="--c:var(--ok)">
+        <h3>Se hvad du reelt tjener</h3>
+        <p>Indtægter minus udgifter pr. måned, din margin, et profitmål og en prognose for resten af måneden. Du ser også, hvilke kilder der betaler mest.</p>
+        <div class="eg"><span>Profit</span><span>Margin</span><span>Profitmål</span><span>Prognose</span></div>
+      </div>
+      <div class="feat" style="--c:var(--ma)">
+        <h3>Bor på din telefon</h3>
+        <p>Installér REDHUE som en app. Den får sin egen hjemmeskærm med ur, mission og profit, og den virker også uden internet.</p>
+        <div class="eg"><span>Android</span><span>iPhone</span><span>Dansk og engelsk</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="priser">
+  <div class="wrap">
+    <h2>Start gratis. Opgradér, når du vil skrive hurtigere.</h2>
+    <div class="plans">
+      <div class="plan">
+        <h3>Gratis</h3>
+        <div class="p">0 kr</div>
+        <div class="pn">Ingen konto, intet kort</div>
+        <ul>
+          <li>90-dages mission med daglige opgaver, streak og XP</li>
+          <li>Pipeline fra idé til postet video</li>
+          <li>Wallet og profit-overblik med profitmål</li>
+          <li>Portefølje og dine produkter</li>
+          <li>Egen hjemmeskærm på telefonen</li>
+          <li>Guide der hjælper dig i gang og foreslår dit næste skridt</li>
+          <li>🛡️ SOS til dine nødkontakter og frivillig deling af din position</li>
+          <li>Fejring af dine milepæle og en daglig taknemmeligheds-linje</li>
+          <li>En daglig besked fra din egen støttende mor, far eller mentor – læst højt med en blid stemme</li>
+        </ul>
+        <a class="btn" href="index.html">Start gratis</a>
+      </div>
+      <div class="plan pro">
+        <h3>Pro</h3>
+        <div class="p price"></div>
+        <div class="pn">Alt i Gratis, plus AI og fællesskab</div>
+        <ul style="margin-bottom:22px"><li>AI-coach du kan chatte med, som kender dine tal</li><li>Skriv med din virtuelle mor, far eller mentor – varm, men ærlig</li><li>Chat med andre REDHUE-creators: del dine sejre og hyld hinandens</li><li>Find dine egne enheder</li><li>Fire AI-agenter, der skriver på dansk eller engelsk</li></ul>
+        <div class="agents">
+          <div><b>Script-agent</b><span>Manuskript med hook, voiceover, visuals og CTA</span></div>
+          <div><b>Hook &amp; Caption</b><span>10 hooks plus captions og hashtags</span></div>
+          <div><b>Planlægger</b><span>Ugeplan og batch-produktion mod dit mål</span></div>
+          <div><b>Analytiker</b><span>Læser dine tal og giver 3 eksperimenter</span></div>
+        </div>
+        <a class="btn main buy" href="#">Få Pro</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap data">
+    <h2>Dine tal bliver på din telefon</h2>
+    <div>
+      <p>REDHUE gemmer alt lokalt på din enhed. Der er ingen konto og ingen database med dine indtægter, idéer eller noter.</p>
+      <p class="muted">Når du bruger en AI-agent eller coachen, sendes det, du skriver, til REDHUE's server og videre til Anthropic, som laver svaret. Coachen får også dine nøgletal med, fx profit og missionsdag, så svaret passer til dig.</p>
+      <p class="muted">Beskeder i fællesskabs-chatten gemmes på REDHUE's server, så andre Pro-brugere kan læse dem. De vises med dit navn, aldrig med din licensnøgle, og du kan selv slette dem. Når du selv starter en SOS eller deler din position, gemmes positionen på REDHUE's server, indtil delingen stopper eller udløber. Resten af appen sender ingenting.</p>
+      <p class="muted">Skifter du telefon, så eksportér en backup under Indstillinger og hent den ind på den nye.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Spørgsmål</h2>
+    <details><summary>Hvordan installerer jeg den på telefonen?</summary><p>På Android: åbn REDHUE i Chrome, tryk på menuen ⋮ og vælg Installér app. På iPhone: åbn den i Safari, tryk på Del og vælg Føj til hjemmeskærm.</p></details>
+    <details><summary>Hvordan låser jeg Pro op?</summary><p>Når du køber Pro, får du en licensnøgle på mail. Indsæt den i appen under Indstillinger, så åbner agenterne med det samme.</p></details>
+    <details><summary>Hvad kan AI-coachen?</summary><p>Du spørger som i en almindelig chat, fx hvad du skal poste i dag, eller hvordan du når dit profitmål. Coachen kan se dine tal i appen og svarer med konkrete næste skridt.</p></details>
+    <details><summary>Skal jeg allerede have en kanal?</summary><p>Nej. Missionen starter fra dag 1, og pipelinen hjælper dig med at finde og planlægge dine første videoer.</p></details>
+    <details><summary>Hvilke platforme passer den til?</summary><p>Kort video uden ansigt: TikTok, Instagram Reels og YouTube Shorts. Agenterne skriver til den platform, du vælger.</p></details>
+  </div>
+</section>
+
+<div class="wrap final">
+  <h2>Dag 1 kan være i dag</h2>
+  <div class="cta"><a class="btn main" href="index.html">Start gratis</a><a class="btn buy" href="#">Få Pro</a></div>
+</div>
+
+<div class="wrap"><footer><span>REDHUE · <a href="privatliv.html">Privatliv &amp; vilkår</a></span><span class="company"></span></footer></div>
+
+<script>
+/* ===== Ret her ===== */
+const SALE = {
+  GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // dit Gumroad-link til REDHUE Pro
+  PRICE: "99 kr./md.",                                      // prisen som den skal stå på siden
+  COMPANY: ""                                               // fx "REDHUE ApS · CVR 12345678 · kontakt@..."
+};
+/* ==================== */
+const buyOk=/^https:\/\/[^/]+\/l\//.test(SALE.GUMROAD_URL) && !/YOUR_NAME/.test(SALE.GUMROAD_URL);
+document.querySelectorAll(".buy").forEach(a=>{ a.href=SALE.GUMROAD_URL; a.target="_blank"; a.rel="noopener"; a.hidden=!buyOk; });
+document.querySelectorAll(".price").forEach(e=>e.textContent=SALE.PRICE);
+document.querySelector(".company").textContent=SALE.COMPANY;
+const d=document.getElementById("days"); let h="";
+for(let i=1;i<=90;i++) h+=`<b class="${i<23?"on":i===23?"today":""}" style="--i:${i};background-position:${(i/90)*100}% 0"></b>`;
+d.innerHTML=h;
+</script>
+</body>
+</html>

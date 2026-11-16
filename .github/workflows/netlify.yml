@@ -1,0 +1,115 @@
+# Lægger REDHUE live på Netlify. Tre kanaler – én branch hver:
+#   alpha  → https://alpha--redhue.netlify.app   udvikling, alt det nyeste (Claude arbejder her)
+#   beta   → https://beta--redhue.netlify.app    testere (branchen "redhue" regnes også som beta)
+#   gamma  → https://redhue.netlify.app          den færdige app
+#   delta  → https://delta--redhue.netlify.app   stabil reserve – den sidst godkendte gamma
+# Flyt en version videre med workflowet «Promovér» (alpha → beta → gamma → delta).
+#
+# Alle nøgler bor ét sted: GitHub → repoet → Settings → Secrets and variables → Actions.
+#   NETLIFY_AUTH_TOKEN  (påkrævet)  Netlify → User settings → Applications → Personal access tokens. Starter med nfp_
+#   ANTHROPIC_API_KEY   (valgfri)   console.anthropic.com → API Keys. Starter med sk-ant-     → AI-agenter, coach, mor/far
+#   REDHUE_DEV_KEY      (valgfri)   din ejer-nøgle (REDHUE-…)                                 → ejer-adgang + feedback-indbakke
+#   GUMROAD_PRODUCT_ID  (valgfri)   fra dit Gumroad-produkt                                   → betalte licenser
+#   REDHUE_BETA_HASHES  (valgfri)   ekstra beta-koder som hashes, kommasepareret
+#   YOUTUBE_API_KEY     (valgfri)   Google Cloud → YouTube Data API v3 → API-nøgle. Starter med AIza → abonnenter + @navne
+# Ved hver deploy synkroniseres de valgfri nøgler til Netlifys miljøvariabler. Nøglerne vises aldrig i loggen.
+name: Deploy til Netlify
+on:
+  push:
+    branches: [alpha, beta, gamma, delta, redhue]
+  workflow_dispatch: {}
+concurrency:
+  group: netlify-${{ github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_SITE_ID: 3d54a324-e30b-443a-b89f-ba58d7fcc01f
+      RAW_NETLIFY: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      REDHUE_DEV_KEY: ${{ secrets.REDHUE_DEV_KEY }}
+      GUMROAD_PRODUCT_ID: ${{ secrets.GUMROAD_PRODUCT_ID }}
+      REDHUE_BETA_HASHES: ${{ secrets.REDHUE_BETA_HASHES }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kanal
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            alpha) ch=alpha; flags="--alias alpha"; url="https://alpha--redhue.netlify.app";;
+            gamma) ch=gamma; flags="--prod";        url="https://redhue.netlify.app";;
+            delta) ch=delta; flags="--alias delta"; url="https://delta--redhue.netlify.app";;
+            *)     ch=beta;  flags="--alias beta";  url="https://beta--redhue.netlify.app";;
+          esac
+          echo "CHANNEL=$ch" >> "$GITHUB_ENV"; echo "DEPLOY_FLAGS=$flags" >> "$GITHUB_ENV"; echo "SITE_URL=$url" >> "$GITHUB_ENV"
+          echo "Branch ${GITHUB_REF_NAME} → kanal $ch → $url"
+
+      - name: Tjek nøgler (viser aldrig selve nøglerne)
+        id: keys
+        run: |
+          T="$(printf %s "$RAW_NETLIFY" | tr -d '[:space:]')"
+          echo "::add-mask::$T"
+          if [ -z "$T" ]; then echo "::error title=Netlify-nøgle mangler::Tilføj NETLIFY_AUTH_TOKEN under Settings → Secrets and variables → Actions."; exit 1; fi
+          case "$T" in nfp_*) ;; *) echo "::error title=Forkert Netlify-nøgle::Den gemte værdi er ${#T} tegn og starter ikke med nfp_. Det er nok nøglens id fra listen, ikke selve nøglen. Lav en ny under Personal access tokens og kopiér den lange tekst, der vises lige efter Generate token."; exit 1;; esac
+          code=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $T" "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID")
+          if [ "$code" != "200" ]; then echo "::error title=Netlify afviser nøglen::Svar $code. Nøglen er udløbet, slettet eller tilhører en konto uden adgang til projektet redhue."; exit 1; fi
+          echo "NETLIFY_AUTH_TOKEN=$T" >> "$GITHUB_ENV"
+          echo "Netlify-nøgle: OK"
+          chk(){ n="$1"; v="$2"; pre="$3"; if [ -z "$v" ]; then echo "$n: ikke sat (springes over)"; elif [ -n "$pre" ] && [ "${v#"$pre"}" = "$v" ]; then echo "::warning title=$n ser forkert ud::Den starter ikke med $pre – synkroniseres ikke."; echo "SKIP_$n=1" >> "$GITHUB_ENV"; else echo "$n: OK"; fi; }
+          chk ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY" "sk-ant-"
+          chk REDHUE_DEV_KEY "$REDHUE_DEV_KEY" "REDHUE-"
+          chk GUMROAD_PRODUCT_ID "$GUMROAD_PRODUCT_ID" ""
+          chk REDHUE_BETA_HASHES "$REDHUE_BETA_HASHES" ""
+          chk YOUTUBE_API_KEY "$YOUTUBE_API_KEY" "AIza"
+
+      - name: Tjek at beta-datoen er ens i app og server
+        run: |
+          a=$(grep -o 'function betaUntil(){ return "[0-9-]*"' index.html | grep -o '[0-9]\{4\}-[0-9-]*')
+          b=$(grep -o 'BETA_UNTIL = "[0-9-]*"' netlify/lib/shared.mjs | grep -o '[0-9]\{4\}-[0-9-]*')
+          echo "App: $a  Server: $b"
+          [ -n "$a" ] && [ "$a" = "$b" ] || { echo "::error::Beta-datoen i index.html ($a) og netlify/lib/shared.mjs ($b) er forskellige."; exit 1; }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Kvalitetstjek (stopper udgivelsen hvis noget er i stykker)
+        run: |
+          node -e "const s=require('fs').readFileSync('index.html','utf8');const m=[...s.matchAll(/<script>([\s\S]*?)<\/script>/g)];m.forEach((x,i)=>{try{new Function(x[1])}catch(e){console.error('::error::Syntaksfejl i script #'+i+' i index.html: '+e.message);process.exit(1)}});console.log('index.html: '+m.length+' scripts OK')"
+          node --check sw.js && echo "sw.js OK"
+          node tools/embed-prompts.mjs --check
+          for f in netlify/functions/*.mjs; do npx -y esbuild "$f" --bundle --platform=node --format=esm --outfile=/tmp/x.mjs --log-level=error || { echo "::error::$f kan ikke bygges"; exit 1; }; node --input-type=module -e "await import('$PWD/$f')" || { echo "::error::$f fejler ved indlæsning"; exit 1; }; echo "$f OK"; done
+
+      - name: Versionsstempel (så telefoner altid får besked om ny version)
+        run: |
+          STAMP="${GITHUB_SHA::7}"
+          sed -i "s/^const CACHE = \"[^\"]*\";/const CACHE = \"redhue-$STAMP\";/" sw.js
+          sed -i "s/const VERSION = \"\([0-9.]*\)[^\"]*\";/const VERSION = \"\1-$CHANNEL+$STAMP\";/" index.html
+          grep -o 'const CACHE = "[^"]*"' sw.js; grep -o 'const VERSION = "[^"]*"' index.html
+
+      - name: Synkronisér nøgler til Netlify
+        run: |
+          for n in ANTHROPIC_API_KEY REDHUE_DEV_KEY GUMROAD_PRODUCT_ID REDHUE_BETA_HASHES YOUTUBE_API_KEY; do
+            v="${!n}"; skip="SKIP_$n"
+            if [ -z "$v" ] || [ -n "${!skip}" ]; then continue; fi
+            npx -y netlify-cli@latest env:set "$n" "$v" --secret --force > /dev/null 2>&1 \
+              || npx -y netlify-cli@latest env:set "$n" "$v" --force > /dev/null \
+              && echo "$n: synkroniseret" || echo "::warning::$n kunne ikke synkroniseres"
+          done
+
+      - name: Deploy
+        run: |
+          node tools/build-drop.mjs
+          npx -y netlify-cli@latest deploy --dir dist --functions dist/netlify/functions $DEPLOY_FLAGS --message "$CHANNEL ${{ github.sha }}"
+
+      - name: Tjek at siden svarer
+        run: |
+          sleep 5
+          for p in / /sw.js /privatliv.html; do echo "$SITE_URL$p: $(curl -s -o /dev/null -w '%{http_code}' $SITE_URL$p)"; done
+          echo "API feedback (forventer 403 uden ejer-nøgle): $(curl -s -o /dev/null -w '%{http_code}' $SITE_URL/api/feedback)"
+          echo "Backend-status: $(curl -s --max-time 15 $SITE_URL/api/health)"
+          echo "### REDHUE $CHANNEL er live: $SITE_URL" >> "$GITHUB_STEP_SUMMARY"

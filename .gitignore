@@ -1,0 +1,6 @@
+.env
+.netlify/
+.baby/
+node_modules/
+dist/
+redhue-netlify.zip
