@@ -142,7 +142,7 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 **Privatliv:** `privatliv.html` er et udkast med gule pladsholdere (dataansvarlig, CVR, retsgrundlag, overførselsgrundlag, ansvarsbegrænsning, opbevaringstid for feedback). Skal udfyldes, før testere får linket. Fjern derefter `#draftNote`.
 
 ### Tjekliste før første tester
-1. Netlify: forbind sitet til repo `west33mark-netizen/redhue`, branch `gamma`.
+1. Netlify: forbind sitet til repo `west33mark-netizen/redhue`, branch `main`.
 2. Netlify env vars: `ANTHROPIC_API_KEY`, `REDHUE_DEV_KEY`, `GUMROAD_PRODUCT_ID` (sidstnævnte kan vente, hvis kun beta-koder bruges).
 3. Udfyld `privatliv.html`.
 4. Åbn sitet på din egen telefon: installér som app, send én test-feedback, tjek at den står i indbakken.
@@ -165,17 +165,8 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 - **Hver morgen** tjekker «Daglig helbredstjek», at siden og serveren svarer. Fejler den, mailer GitHub dig.
 - Nøgler ændres kun ét sted: GitHub → Settings → Secrets and variables → Actions.
 
-## Kanaler: alpha → beta → gamma
-| Kanal | Branch | Adresse | Til |
-|---|---|---|---|
-| **alpha** | `alpha` | https://alpha--redhue.netlify.app | udvikling – alt det nyeste lander her først |
-| **beta** | `beta` (og `redhue`) | https://beta--redhue.netlify.app | testere med beta-koder |
-| **gamma** | `gamma` | https://redhue.netlify.app | den færdige app |
-| **delta** | `delta` | https://delta--redhue.netlify.app | stabil reserve – den sidst godkendte gamma |
-
-- Push til en branch udgiver automatisk til dens adresse. Appen viser selv sin kanal (ALPHA/BETA/GAMMA) ved logoet og i Indstillinger → Beta, og feedback mærkes med kanalen.
-- **Flyt videre:** GitHub → Actions → «Promovér» → vælg et trin eller *alt: alpha → beta → gamma → delta* → Run workflow. Kun hurtig-flytning (fast-forward), så en kanal aldrig mister noget.
-- Alle kanaler deler nøgler og feedback-indbakke.
+## Én samlet udgave
+Al kode ligger på `main`. Hvert push til `main` bygger og udgiver til https://redhue.netlify.app. Vagten (`vagt.yml`) udgiver automatisk, så snart Netlify-nøglen virker.
 
 ## Backend (samlet)
 Alle endpoints ligger i `netlify/functions/` og deler `netlify/lib/shared.mjs`: CORS, preflight, licens/beta-tjek, spam-bremse og `endpoint()`-indgangen med fælles fejlhåndtering.

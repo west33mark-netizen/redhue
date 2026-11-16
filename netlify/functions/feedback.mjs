@@ -50,7 +50,7 @@ export default async (req) => {
     text,
     page: clean(b.page, 40),
     version: clean(b.version, 40),
-    channel: ["alpha", "beta", "gamma", "delta"].includes(b.channel) ? b.channel : "",
+    channel: ["dev", "beta"].includes(b.channel) ? b.channel : "",
     errors: clean(b.errors, 1500),
     contact: clean(b.contact, 120),
     ua: clean(req.headers.get("user-agent"), 160),

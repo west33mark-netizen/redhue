@@ -1198,7 +1198,7 @@ const CFG = {
 const ON_SITE = (()=>{ try{ const o=location.origin; return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o) || /\.netlify\.app$/.test(location.hostname) || o===CFG.SITE; }catch(e){ return false; } })();
 const IS_PREVIEW = !ON_SITE;
 // Kanal ud fra adressen: alpha--redhue / beta--redhue / redhue.netlify.app (gamma)
-const CHANNEL = (()=>{ try{ const h=location.hostname; if(/^alpha--/.test(h)||/^(localhost|127\.0\.0\.1)$/.test(h)) return "alpha"; if(/^beta--/.test(h)) return "beta"; if(/^delta--/.test(h)) return "delta"; if(h==="redhue.netlify.app") return "gamma"; }catch(e){} return "beta"; })();
+const CHANNEL = (()=>{ try{ if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return "dev"; }catch(e){} return "beta"; })(); // én samlet udgave
 const apiUrl = p => (ON_SITE ? "" : CFG.SITE) + p;
 const APP_URL = ON_SITE ? location.origin + location.pathname : CFG.SITE + "/";
 CFG.API = apiUrl(CFG.API);
