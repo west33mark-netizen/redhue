@@ -9,10 +9,13 @@ rmSync(out, { recursive: true, force: true }); mkdirSync(out + "netlify/function
 // 1) Offentlige filer – kun dem, appen bruger
 for (const f of ["index.html", "sw.js", "manifest.json", "avatar.png", "privatliv.html", "salg.html"]) cpSync(root + f, out + f);
 cpSync(root + "icons", out + "icons", { recursive: true });
+// Google Play (TWA): Digital Asset Links skal ligge på /.well-known/assetlinks.json
+cpSync(root + ".well-known", out + ".well-known", { recursive: true });
+cpSync(root + "store/manifest", out + "store/manifest", { recursive: true }); // manifest-screenshots (webp)
 // 2) Headers (træk-og-slip læser _headers, ikke netlify.toml)
 // Kildekoden til funktionerne skal ikke kunne hentes som almindelige filer
 writeFileSync(out + "_redirects", "/netlify/*  /404  404!\n");
-writeFileSync(out + "_headers", "/sw.js\n  Cache-Control: no-cache\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n");
+writeFileSync(out + "_headers", "/sw.js\n  Cache-Control: no-cache\n/.well-known/assetlinks.json\n  Content-Type: application/json\n  Access-Control-Allow-Origin: *\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n");
 // 3) Funktioner: én selvstændig fil hver. `export const config` bevares bogstaveligt, så Netlify finder /api/-stien.
 const fns = readdirSync(root + "netlify/functions").filter((f) => f.endsWith(".mjs"));
 for (const f of fns) {

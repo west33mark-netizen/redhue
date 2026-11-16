@@ -1,8 +1,8 @@
 {
-  "name": "REDHUE OS",
+  "name": "REDHUE",
   "short_name": "REDHUE",
-  "description": "Dit eget creator-styresystem: 90-dages mission, pipeline, profit og AI-agenter.",
-  "start_url": "/index.html#home",
+  "description": "Creator-OS til faceless creators: 90-dages indkomstmission, pipeline, AI-agenter, grafik, vejr fra DMI og små hverdags-apps. Virker offline.",
+  "start_url": "/index.html?app=web#home",
   "scope": "/",
   "display": "fullscreen",
   "background_color": "#06060e",
@@ -37,15 +37,33 @@
   "shortcuts": [
     {
       "name": "Ny indtægt",
-      "url": "/index.html#wallet"
+      "url": "/index.html#wallet",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Pipeline",
-      "url": "/index.html#pipeline"
+      "url": "/index.html#pipeline",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Mission",
-      "url": "/index.html#mission"
+      "url": "/index.html#mission",
+      "icons": [
+        {
+          "src": "icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "share_target": {
@@ -56,5 +74,45 @@
       "text": "share_text",
       "url": "share_url"
     }
-  }
+  },
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "business",
+    "lifestyle"
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "store/manifest/phone-1.webp",
+      "sizes": "1080x1920",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Hjem: REDHUE OS"
+    },
+    {
+      "src": "store/manifest/phone-2.webp",
+      "sizes": "1080x1920",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "AI-agenter"
+    },
+    {
+      "src": "store/manifest/phone-3.webp",
+      "sizes": "1080x1920",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Liv-apps"
+    },
+    {
+      "src": "store/manifest/wide-1.webp",
+      "sizes": "1920x1080",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Overblik"
+    }
+  ]
 }

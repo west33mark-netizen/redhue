@@ -1188,7 +1188,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "1.0.3-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "1.0.4-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -1199,6 +1199,9 @@ const ON_SITE = (()=>{ try{ const o=location.origin; return /^https?:\/\/(localh
 const IS_PREVIEW = !ON_SITE;
 // Kanal ud fra adressen: alpha--redhue / beta--redhue / redhue.netlify.app (gamma)
 const CHANNEL = (()=>{ try{ if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return "dev"; }catch(e){} return "beta"; })(); // én samlet udgave
+// Butiks-app (Google Play/TWA): ?app=play i start-URL eller android-app:// som henviser. Huskes på enheden.
+const IN_STORE_APP = (()=>{ try{ const q=new URLSearchParams(location.search).get("app"); if(q==="play"||q==="ios") localStorage.setItem("redhue_store",q);
+  if(/^android-app:\/\//.test(document.referrer||"")) localStorage.setItem("redhue_store","play"); return localStorage.getItem("redhue_store")||""; }catch(e){ return ""; } })();
 const apiUrl = p => (ON_SITE ? "" : CFG.SITE) + p;
 const APP_URL = ON_SITE ? location.origin + location.pathname : CFG.SITE + "/";
 CFG.API = apiUrl(CFG.API);
@@ -1268,7 +1271,7 @@ const T = {
   refreshPrices:"Opdater priser", quantity:"Antal", name:"Navn", value:"Værdi", price:"Pris", coin:"Mønt",
   pricesAt:t=>`Priser opdateret ${t}`, noPrices:"Tryk 'Opdater priser' for live-kurser.",
   productsSub:"Dine digitale produkter. Registrér et salg, og det lander direkte i Wallet.", payLink:"Betalingslink", sales:"Salg", revenue:"Omsætning", sell:"+1 salg", noProducts:"Ingen produkter endnu.",
-  agentsTitle:"AI-agent-team", agentsSub:"Fire agenter, der arbejder for din mission. Output kan sendes direkte til Pipeline.",
+  agentsTitle:"AI-agent-team", agentsSub:"Fem agenter, der arbejder for din mission. Output kan sendes direkte til Pipeline.",
   lockedText:"Agenterne er en del af REDHUE Pro. Indsæt din licensnøgle for at låse op.", unlock:"Lås op", buy:"Køb Pro",
   run:"Kør agent", running:"Arbejder…", chain:"Send automatisk manuskriptet videre til Hook-agenten", history:"Historik", output:"Output",
   copy:"Kopiér", toHooks:"→ Hooks", toPipe:"→ Pipeline", copied:"Kopieret", addedPipe:n=>`${n} kort lagt i Pipeline`,
@@ -1384,7 +1387,7 @@ const T = {
   refreshPrices:"Refresh prices", quantity:"Quantity", name:"Name", value:"Value", price:"Price", coin:"Coin",
   pricesAt:t=>`Prices updated ${t}`, noPrices:"Hit 'Refresh prices' for live rates.",
   productsSub:"Your digital products. Log a sale and it lands straight in Wallet.", payLink:"Payment link", sales:"Sales", revenue:"Revenue", sell:"+1 sale", noProducts:"No products yet.",
-  agentsTitle:"AI agent team", agentsSub:"Four agents working for your mission. Output can go straight to Pipeline.",
+  agentsTitle:"AI agent team", agentsSub:"Five agents working for your mission. Output can go straight to Pipeline.",
   lockedText:"The agents are part of REDHUE Pro. Paste your license key to unlock.", unlock:"Unlock", buy:"Get Pro",
   run:"Run agent", running:"Working…", chain:"Automatically pass the script on to the Hook agent", history:"History", output:"Output",
   copy:"Copy", toHooks:"→ Hooks", toPipe:"→ Pipeline", copied:"Copied", addedPipe:n=>`${n} card(s) added to Pipeline`,
@@ -2735,7 +2738,7 @@ $("licInlineSave").onclick=()=>{ const v=$("licInline").value.trim(); if(!v) ret
 
 /* ---------- Settings ---------- */
 function legacyKeys(){
-  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app","redhue_youtube","redhue_weather"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
+  const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if([K.state,K.lang,K.lic,K.hist,"redhue_coach","redhue_tz","redhue_haptic","redhue_4d","redhue_guide","redhue_moments","redhue_cheers","redhue_voice","redhue_parent","redhue_parent_chat","redhue_device","redhue_ec","redhue_shares","redhue_watch","redhue_findable","redhue_region","redhue_outbox","redhue_ver","redhue_drafts","redhue_autosave","redhue_restored","redhue_voice_day","redhue_life","redhue_life_app","redhue_youtube","redhue_weather","redhue_store"].includes(k)) continue; out.push([k,(localStorage.getItem(k)||"").length]); } }catch{}
   return out.sort((a,b)=>b[1]-a[1]);
 }
 function renderSettings(){
@@ -3954,7 +3957,8 @@ function applyStatic(){
   document.querySelectorAll("[data-t]").forEach(el=>{ const v=t()[el.dataset.t]; if(typeof v==="string") el.textContent=v; });
   document.querySelectorAll("[data-tp]").forEach(el=>el.placeholder=t()[el.dataset.tp]);
   const buyOk=/^https:\/\/[^/]+\/l\//.test(CFG.GUMROAD_URL) && !/YOUR_NAME/.test(CFG.GUMROAD_URL);
-  document.querySelectorAll(".buyLink").forEach(a=>{ a.href=CFG.GUMROAD_URL; a.hidden=!buyOk; });
+  // I butiks-apps vises ingen købsknapper (butikkernes betalingsregler) – Pro låses op med nøgle
+  document.querySelectorAll(".buyLink").forEach(a=>{ a.href=CFG.GUMROAD_URL; a.hidden=!buyOk||!!IN_STORE_APP; });
 }
 function renderSection(id){
   ({overview:renderOverview,mission:renderMission,pipeline:renderPipeline,wallet:renderWallet,portfolio:renderPortfolio,products:renderProducts,agents:renderAgents,settings:renderSettings,home:renderHome,profit:renderProfit,chat:renderChat,safe:()=>Safe.render(),life:()=>Life.render()}[id]||(()=>{}))();

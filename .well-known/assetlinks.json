@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.netlify.redhue.twa",
+      "sha256_cert_fingerprints": [
+        "INDSÆT:SHA256:FRA:PLAY-CONSOLE:APP-INTEGRITY:APP-SIGNING-NØGLE"
+      ]
+    }
+  }
+]
