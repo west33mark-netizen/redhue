@@ -1188,7 +1188,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "1.0.2-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "1.0.3-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -2547,6 +2547,7 @@ function hasLic(){
   let k=""; try{ k=String(JSON.parse(localStorage.getItem("redhue_pro_license")||'""')||"").trim(); }catch(e){ try{ k=String(store.get(K.lic,"")||"").trim(); }catch(_){ k=""; } }
   if(!k) return false;
   if(/^BETA-/i.test(k)) return /^BETA-[0-9A-F]{5}-[0-9A-F]{5}$/.test(k) && Date.now() <= Date.parse(betaUntil()+"T23:59:59Z");
+  if(/^PRO-/i.test(k)) return /^PRO-[0-9A-F]{5}-[0-9A-F]{5}$/.test(k);
   return true;
 }
 
@@ -2925,7 +2926,7 @@ const Beta=(()=>{
     const lic=store.get(K.lic,"");
     $("btTitle").textContent=L("Beta","Beta");
     $("btSub").textContent=L("Du bruger en testudgave. Fortæl os, hvad der virker, og hvad der driller – det former appen.","You're using a test version. Tell us what works and what doesn't – it shapes the app.");
-    const access=isBetaKey(lic)?(hasLic()?L("Beta-kode (Pro gratis til "+betaUntil()+")","Beta code (Pro free until "+betaUntil()+")"):L("Beta-koden er udløbet","Beta code has expired")):lic?L("Licens","License"):L("Ingen – gratis-delen","None – free tier");
+    const access=/^PRO-[0-9A-F]{5}-[0-9A-F]{5}$/.test(lic)?L("Pro-licens","Pro license"):isBetaKey(lic)?(hasLic()?L("Beta-kode (Pro gratis til "+betaUntil()+")","Beta code (Pro free until "+betaUntil()+")"):L("Beta-koden er udløbet","Beta code has expired")):lic?L("Licens","License"):L("Ingen – gratis-delen","None – free tier");
     $("btRows").innerHTML=[[L("Version","Version"),VERSION],[L("Kanal","Channel"),CHANNEL],[L("Adgang","Access"),access],[L("Tidszone","Time zone"),TZ()]].map(([a,b])=>`<div class="beta-row"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");
     $("btFb").textContent=L("Send feedback","Send feedback");
     $("btPriv").textContent=L("Privatliv & vilkår","Privacy & terms");

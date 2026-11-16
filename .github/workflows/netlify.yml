@@ -26,6 +26,7 @@ jobs:
       REDHUE_DEV_KEY: ${{ secrets.REDHUE_DEV_KEY }}
       GUMROAD_PRODUCT_ID: ${{ secrets.GUMROAD_PRODUCT_ID }}
       REDHUE_BETA_HASHES: ${{ secrets.REDHUE_BETA_HASHES }}
+      REDHUE_PRO_HASHES: ${{ secrets.REDHUE_PRO_HASHES }}
       YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +51,7 @@ jobs:
           chk REDHUE_DEV_KEY "$REDHUE_DEV_KEY" "REDHUE-"
           chk GUMROAD_PRODUCT_ID "$GUMROAD_PRODUCT_ID" ""
           chk REDHUE_BETA_HASHES "$REDHUE_BETA_HASHES" ""
+          chk REDHUE_PRO_HASHES "$REDHUE_PRO_HASHES" ""
           chk YOUTUBE_API_KEY "$YOUTUBE_API_KEY" "AIza"
 
       - name: Tjek at beta-datoen er ens i app og server
@@ -81,7 +83,7 @@ jobs:
 
       - name: Synkronisér nøgler til Netlify
         run: |
-          for n in ANTHROPIC_API_KEY REDHUE_DEV_KEY GUMROAD_PRODUCT_ID REDHUE_BETA_HASHES YOUTUBE_API_KEY; do
+          for n in ANTHROPIC_API_KEY REDHUE_DEV_KEY GUMROAD_PRODUCT_ID REDHUE_BETA_HASHES REDHUE_PRO_HASHES YOUTUBE_API_KEY; do
             v="${!n}"; skip="SKIP_$n"
             if [ -z "$v" ] || [ -n "${!skip}" ]; then continue; fi
             npx -y netlify-cli@latest env:set "$n" "$v" --secret --force > /dev/null 2>&1 \
