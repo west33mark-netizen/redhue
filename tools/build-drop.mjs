@@ -1,4 +1,4 @@
-// Bygger dist/ (og redhue-netlify.zip): en komplet udgave, der kan trækkes direkte ind i Netlify
+// Bygger dist/ (og REDHUE-KOMPLET.zip): en komplet udgave, der kan trækkes direkte ind i Netlify
 // (Deploys → træk-og-slip). Ingen build eller npm nødvendig: hver server-funktion samles i én fil.
 //   node tools/build-drop.mjs
 import { build } from "esbuild";
@@ -26,8 +26,11 @@ for (const f of fns) {
   if (!/export const config = \{\s*path:\s*"\/api\//.test(code)) throw new Error(f + ": config.path blev ikke bevaret");
   writeFileSync(out + "netlify/functions/" + f, code);
 }
+// Tjekliste i pakken, så man kan se, at den er komplet
+const ver=(readFileSync(root+"index.html","utf8").match(/const VERSION = "([^"]+)"/)||[])[1];
+writeFileSync(out+"INDHOLD.txt",`REDHUE ${ver} – komplet pakke\nTræk denne zip (eller den udpakkede mappe) ind under Deploys i Netlify.\n\nApp: index.html, sw.js, manifest.json, ikoner, privatliv.html, salg.html\nServer (${fns.length} dele): ${fns.map(f=>"/api/"+f.replace(".mjs","")).join(", ")}\n\nEfter upload skal Netlify vise ${fns.length} funktioner, og appen viser "Server: Komplet" under Indstillinger → Beta.\n`);
 // 4) Zip
-rmSync(root + "redhue-netlify.zip", { force: true });
-execSync(`cd "${out}" && zip -qr "${root}redhue-netlify.zip" .`);
+rmSync(root + "REDHUE-KOMPLET.zip", { force: true });
+execSync(`cd "${out}" && zip -qr "${root}REDHUE-KOMPLET.zip" .`);
 const kb = (p) => Math.round(statSync(p).size / 1024);
-console.log(`dist/ klar · ${fns.length} funktioner · zip ${kb(root + "redhue-netlify.zip")} KB`);
+console.log(`dist/ klar · ${fns.length} funktioner · zip ${kb(root + "REDHUE-KOMPLET.zip")} KB`);

@@ -1050,7 +1050,7 @@ html.os-on .app,html.os-on .bottomnav{visibility:hidden}
           <div class="card" id="betaCard">
             <h3 id="btTitle"></h3>
             <p class="sub" style="margin-bottom:8px" id="btSub"></p>
-            <div id="btRows"></div><div class="beta-row" id="btCloud" hidden></div>
+            <div id="btRows"></div><div class="beta-row" id="btCloud" hidden></div><div class="beta-row" id="btSrv" hidden><span id="btSrvL"></span><b id="btSrvV"></b></div>
             <div class="actions"><button class="primary" id="btFb"></button><a class="btn" id="btPriv" href="privatliv.html" target="_blank" rel="noopener"></a><button id="btInbox" hidden></button></div>
             <div class="actions" style="margin-top:6px"><button class="small" id="btUpd"></button><button class="small" id="btRestart"></button><button class="small" id="btQueue"></button></div>
             <div id="btInboxList"></div>
@@ -1188,7 +1188,7 @@ window.__errs=[];
 /* =========================================================
    REDHUE · Mission Control  (single-file PWA)
    ========================================================= */
-const VERSION = "1.0.1-beta"; // ← hæv ved hver beta-udgivelse
+const VERSION = "1.0.2-beta"; // ← hæv ved hver beta-udgivelse
 const CFG = {
   GUMROAD_URL: "https://YOUR_NAME.gumroad.com/l/redhue-pro", // ← dit Gumroad-link
   SITE: "https://redhue.netlify.app", // ← den rigtige app (bruges når siden vises som forhåndsvisning)
@@ -2932,7 +2932,12 @@ const Beta=(()=>{
     $("btInbox").textContent=L("Feedback-indbakke","Feedback inbox");
     $("btInbox").hidden=!lic||isBetaKey(lic);
     $("btUpd").textContent=L("Søg efter opdatering","Check for update");
-    $("btRestart").textContent=L("Genstart app","Restart app"); try{ Cloud.paint(); }catch(e){}
+    $("btRestart").textContent=L("Genstart app","Restart app");
+    // Er serveren komplet? /api/health findes kun i den komplette udgave (8 dele)
+    if(ON_SITE){ $("btSrv").hidden=false; $("btSrvL").textContent=L("Server","Server"); const v=$("btSrvV"); if(!v.dataset.done){ v.textContent="…";
+      Net.tfetch(apiUrl("/api/health"),{},8000).then(r=>r.ok?r.json():Promise.reject(r.status)).then(j=>{ const n=Object.keys(j.routes||{}).length, k=j.ready||{};
+        v.textContent=L(`Komplet · ${n} dele`,`Complete · ${n} parts`)+(k.ai?"":L(" · AI-nøgle mangler"," · AI key missing"))+(k.owner?"":L(" · ejer-nøgle mangler"," · owner key missing")); v.style.color=k.ai&&k.owner?"var(--ok)":"var(--am)"; v.dataset.done=1; })
+      .catch(e=>{ v.textContent=e===404?L("Gammel udgave – læg REDHUE-KOMPLET.zip op","Old version – upload REDHUE-KOMPLET.zip"):L("Kan ikke nås lige nu","Unreachable right now"); v.style.color="var(--am)"; }); } } try{ Cloud.paint(); }catch(e){}
     Net.paint(); $("btQueue").onclick=()=>{ if(!Net.queue().length) return; if(!Net.online()) return toast(L("Sendes, når du er online","Sent when you're online")); Net.flush(); };
   }
   function open(k){
