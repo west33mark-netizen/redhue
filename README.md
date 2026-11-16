@@ -142,7 +142,7 @@ Bygget omkring det, oxytocin handler om: samhørighed, anerkendelse og varme –
 **Privatliv:** `privatliv.html` er et udkast med gule pladsholdere (dataansvarlig, CVR, retsgrundlag, overførselsgrundlag, ansvarsbegrænsning, opbevaringstid for feedback). Skal udfyldes, før testere får linket. Fjern derefter `#draftNote`.
 
 ### Tjekliste før første tester
-1. Netlify: forbind sitet til repo `west33mark-netizen/mark`, branch `redhue`.
+1. Netlify: forbind sitet til repo `west33mark-netizen/redhue`, branch `gamma`.
 2. Netlify env vars: `ANTHROPIC_API_KEY`, `REDHUE_DEV_KEY`, `GUMROAD_PRODUCT_ID` (sidstnævnte kan vente, hvis kun beta-koder bruges).
 3. Udfyld `privatliv.html`.
 4. Åbn sitet på din egen telefon: installér som app, send én test-feedback, tjek at den står i indbakken.
